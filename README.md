@@ -1,11 +1,10 @@
 # Arcturus
 
-
 ## Development
 
 ### Getting Started - Local Development
 
-#### Prerequisites 
+#### Prerequisites
 
 - This repo makes use of [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm) to manage the version of Node, follow the [installation instructions here](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
 
@@ -20,4 +19,12 @@
 
 ### Technologies
 
+- [Node](https://nodejs.org/en)
+- [NVM](https://github.com/nvm-sh/nvm) - Node Version Manager
+- [Yarn](https://yarnpkg.com/) - Package Manager
+- [NX](https://nx.dev/) - Build System
+- [NestJS](https://nestjs.com/) - Node JS Framework
+
 ### Commands
+
+Note: All `nx` commands should be run using `yarn`, e.g. `yarn nx run-many -t build`
