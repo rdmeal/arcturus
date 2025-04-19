@@ -22,7 +22,10 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["tournament-runner/tournament-runner-service-e2e/**/*"]
+      "exclude": [
+        "tournament-runner/tournament-runner-service-e2e/**/*",
+        "games/rock-paper-scissors/runner/rock-paper-scissors-runner-service-e2e/**/*"
+      ]
     }
   ]
 }
