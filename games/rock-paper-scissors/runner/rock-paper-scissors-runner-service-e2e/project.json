@@ -1,0 +1,17 @@
+{
+  "name": "rock-paper-scissors-runner-service-e2e",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["rock-paper-scissors-runner-service"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "games/rock-paper-scissors/runner/rock-paper-scissors-runner-service-e2e/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "dependsOn": ["rock-paper-scissors-runner-service:build"]
+    }
+  }
+}
