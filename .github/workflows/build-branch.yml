@@ -1,0 +1,24 @@
+name: Build Branch
+on:
+  push:
+    branches:
+      - '!main'
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - id: yarn-install
+        name: Install Yarn Dependencies
+        uses: ./.github/actions/install-yarn-dependencies
+
+      - uses: nrwl/nx-set-shas@v4
+
+      - run: yarn nx format:check
+
+      - run: yarn nx affected -t lint test build
