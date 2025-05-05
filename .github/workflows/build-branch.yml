@@ -8,17 +8,20 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           filter: tree:0
 
-      - id: yarn-install
-        name: Install Yarn Dependencies
+      - name: Install Yarn Dependencies
         uses: ./.github/actions/install-yarn-dependencies
 
-      - uses: nrwl/nx-set-shas@v4
+      - name: Set NX SHAs
+        uses: nrwl/nx-set-shas@v4
 
-      - run: yarn nx format:check
+      - name: Check Formatting Using Prettier
+        run: yarn nx format:check
 
-      - run: yarn nx affected -t lint test build
+      - name: Lint, Test and Build
+        run: yarn nx affected -t lint test build
