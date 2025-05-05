@@ -12,4 +12,5 @@ runs:
         cache: 'yarn'
 
     - name: Install Yarn Dependencies
+      shell: bash
       run: yarn install --immutable
