@@ -12,7 +12,7 @@
 
 - `nvm install` - Install the version of Node specified in [.nvmrc](./.nvmrc)
 - `nvm use` - Switch to the version of Node specified in [.nvmrc](./.nvmrc)
-- `npm install -g corepack` - Install [Corepack](https://github.com/nodejs/corepack), which is need to use [Yarn](https://yarnpkg.com/), the package manager this project uses
+- `corepack enable` - Enables [Corepack](https://github.com/nodejs/corepack), which is needed to use [Yarn](https://yarnpkg.com/), the package manager this project uses
 - `yarn install` - Install Node dependencies
 
 #### Running Locally
@@ -24,7 +24,14 @@
 - [Yarn](https://yarnpkg.com/) - Package Manager
 - [NX](https://nx.dev/) - Build System
 - [NestJS](https://nestjs.com/) - Node JS Framework
+- [Prettier](https://prettier.io/) - Formatting tool
 
 ### Commands
 
 Note: All `nx` commands should be run using `yarn`, e.g. `yarn nx run-many -t build`
+
+- `yarn nx run-many -t build` - Builds all packages
+- `yarn nx run-many -t lint` - Lints all packages
+- `yarn nx run-many -t test` - Tests all packages
+- `yarn nx format:check` - Checks formatting us Prettier
+- `yarn nx format:write` - Formats all files with Prettier
