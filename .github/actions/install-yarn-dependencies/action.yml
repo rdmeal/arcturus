@@ -1,0 +1,15 @@
+name: Install Yarn Dependencies
+description: |
+  Sets up Node with a Yarn Cache and installs dependencies.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: 'yarn'
+
+    - name: Install Yarn Dependencies
+      run: yarn install --immutable
