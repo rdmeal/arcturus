@@ -2,6 +2,7 @@ name: Build Branch
 on:
   push:
     branches:
+      - '**'
       - '!main'
 
 jobs:
