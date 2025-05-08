@@ -5,8 +5,25 @@ on:
       - 'main'
 
 jobs:
-  main:
+  lint-actions:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Install Yarn Dependencies
+        uses: ./.github/actions/install-yarn-dependencies
+
+      - name: Check Formatting Using Prettier
+        run: yarn nx run arcturus:lint:actions
+
+  main:
+    name: Lint, Test, Build
+    runs-on: ubuntu-latest
+    needs: lint-actions
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
