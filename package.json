@@ -1,6 +1,10 @@
 {
   "name": "arcturus",
   "packageManager": "yarn@4.9.1",
+  "nx": {},
+  "scripts": {
+    "lint:actions": "docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color"
+  },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "@nestjs/schematics": "^10.0.1",
