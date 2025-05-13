@@ -1,13 +1,13 @@
 create table BOT (
     id uuid primary key,
-    url varchar(255) not null,
+    url varchar(255) not null
 );
 
-create enum  MOVE_TYPE (
-    ROCK,
-    PAPER, 
-    SCISSORS
-   );
+create type MOVE_TYPE as enum (
+    'ROCK',
+    'PAPER', 
+    'SCISSORS'
+);
 
 create table MATCH (
     id uuid primary key,
