@@ -16,9 +16,10 @@ Arcturus is a microservices-based tournament platform built with NX monorepo arc
 
 - **Languages**: TypeScript, SQL
 - **Backend**: NestJS, Node.js 18+, KafkaJS, TypeORM
-- **Frontend**: React 18, NX React plugin
-- **Database**: PostgreSQL 14+, Flyway migrations
-- **Testing**: Jest, Playwright
+- **Frontend**: React 18, NX React plugin, React Query (server state)
+- **Database**: PostgreSQL 14+, Flyway migrations per database
+- **Messaging**: Apache Kafka with KafkaJS client
+- **Testing**: Jest (unit), Playwright (E2E), Contract testing
 - **Tools**: NX, Yarn, Docker, Prettier, ESLint
 
 ### Monorepo Structure
@@ -31,10 +32,11 @@ Arcturus is a microservices-based tournament platform built with NX monorepo arc
 
 ### Service Architecture
 
-- Each runner service follows the same NestJS structure: `app.module.ts`, `app.controller.ts`, `app.service.ts`
-- Services communicate through HTTP APIs
-- Tournament runner orchestrates game-specific runners
-- Database schema uses UUIDs for primary keys and enum types for game moves
+- **Event-Driven Communication**: Apache Kafka primary messaging, HTTP for synchronous operations
+- **Core Services**: Tournament Runner, Game Runners (per game), User Management, Frontend (React SPA)
+- **Clean Architecture Layers**: Controllers → Services → Repositories (strict dependency flow)
+- **Tournament Orchestration**: Event-driven workflow (tournament.created → match.scheduled → match.completed)
+- **Database Schema**: UUIDs for primary keys, enum types for game moves, per-game database isolation
 
 ## Development Commands
 

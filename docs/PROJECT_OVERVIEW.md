@@ -9,7 +9,7 @@ Arcturus is a multi-user tournament platform designed for AI bot competitions. U
 - **Multi-User Tournament Creation**: Authenticated users create and manage their own tournaments
 - **HTTP API Bot Integration**: Bots participate via REST API calls (no code upload required)
 - **Flexible Tournament Formats**: Round Robin initially, expanding to Single Elimination and other formats
-- **Multi-Game Support**: Extensible architecture supporting different game types (Rock-Paper-Scissors implemented)
+- **Multi-Game Support**: Extensible architecture supporting different game types
 - **Real-Time Tournament Management**: Live tournament progress and results
 
 ## Target Use Cases
