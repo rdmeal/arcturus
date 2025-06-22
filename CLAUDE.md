@@ -28,7 +28,6 @@ Arcturus is a microservices-based tournament platform built with NX monorepo arc
 - Each service is a separate NX project with its own `project.json`
 - Services are NestJS applications compiled with Webpack
 - Database migrations are isolated per game in `games/[game-name]/database/migrations/`
-- `/docs` - Architecture, ADRs, project documentation
 
 ### Service Architecture
 
@@ -189,6 +188,32 @@ Before submitting any code, ensure the following steps are completed:
    - [ ] Error handling implemented
    - [ ] Tests written and passing
    - [ ] Documentation updated
+
+## Project Structure
+
+```
+/apps/                          # Frontend applications
+  /tournament-manager/          # React SPA for tournament management
+/docs/                          # Project documentation, ADRs, architecture
+/games/                         # Game-specific services
+  /[game-name]/                 # Individual game implementations
+    /runner/                    # Game runner service (NestJS)
+    /database/                  # Game-specific database and migrations
+/shared/                        # Shared libraries and utilities
+  /types/                       # TypeScript type definitions
+  /utils/                       # Common utilities
+  /constants/                   # Shared constants
+/tournament-runner/             # Tournament orchestration service (NestJS)
+```
+
+### Service Layer Structure (NestJS services)
+```
+/[service]/src/
+  /app/                         # Application layer (controllers, modules)  
+  /domain/                      # Business logic, entities, interfaces
+  /infrastructure/              # External integrations, repositories
+/[service]/docs/                # Service-specific documentation
+```
 
 ## References
 

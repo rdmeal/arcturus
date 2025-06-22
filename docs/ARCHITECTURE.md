@@ -51,8 +51,9 @@ Arcturus is an event-driven microservices platform for AI bot tournaments, built
   - Authorization middleware
 - **Dependencies**: Central DB, Auth Provider APIs
 
-#### Frontend Service (React SPA)
+#### Tournament Manager App (React SPA)
 - **Purpose**: Tournament management interface
+- **Location**: `/apps/tournament-manager/`
 - **Responsibilities**:
   - Tournament creation/management UI
   - Real-time tournament viewing
@@ -137,18 +138,26 @@ interface BotAPI {
 ### Development Environment
 ```
 NX Workspace
-├── tournament-runner/ (NestJS)
-├── games/rock-paper-scissors/runner/ (NestJS)
-├── user-management/ (NestJS)
-├── frontend/ (React)
-└── shared/types/ (TypeScript definitions)
+├── apps/
+│   └── tournament-manager/ (React SPA)
+├── docs/ (Architecture, ADRs, project documentation)
+├── games/
+│   └── [game-name]/
+│       ├── runner/ (NestJS game service)
+│       └── database/ (Game-specific DB & migrations)
+├── shared/
+│   ├── types/ (TypeScript definitions)
+│   ├── utils/ (Common utilities)
+│   └── constants/ (Shared constants)
+└── tournament-runner/ (NestJS orchestration service)
 ```
 
 ### Service Dependencies
 - Tournament Runner ← Kafka → Game Runners
 - User Management → Auth Provider
-- Frontend → All Backend Services (HTTP)
+- Tournament Manager App → All Backend Services (HTTP)
 - All Services → PostgreSQL (respective databases)
+- Shared Libraries → Used by all services and apps
 
 ## Security Considerations
 
