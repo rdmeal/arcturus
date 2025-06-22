@@ -27,6 +27,8 @@
 - [Github Actions](https://docs.github.com/en/actions) - CI/CD
 - [NestJS](https://nestjs.com/) - Node JS Framework
 - [Prettier](https://prettier.io/) - Formatting tool
+- [PostgreSQL](https://www.postgresql.org/) - Relational Database
+- [Flyway](https://www.red-gate.com/products/flyway/community/) - Database Schema Migrator
 
 ### Commands
 
