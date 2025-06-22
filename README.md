@@ -1,5 +1,9 @@
 # Arcturus
 
+> **AI Bot Tournament Platform** - Multi-user tournament management for HTTP API-based bot competitions
+
+For detailed project information, see [Project Overview](docs/PROJECT_OVERVIEW.md) | [Architecture](docs/ARCHITECTURE.md)
+
 ## Development
 
 ### Getting Started - Local Development

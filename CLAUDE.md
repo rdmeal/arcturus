@@ -12,12 +12,22 @@ Arcturus is a microservices-based tournament platform built with NX monorepo arc
 
 ## Architecture
 
+### Tech Stack
+
+- **Languages**: TypeScript, SQL
+- **Backend**: NestJS, Node.js 18+, KafkaJS, TypeORM
+- **Frontend**: React 18, NX React plugin
+- **Database**: PostgreSQL 14+, Flyway migrations
+- **Testing**: Jest, Playwright
+- **Tools**: NX, Yarn, Docker, Prettier, ESLint
+
 ### Monorepo Structure
 
 - Uses NX workspace with Yarn package manager
 - Each service is a separate NX project with its own `project.json`
 - Services are NestJS applications compiled with Webpack
 - Database migrations are isolated per game in `games/[game-name]/database/migrations/`
+- `/docs` - Architecture, ADRs, project documentation
 
 ### Service Architecture
 
@@ -89,6 +99,14 @@ docker-compose up -d
 - E2E tests are separate projects with their own configurations
 - E2E test projects are excluded from the main Jest plugin configuration in `nx.json`
 
+### Testing Strategy
+
+- **Unit Tests**: Jest, business logic coverage, mocked dependencies
+- **Integration Tests**: Service layer testing with test database
+- **Contract Tests**: Bot API interaction validation
+- **E2E Tests**: Playwright for critical tournament flows
+- **Test Naming**: `should_[expected_behavior]_when_[condition]`
+
 ## NX Integration
 
 This workspace uses NX Console and has Cursor integration configured. When working on NX-related tasks:
@@ -98,79 +116,52 @@ This workspace uses NX Console and has Cursor integration configured. When worki
 - Use `nx_workspace` tool to understand workspace architecture
 - For generators, use the `nx_generators` and `nx_generator_schema` tools
 
----
-
-**NOTE FOR CLAUDE: Fill in the below**
-
-## Tech Stack
-
-- Languages: [list primary languages]
-- Frameworks: [list frameworks]
-- Tools: [list tools]
-
 ## Code Style & Conventions
+
+- TypeScript strict mode compliance
+- No `any` types without justification
+- Proper dependency injection
+- Swagger documentation for public APIs
 
 ### Import/Module Standards
 
-- [Specify import standards]
+- Absolute imports using TypeScript path mapping
+- Group imports: external libs → internal modules → relative imports
+- Named exports preferred over default exports
+- Barrel exports for module boundaries
 
 ### Naming Conventions
 
-- [Functions naming convention]
-- [Classes/Components naming convention]
-- [Constants naming convention]
-- [Files naming convention]
+- **Functions**: camelCase, verb-noun pattern (`createTournament`, `validateBot`)
+- **Classes/Services**: PascalCase with domain suffix (`TournamentService`, `BotRepository`)
+- **Constants**: SCREAMING_SNAKE_CASE (`MAX_TOURNAMENT_SIZE`, `DEFAULT_TIMEOUT`)
+- **Files**: kebab-case matching class name (`tournament.service.ts`, `bot.repository.ts`)
+- **Interfaces**: PascalCase with 'I' prefix for abstractions (`ITournamentRepository`)
 
 ### Patterns to Follow
 
-- [Key architectural patterns]
-- [Error handling approaches]
-- [Code organisation principles]
+- **Clean Architecture**: Controllers → Services → Repositories (no layer skipping)
+- **Domain-Driven Naming**: Use tournament domain language (Tournament, Bot, Match, not generic terms)
+- **Dependency Injection**: Constructor injection with readonly properties
+- **Error Handling**: Custom domain exceptions with standardized HTTP status mapping
 
 ## Development Workflow
 
-- Branch strategy
-- Commit message format
-- PR requirements
-
-## Testing Strategy
-
-- Test frameworks
-- Coverage requirements
-- Test naming conventions
+- **Branch Strategy**: Feature branches from main, squash merge PRs
+- **Commit Format**: Conventional commits (`feat:`, `fix:`, `docs:`, `test:`)
+- **PR Requirements**: Automated checks pass, squash merge, protected main branch
 
 ## Environment Setup
 
-- Required environment variables
-- Setup commands
-- Local development server
+Required environment variables per service in `.env` files:
 
-## Common Commands
+- `DATABASE_URL`, `KAFKA_BROKERS`, `AUTH_PROVIDER_*`
+
+Setup commands:
 
 ```bash
-# Build command
-[command]
-
-# Test command
-[command]
-
-# Lint command
-[command]
-
-# Check command
-[command]
-
-# Development server
-[command]
+nvm use && corepack enable && yarn install
 ```
-
-## Project Structure
-
-Key directories and their purpose:
-
-- `/src` - [description]
-- `/tests` - [description]
-- [other important directories]
 
 ## Review Process Guidelines
 
@@ -197,10 +188,8 @@ Before submitting any code, ensure the following steps are completed:
    - [ ] Tests written and passing
    - [ ] Documentation updated
 
-## Known Issues & Workarounds
-
-Document any current limitations or workarounds Claude should be aware of.
-
 ## References
 
-Links to relevant external documentation, design docs, or resources.
+- [Architecture Specification](docs/ARCHITECTURE.md)
+- [Project Overview](docs/PROJECT_OVERVIEW.md)
+- [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
