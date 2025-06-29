@@ -4,38 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Arcturus is a microservices-based tournament platform built with NX monorepo architecture. It consists of:
+Arcturus is a microservices-based tournament platform built with NX monorepo architecture.
 
-- **Tournament Runner Service**: Core tournament orchestration service
-- **Game-Specific Runner Services**: Individual game implementations (currently Rock-Paper-Scissors)
-- **Database Layer**: PostgreSQL with Flyway migrations per game
+- @./docs/PROJECT_OVERVIEW.md
 
 ## Architecture
 
-### Tech Stack
-
-- **Languages**: TypeScript, SQL
-- **Backend**: NestJS, Node.js 18+, KafkaJS, TypeORM
-- **Frontend**: React 18, NX React plugin, React Query (server state)
-- **Database**: PostgreSQL 14+, Flyway migrations per database
-- **Messaging**: Apache Kafka with KafkaJS client
-- **Testing**: Jest (unit), Playwright (E2E), Contract testing
-- **Tools**: NX, Yarn, Docker, Prettier, ESLint
-
-### Monorepo Structure
-
-- Uses NX workspace with Yarn package manager
-- Each service is a separate NX project with its own `project.json`
-- Services are NestJS applications compiled with Webpack
-- Database migrations are isolated per game in `games/[game-name]/database/migrations/`
-
-### Service Architecture
-
-- **Event-Driven Communication**: Apache Kafka primary messaging, HTTP for synchronous operations
-- **Core Services**: Tournament Runner, Game Runners (per game), User Management, Frontend (React SPA)
-- **Clean Architecture Layers**: Controllers → Services → Repositories (strict dependency flow)
-- **Tournament Orchestration**: Event-driven workflow (tournament.created → match.scheduled → match.completed)
-- **Database Schema**: UUIDs for primary keys, enum types for game moves, per-game database isolation
+- @./docs/ARCHITECTURE.MD
 
 ## Development Commands
 
@@ -191,25 +166,11 @@ Before submitting any code, ensure the following steps are completed:
 
 ## Project Structure
 
-```
-/apps/                          # Frontend applications
-  /tournament-manager/          # React SPA for tournament management
-/docs/                          # Project documentation, ADRs, architecture
-/games/                         # Game-specific services
-  /[game-name]/                 # Individual game implementations
-    /runner/                    # Game runner service (NestJS)
-    /database/                  # Game-specific database and migrations
-/shared/                        # Shared libraries and utilities
-  /types/                       # TypeScript type definitions
-  /utils/                       # Common utilities
-  /constants/                   # Shared constants
-/tournament-runner/             # Tournament orchestration service (NestJS)
-```
-
 ### Service Layer Structure (NestJS services)
+
 ```
 /[service]/src/
-  /app/                         # Application layer (controllers, modules)  
+  /app/                         # Application layer (controllers, modules)
   /domain/                      # Business logic, entities, interfaces
   /infrastructure/              # External integrations, repositories
 /[service]/docs/                # Service-specific documentation
