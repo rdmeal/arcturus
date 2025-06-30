@@ -1,6 +1,7 @@
 I want to create a GitHub issue for an enhancement to this project. Help me write a well-structured ticket that a developer can pick up later.
 
 Each ticket should include:
+
 - Brief description
 - Specific deliverables
 - Definition of done/Acceptance Criteria
@@ -20,4 +21,4 @@ Once these questions have been answered show me the proposed ticket and ask for 
 
 When I have given my approval for the ticket, create it in Github as a Github Issue, using the Github CLI (`gh`). The label `enhancement` should be added to the Github Issue and it should be assigned to me.
 
-**Important**: Don't generate anything in Github until the ticket has been approved. Do not implement the ticket. Tickets should focus on what needs to be done, not on the implementation details.
+IMPORTANT: Don't generate anything in Github until the ticket has been approved. Do not implement the ticket. Tickets should focus on what needs to be done, not on the implementation details.
