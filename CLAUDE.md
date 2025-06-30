@@ -77,11 +77,13 @@ docker-compose up -d
 
 ### Testing Strategy
 
-- **Unit Tests**: Jest, business logic coverage, mocked dependencies
-- **Integration Tests**: Service layer testing with test database
-- **Contract Tests**: Bot API interaction validation
-- **E2E Tests**: Playwright for critical tournament flows
-- **Test Naming**: `should_[expected_behavior]_when_[condition]`
+- **General Test Strategy**: Follow the Testing Trophy approach - prioritize integration tests over unit tests
+- **Focus on Functionality**: Write tests that verify behavior and functionality, not implementation details
+- **Integration Tests**: Primary focus - service layer testing with test database, testing real workflows
+- **Contract Tests**: Bot API interaction validation with actual HTTP calls
+- **E2E Tests**: Playwright for critical tournament flows and user journeys
+- **Unit Tests**: Minimal use - only for complex business logic that benefits from isolated testing
+- **Test Real Behavior**: Avoid mocking unless absolutely necessary; test with real dependencies when possible
 
 ## NX Integration
 
@@ -181,3 +183,4 @@ Before submitting any code, ensure the following steps are completed:
 - [Architecture Specification](docs/ARCHITECTURE.md)
 - [Project Overview](docs/PROJECT_OVERVIEW.md)
 - [Clean Architecture Principles](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Testing Trophy](https://kentcdodds.com/blog/the-testing-trophy-and-testing-classifications)
