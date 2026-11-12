@@ -136,7 +136,7 @@ Required environment variables per service in `.env` files:
 Setup commands:
 
 ```bash
-nvm use && corepack enable && yarn install
+nvm use && npm install -g corepack && corepack enable && yarn install
 ```
 
 ## Review Process Guidelines

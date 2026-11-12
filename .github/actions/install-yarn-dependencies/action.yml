@@ -5,11 +5,16 @@ description: |
 runs:
   using: 'composite'
   steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+
     - name: Enable Corepack
       shell: bash
-      run: corepack enable
+      run: npm install -g corepack && corepack enable
 
-    - name: Set up Node.js
+    - name: Cache Yarn Dependencies
       uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
