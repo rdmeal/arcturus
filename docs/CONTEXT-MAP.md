@@ -8,6 +8,6 @@ The scopes of the Arcturus repo. Each scope can have its own glossary (`docs/GLO
 
 ## Scopes
 
-| Scope         | Path | Covers                                                                          |
-| ------------- | ---- | ------------------------------------------------------------------------------- |
-| Arcturus-wide | `/`  | The platform as a whole, the protocols between services, and the repo's tooling |
+| ID         | Scope         | Path | Covers                                                                          |
+| ---------- | ------------- | ---- | ------------------------------------------------------------------------------- |
+| `arcturus` | Arcturus-wide | `/`  | The platform as a whole, the protocols between services, and the repo's tooling |
