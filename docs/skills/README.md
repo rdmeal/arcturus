@@ -15,6 +15,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
 | [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
 | [implement](./implement.md) | `/implement [plan] [--steps N]` | build a planned ticket one step at a time, reviewing each |
+| [finish-ticket](./finish-ticket.md) | `/finish-ticket [ticket]` | check a finished ticket, mark it done and open its PR |
 | [to-agent-task](./to-agent-task.md) | `/to-agent-task [plan] [step K \| steps K-M]` | hand plan steps to a cheaper model as a task brief |
 | [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
@@ -37,6 +38,7 @@ For each ticket that can start (its blockers are done):
 
 1. **`/plan-ticket <feature> <NN>`**: plan the ticket with Claude. You get a branch, a step-by-step plan file, and the ticket marked in progress. Review and commit the plan.
 2. **`/implement`**: Claude does the next step of the plan, then stops. Review the diff, commit it, and run `/implement` again until the plan is complete.
+3. **`/finish-ticket`**: Claude runs the full checks, marks the ticket done (archiving the feature if it was the last ticket) and writes the PR. Commit and push, then Claude opens the PR.
 
 ### Shortcuts
 
