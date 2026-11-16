@@ -34,10 +34,4 @@ Empty sections are left out. Secrets and personal details are redacted.
 
 ## Resuming
 
-Claude ends with a command to copy, like:
-
-```sh
-claude "Read scratchpad/handoffs/2026-11-16-1430-seeding-tiebreaks.md and continue from its Next step."
-```
-
-The new session checks the branch and `git status` against the handoff first. If the work has moved on since, it reads what changed before carrying on.
+In a fresh session, run [`/pick-up`](./pick-up.md). With no argument it takes the latest handoff. You can also give it a handoff's path, or a few words about what the handoff was about. It checks the branch and `git status` against the handoff, tells you where things stand, and starts the next step when you say go.

@@ -18,6 +18,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [finish-ticket](./finish-ticket.md) | `/finish-ticket [ticket]` | check a finished ticket, mark it done and open its PR |
 | [to-agent-task](./to-agent-task.md) | `/to-agent-task [plan] [step K \| steps K-M]` | hand plan steps to a cheaper model as a task brief |
 | [handoff](./handoff.md)   | `/handoff [what's next]` | stop a conversation and resume it later in a fresh session |
+| [pick-up](./pick-up.md)   | `/pick-up [handoff or what it was about]` | carry on from a handoff in a fresh session |
 | [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
 ## The usual flow
@@ -47,5 +48,5 @@ For each ticket that can start (its blockers are done):
 - **A decision, not a feature?** Stop after `/to-adr`.
 - **Small work?** Skip the spec and go straight to `/to-tickets`.
 - **An implementation step that doesn't need you?** `/to-agent-task` writes a brief for a cheaper model to do it; `/implement` then checks the work and ticks it.
-- **Stopping for now?** `/handoff` at any point writes what the conversation hasn't put on disk to a handoff file, plus a command to resume from it.
+- **Stopping for now?** `/handoff` at any point writes what the conversation hasn't put on disk to a handoff file; `/pick-up` in a fresh session carries on from the latest one.
 - **Lost the thread?** `/wait-what` at any point has Claude re-pitch its last message more simply.

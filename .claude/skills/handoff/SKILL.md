@@ -52,7 +52,7 @@ Get the time with `date +%Y-%m-%d-%H%M` (local time) and pick a 2–4 word kebab
 - The handoff's path.
 - Anything under "Decisions not yet written down", with where it belongs, so the developer can record it before the conversation is gone.
 - Any uncommitted changes the developer may want to commit first.
-- A command to resume, e.g. `claude "Read scratchpad/handoffs/2026-11-16-1430-seeding-tiebreaks.md and continue from its Next step."`
+- How to resume: in a fresh session, `/pick-up` takes the latest handoff, or `/pick-up {this handoff's path}` takes this one.
 
 ## Handoff template
 
