@@ -11,6 +11,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [grill-me](./grill-me.md)   | `/grill-me [subject]`   | have a plan or design stress-tested, without writing docs |
 | [grill-me-with-docs](./grill-me-with-docs.md) | `/grill-me-with-docs [topic]` | stress-test a design while writing glossary terms and recording decisions |
 | [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
+| [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
 
 ## The usual flow
 
