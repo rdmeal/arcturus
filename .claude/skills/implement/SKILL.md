@@ -83,7 +83,12 @@ The plan's last step has one box per criterion, each with the test that proves i
 
 ## 8. A step done elsewhere
 
-If the developer says a step was done outside this session (by hand, or by an agent given a `/to-agent-task` file), check it rather than trusting it: look at the diff against the step's goal and Files, run the step's Check, and tick the step only if it passes. Report any gap between the diff and the step. This session stays the plan's only writer.
+If the developer says a step was done outside this session (by hand, or by an agent given a `/to-agent-task` brief), check it rather than trusting it. This session stays the plan's only writer.
+
+- **An agent's report:** a brief at `scratchpad/agent-tasks/<feature>-NN-step-K.md` (or `…-steps-K-M.md` for a run) has its report next to it, as `….report.md`. Read it first. It says which steps the agent finished, what it changed, its deviations and its questions. Treat it as the agent's claim, not as proof.
+- **For each step done:** look at the diff against the step's goal and Files, run the step's Check, and tick the step only if it passes. Report any gap between the diff and the step, and any deviation that changes the plan (see 6).
+- **Suggested notes** from the report go into the plan's Notes only once you've checked them against the diff.
+- **Questions and stopped steps** from the report go to the developer.
 
 ## 9. Report
 

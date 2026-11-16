@@ -15,6 +15,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
 | [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
 | [implement](./implement.md) | `/implement [plan] [--steps N]` | build a planned ticket one step at a time, reviewing each |
+| [to-agent-task](./to-agent-task.md) | `/to-agent-task [plan] [step K \| steps K-M]` | hand plan steps to a cheaper model as a task brief |
 | [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
 ## The usual flow
@@ -42,4 +43,5 @@ For each ticket that can start (its blockers are done):
 - **Just want your thinking challenged?** `/grill-me` grills you without writing anything.
 - **A decision, not a feature?** Stop after `/to-adr`.
 - **Small work?** Skip the spec and go straight to `/to-tickets`.
+- **An implementation step that doesn't need you?** `/to-agent-task` writes a brief for a cheaper model to do it; `/implement` then checks the work and ticks it.
 - **Lost the thread?** `/wait-what` at any point has Claude re-pitch its last message more simply.
