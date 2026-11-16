@@ -12,7 +12,21 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [grill-me-with-docs](./grill-me-with-docs.md) | `/grill-me-with-docs [topic]` | stress-test a design while writing glossary terms and recording decisions |
 | [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
 | [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
+| [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
 
 ## The usual flow
 
-<!-- Filled in as the remaining skills (grill-me-with-docs, to-adr, to-spec, to-tickets, wait-what) are added. -->
+For a feature to build:
+
+1. **`/grill-me-with-docs <feature>`**: work the design through. Glossary terms are written as they're agreed; decisions go into a discussion record.
+2. **`/to-adr <feature>`**: turn the decisions worth recording into ADRs.
+3. **`/to-spec <feature>`**: write up the feature as a spec, agreeing the boundary it's tested at.
+4. **`/to-tickets <feature>`**: break the spec into tickets.
+
+Then review and commit the glossary changes, ADRs, spec and tickets together.
+
+Shortcuts:
+
+- **Just want your thinking challenged?** `/grill-me` grills you without writing anything.
+- **A decision, not a feature?** Stop after `/to-adr`.
+- **Small work?** Skip the spec and go straight to `/to-tickets`.
