@@ -13,6 +13,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
 | [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
+| [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
 ## The usual flow
 
@@ -30,3 +31,4 @@ Shortcuts:
 - **Just want your thinking challenged?** `/grill-me` grills you without writing anything.
 - **A decision, not a feature?** Stop after `/to-adr`.
 - **Small work?** Skip the spec and go straight to `/to-tickets`.
+- **Lost the thread?** `/wait-what` at any point has Claude re-pitch its last message more simply.
