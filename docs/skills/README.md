@@ -13,11 +13,14 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
 | [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
+| [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
 | [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
 ## The usual flow
 
-For a feature to build:
+A feature goes through two stages: first the work is defined, then each ticket is built.
+
+### 1. Define the work
 
 1. **`/grill-me-with-docs <feature>`**: work the design through. Glossary terms are written as they're agreed; decisions go into a discussion record.
 2. **`/to-adr <feature>`**: turn the decisions worth recording into ADRs.
@@ -26,7 +29,13 @@ For a feature to build:
 
 Then review and commit the glossary changes, ADRs, spec and tickets together.
 
-Shortcuts:
+### 2. Build each ticket
+
+For each ticket that can start (its blockers are done):
+
+1. **`/plan-ticket <feature> <NN>`**: plan the ticket with Claude. You get a branch, a step-by-step plan file, and the ticket marked in progress. Review and commit the plan.
+
+### Shortcuts
 
 - **Just want your thinking challenged?** `/grill-me` grills you without writing anything.
 - **A decision, not a feature?** Stop after `/to-adr`.
