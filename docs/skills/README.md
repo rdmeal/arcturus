@@ -14,6 +14,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
 | [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
+| [implement](./implement.md) | `/implement [plan] [--steps N]` | build a planned ticket one step at a time, reviewing each |
 | [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
 
 ## The usual flow
@@ -34,6 +35,7 @@ Then review and commit the glossary changes, ADRs, spec and tickets together.
 For each ticket that can start (its blockers are done):
 
 1. **`/plan-ticket <feature> <NN>`**: plan the ticket with Claude. You get a branch, a step-by-step plan file, and the ticket marked in progress. Review and commit the plan.
+2. **`/implement`**: Claude does the next step of the plan, then stops. Review the diff, commit it, and run `/implement` again until the plan is complete.
 
 ### Shortcuts
 
