@@ -99,3 +99,5 @@ Discussing the model often settles decisions, not just words. When one meets the
 
 - inside a `grill-me-with-docs` session, record it in that session's discussion record, as the session's instructions describe;
 - otherwise, offer to write the ADR, and write it following the `adr` skill.
+
+When the discussion settles how a kind of code should be written each time (how test data is built, how external endpoints are mocked), call the Skill tool with `pattern` and follow it.
