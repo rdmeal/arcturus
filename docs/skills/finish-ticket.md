@@ -25,8 +25,9 @@ When every step of the plan is ticked and you've committed the work.
 2. **Checks the plan is complete:** every step and every acceptance criterion is ticked. If any aren't, it lists them and suggests `/implement`. A step you agree is no longer needed is removed from the plan, with a note saying why. An acceptance criterion can't be dropped here.
 3. **Runs the full checks:** lint, typecheck, tests and build. It takes the commands from `CLAUDE.md` or the root `package.json`, or asks you. It runs all of them, so you see every failure at once. If any fail, it stops before changing anything.
 4. **Sets statuses:** the ticket becomes `done`. If every other ticket in the feature is done or cancelled on `main`, the spec becomes `done` too, and the feature folder moves from `specs/active/` to `specs/archive/`. It finds links to the old folder and offers to fix them.
-5. **Flags follow-ups:** decisions in the plan that look worth an ADR (use [to-adr](./to-adr.md)), and possible patterns still to write up.
-6. **Writes the PR:** a title, plus a body saved to `scratchpad/pr-bodies/<feature>-NN.md`. The body has the summary, links to the ticket and plan, the steps, each acceptance criterion with its test, any deviations, the checks and the follow-ups.
+5. **Fills in pattern exemplars:** if a step was the first code to follow a new pattern, Claude proposes that code as the pattern's exemplar (a file and the symbol to look at), and writes it into the pattern doc once you confirm.
+6. **Flags follow-ups:** decisions in the plan that look worth an ADR (use [to-adr](./to-adr.md)), and possible patterns noticed during implementation (use [to-pattern](./to-pattern.md)).
+7. **Writes the PR:** a title, plus a body saved to `scratchpad/pr-bodies/<feature>-NN.md`. The body has the summary, links to the ticket and plan, the steps, each acceptance criterion with its test, any deviations, the checks and the follow-ups.
 
 Then it stops with a suggested commit message for the status changes. **You commit and push** from your own terminal.
 

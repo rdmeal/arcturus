@@ -41,6 +41,8 @@ claude --model sonnet "Do the task in scratchpad/agent-tasks/tournament-seeding-
 
 The agent follows the same rules as `implement`: test-first, only the tests the plan names, and only the step's check. It doesn't touch the plan, commit, or add dependencies. If the plan doesn't fit the code, it stops and reports instead of improvising.
 
+On a step that establishes a pattern, the agent may fill gaps in the pattern doc but must stop rather than change an agreed rule. A pattern it notices goes in its report as a suggested note.
+
 It writes its report to the same path with `.report.md`. The report has a section per step, giving the status, the changed files, the check result, any deviations, suggested notes and questions.
 
 ## Afterwards

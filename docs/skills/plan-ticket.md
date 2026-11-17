@@ -27,7 +27,7 @@ When a ticket is ready to build: its status is `ready` and its blockers are `don
 - From the spec, only: the user stories the ticket delivers, Decisions, Testing and Open questions.
 - The ADRs the ticket and spec link to.
 - The glossaries for the ticket's scopes.
-- Only the one-line summaries of the patterns in those scopes.
+- Only the one-line summaries of the patterns: always those in `docs/patterns/`, plus those in the ticket's scopes.
 
 Beyond that, it reads the code you point it at, and files it can name directly from those. It asks before searching more widely.
 
@@ -39,6 +39,8 @@ It stops if the ticket depends on one of the spec's open questions, and suggests
 2. It asks a round of numbered questions, each with a recommended answer, and invites you to add context or point at code. This is the time to say which patterns to follow and where things should go.
 3. It proposes the steps as a list of titles. Correct the list until you're happy, then approve it.
 
+**If a step needs a pattern that doesn't exist yet,** Claude says whether it looks small or big, and you decide. A small one (a few rules, no real trade-off) is agreed in the question rounds and written as a pattern doc alongside the plan. A big one stops planning: settle it with [grill-me-with-docs](./grill-me-with-docs.md) and [to-pattern](./to-pattern.md) first, then plan again.
+
 ## What you get
 
 - A new branch, `ticket/<feature>-NN-<slug>`. Claude checks you're on a clean `main` first.
@@ -46,12 +48,14 @@ It stops if the ticket depends on one of the spec's open questions, and suggests
   - its goal;
   - the files it touches;
   - what to read first;
+  - the pattern it establishes, if it's the first code to follow a new pattern;
   - the tests it adds;
   - a command that checks it.
 
   The last step lists each acceptance criterion with the test that proves it.
 - The ticket set to `in-progress`, and the spec too if this is its first ticket.
-- A list of any decisions that look worth an ADR (use [to-adr](./to-adr.md)), and of possible new patterns.
+- Any new pattern doc agreed during planning, in `docs/patterns/` (or a scope's own), to commit with the plan.
+- A list of any decisions that look worth an ADR (use [to-adr](./to-adr.md)).
 
 If the ticket already has a plan, Claude suggests `/implement` instead. It can revise steps that haven't been done yet, but never ones already ticked.
 

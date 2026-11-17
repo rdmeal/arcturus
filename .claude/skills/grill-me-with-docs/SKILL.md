@@ -1,6 +1,6 @@
 ---
 name: grill-me-with-docs
-description: A relentless interview to stress-test a plan or design that captures docs as it goes — glossary terms written as they're agreed, and every decision recorded in a discussion record ready for /to-adr.
+description: A relentless interview to stress-test a plan or design that captures docs as it goes — glossary terms written as they're agreed, and every decision recorded in a discussion record ready for /to-adr and /to-pattern.
 disable-model-invocation: true
 argument-hint: "[topic]"
 ---
@@ -12,6 +12,8 @@ A grilling session that also builds the project's documentation as it goes. Glos
 ## 1. Load the building blocks
 
 Call the Skill tool with `grilling`, then call the Skill tool with `domain-modelling`. Follow both for the whole session: `grilling` runs the interview, `domain-modelling` challenges the language and writes glossary terms. This skill adds the discussion record.
+
+**Load `pattern` only when it's needed.** When the topic, or a decision during the session, is about how a kind of code should be written each time (how test data is built, how external endpoints are mocked in tests, how Playwright tests are structured, how errors are logged), call the Skill tool with `pattern` and follow it from then on. Most sessions never need it, so don't load it up front.
 
 ## 2. Find the topic and its record
 
@@ -32,7 +34,8 @@ So that you can push back on conflicts from the first question:
 
 - read `docs/GLOSSARY.md`, `docs/CONTEXT-MAP.md`, and the glossary of any scope the topic touches;
 - read the frontmatter `summary` of the ADRs in the relevant scopes' `docs/adr/` folders (the first few lines of each file is enough);
-- read an ADR in full only when a question touches it.
+- read an ADR in full only when a question touches it;
+- once `pattern` is loaded, the `summary` lines of the existing patterns, as it describes.
 
 ## 4. During the session
 
@@ -41,13 +44,14 @@ After every round, update the record with what that round settled, changed, defe
 - **Every decision goes in the record**, not only ADR candidates: decisions that don't need an ADR still feed specs and tickets.
 - **Mark whether each decision meets the ADR bar** in the `adr` skill (hard to reverse, surprising without context, a real trade-off): `candidate` or `not needed`.
 - **Don't write ADRs during the session.** That is `/to-adr`'s job, once decisions have settled. Here, capture what an ADR will need: the reasoning, and the alternatives and why they lost.
+- **Mark decisions that belong to a pattern** with its slug (`Pattern: object-mother`). A pattern bundles several decisions (where it lives, naming, shape, what to avoid), and the slug is how `/to-pattern` gathers them into one doc. **Don't write pattern docs during the session** either: a pattern settles over several rounds.
 - **Glossary terms** are written by `domain-modelling` as soon as they're agreed, not recorded here.
 
 ## 5. Ending
 
 When `grilling`'s frontier is empty and the user has confirmed a shared understanding, set the record's `status: closed`. Deferred decisions stay in it, ready for when the topic is picked up again.
 
-Then suggest next steps: `/to-adr` if any decisions are ADR candidates, and `/to-spec` or `/to-tickets` if the discussion was about a feature to build.
+Then suggest next steps: `/to-adr` if any decisions are ADR candidates, then `/to-pattern` if any decisions belong to a pattern (after `/to-adr`, so the pattern can link its ADR), and `/to-spec` or `/to-tickets` if the discussion was about a feature to build.
 
 ## Discussion record format
 
@@ -68,6 +72,7 @@ started: 2026-11-15
 
 - **Status:** settled
 - **ADR:** candidate
+- **Pattern:** msw-endpoint-mock
 
 {What was decided and why, in a few sentences.}
 
@@ -81,4 +86,5 @@ started: 2026-11-15
   - `open`: still to be decided;
   - `deferred`: put aside by the user, not to be asked again this session.
 - **ADR:** `candidate`, `not needed`, or, once `/to-adr` has written it, `written: [title](relative link)`.
+- **Pattern** (optional; leave the line out when the decision isn't part of a pattern): the pattern's slug, as `pattern` names files, or, once `/to-pattern` has written it, `written: [<slug>](relative link)`. A decision can carry both lines: "we mock external endpoints with MSW" is an ADR candidate and part of the `msw-endpoint-mock` pattern.
 - When a later answer changes a decision, update its entry rather than adding a second one, and note what changed and why in a sentence.

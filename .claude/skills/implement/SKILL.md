@@ -43,7 +43,11 @@ Beyond that:
 - **Write only the test cases the step names, and test behaviour, not internals.** Go through the public interface of the thing being tested, the way a caller would use it, so the tests survive refactoring. If you think more cases are needed, say so in the report rather than adding them quietly; red-green is a reason to write the planned tests first, not to write more of them.
 - **Prefactor steps** change no behaviour. Run the existing tests before and after, and both runs should pass.
 - **Documentation steps** have no tests. Write the doc the step names.
-- **Follow the patterns the step names.** A pattern doc points at an exemplar file; follow it the way the exemplar does, not from memory.
+- **Follow the patterns the step names:** their rules, and their exemplar file where they have one, not your own habits.
+- **A step with Establishes** is the first code to follow that pattern, so the doc is the spec and there's no exemplar yet. Implementing it often shows where the rules fall short:
+  - **A gap or clarification** that doesn't change what a rule says (a naming detail the rules didn't cover, a case they didn't mention): edit the pattern doc on this branch, and list the change in the report. The doc and its first exemplar should merge in agreement.
+  - **A change to an agreed rule:** stop and ask, as for any change to the plan. The developer agreed those rules.
+- **A pattern you notice that the plan didn't name** (you're writing something that later code should do the same way): don't write it up mid-step. Add a dated `Possible pattern: <what, and which file shows it>` line to the plan's Notes, and mention it in the report.
 - **Use the names the plan gives.** Changing a public name or signature that later steps depend on is a deviation (see 6).
 
 ## 5. Run the check
@@ -87,7 +91,8 @@ If the developer says a step was done outside this session (by hand, or by an ag
 
 - **An agent's report:** a brief at `scratchpad/agent-tasks/<feature>-NN-step-K.md` (or `…-steps-K-M.md` for a run) has its report next to it, as `….report.md`. Read it first. It says which steps the agent finished, what it changed, its deviations and its questions. Treat it as the agent's claim, not as proof.
 - **For each step done:** look at the diff against the step's goal and Files, run the step's Check, and tick the step only if it passes. Report any gap between the diff and the step, and any deviation that changes the plan (see 6).
-- **Suggested notes** from the report go into the plan's Notes only once you've checked them against the diff.
+- **Pattern doc edits** by the agent (on a step with Establishes) must only fill gaps. If one changes what an agreed rule says, treat it as a deviation that changes the plan.
+- **Suggested notes** from the report go into the plan's Notes only once you've checked them against the diff. That includes `Possible pattern:` lines.
 - **Questions and stopped steps** from the report go to the developer.
 
 ## 9. Report

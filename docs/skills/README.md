@@ -11,6 +11,7 @@ The Claude skills you can use in this repo. Type a skill's command in Claude Cod
 | [grill-me](./grill-me.md)   | `/grill-me [subject]`   | have a plan or design stress-tested, without writing docs |
 | [grill-me-with-docs](./grill-me-with-docs.md) | `/grill-me-with-docs [topic]` | stress-test a design while writing glossary terms and recording decisions |
 | [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
+| [to-pattern](./to-pattern.md) | `/to-pattern [pattern, topic or file]` | turn agreed coding patterns into pattern docs      |
 | [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
 | [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
 | [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
@@ -29,10 +30,11 @@ A feature goes through two stages: first the work is defined, then each ticket i
 
 1. **`/grill-me-with-docs <feature>`**: work the design through. Glossary terms are written as they're agreed; decisions go into a discussion record.
 2. **`/to-adr <feature>`**: turn the decisions worth recording into ADRs.
-3. **`/to-spec <feature>`**: write up the feature as a spec, agreeing the boundary it's tested at.
-4. **`/to-tickets <feature>`**: break the spec into tickets.
+3. **`/to-pattern <feature>`**: if the discussion agreed how a kind of code should be written, turn it into a pattern doc.
+4. **`/to-spec <feature>`**: write up the feature as a spec, agreeing the boundary it's tested at.
+5. **`/to-tickets <feature>`**: break the spec into tickets.
 
-Then review and commit the glossary changes, ADRs, spec and tickets together.
+Then review and commit the glossary changes, ADRs, spec and tickets together. Pattern docs can go in with them, or with the first ticket that uses them.
 
 ### 2. Build each ticket
 
@@ -46,6 +48,7 @@ For each ticket that can start (its blockers are done):
 
 - **Just want your thinking challenged?** `/grill-me` grills you without writing anything.
 - **A decision, not a feature?** Stop after `/to-adr`.
+- **A pattern, not a feature?** `/grill-me-with-docs`, then `/to-adr` and `/to-pattern`. Already have code that shows it? `/to-pattern make <file> a pattern`.
 - **Small work?** Skip the spec and go straight to `/to-tickets`.
 - **An implementation step that doesn't need you?** `/to-agent-task` writes a brief for a cheaper model to do it; `/implement` then checks the work and ticks it.
 - **Stopping for now?** `/handoff` at any point writes what the conversation hasn't put on disk to a handoff file; `/pick-up` in a fresh session carries on from the latest one.

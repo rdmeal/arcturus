@@ -57,7 +57,7 @@ Write `scratchpad/agent-tasks/<feature>-NN-step-K.md`, or `<feature>-NN-steps-K-
 What goes in, and how:
 
 - **Copied in:** each step as the plan writes it (its goal, Files, Tests and Check). Also the Context lines that apply (the test boundary, the relevant planning decisions), the Notes that affect these steps, and anything from this conversation that does.
-- **Pointed at:** the patterns, ADRs, exemplar files and code the steps need, as a path plus a symbol name where there is one, with a line on why each matters. Use the step's Read first as the list. Give line numbers only if you already know them; symbol names survive edits, line numbers don't.
+- **Pointed at:** the patterns, ADRs, exemplar files and code the steps need, as a path plus a symbol name where there is one, with a line on why each matters. Use the step's Read first as the list. When a step has an **Establishes** line, say in its Read first entry that this step establishes the pattern. Give line numbers only if you already know them; symbol names survive edits, line numbers don't.
 - **Left out:** the path to the plan file. The implementer gets the steps from the brief, so it doesn't read or drift into other steps. Also left out: glossaries, because the plan already gives the names.
 - **"Why it matters"** is one sentence on how the steps fit the ticket. An implementer that knows the goal makes better small decisions.
 
@@ -104,7 +104,9 @@ You're implementing part of a planned ticket in this repo. Everything you need i
 - **Behaviour steps go test-first.** Write the test cases the step names, run them and see them fail for the right reason, then write the code that makes them pass.
 - **Write only the test cases the step names, and test behaviour through the public interface,** the way a caller would use it. If you think more tests are needed, say so in the report instead of adding them.
 - **Prefactor steps change no behaviour:** the existing tests pass before and after.
-- **Follow the patterns you're pointed at** the way their exemplar files do.
+- **Follow the patterns you're pointed at:** their rules, and their exemplar file where they have one.
+- **A step that establishes a pattern** is the first code to follow it, so the pattern doc is your spec. You may fill a gap in the doc that doesn't change what a rule says (e.g. a naming detail it didn't cover); list it under Changed. If an agreed rule itself seems wrong, stop and report it instead of changing it.
+- **If you write something later code should do the same way,** and no pattern you were pointed at covers it, add `Possible pattern: {what, and which file shows it}` under Suggested notes. Don't write a pattern doc.
 - **Use the names the step gives.**
 - **Run only the step's Check.** If it fails, fix your code and run it again. Stop after about three attempts without progress.
 - **Small deviations within a step's goal are fine** (a private helper, an extra import, a file the step missed because the goal needs it); list them in the report. **Anything that would change the plan** (the goal, a public name or signature, adding or reordering steps, going against a pattern or ADR) means: stop, and report it instead.

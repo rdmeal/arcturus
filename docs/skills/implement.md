@@ -38,6 +38,7 @@ It asks before searching more widely.
 - **Behaviour steps go test-first:** the step's test cases are written and seen to fail, then the code is written to make them pass. Only the test cases the plan names are written, and they test behaviour through the public interface. If Claude thinks more tests are needed, it says so rather than adding them.
 - **Prefactor steps** keep the existing tests passing.
 - **The step's check** is run. The step is ticked in the plan only when the check passes. If it keeps failing, Claude stops and shows you the output.
+- **Patterns** are followed by their rules, and by their exemplar file where they have one. On a step that establishes a pattern (the first code to follow it), Claude may fill gaps in the pattern doc and report them, so the doc and its first example agree; changing an agreed rule stops for your decision. A pattern Claude notices that the plan didn't name goes into the plan's Notes as a possible pattern, for later.
 - **Small deviations** (a helper, an extra import, a file the plan missed) are made and reported. **Anything that changes the plan** (a step's goal, a name later steps rely on, adding or reordering steps, going against an ADR or pattern) stops for your decision. Agreed changes go into the unticked steps and a dated line in the plan's Notes. Ticked steps are never rewritten.
 
 ## What you get after each step

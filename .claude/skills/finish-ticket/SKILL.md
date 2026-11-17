@@ -1,6 +1,6 @@
 ---
 name: finish-ticket
-description: Close off a ticket whose plan is complete — check every box is ticked and the full checks pass, set the ticket (and spec) to done, archive a finished feature, flag ADR-worthy decisions, write the PR body, and open the PR once the developer has pushed.
+description: Close off a ticket whose plan is complete — check every box is ticked and the full checks pass, set the ticket (and spec) to done, archive a finished feature, fill in the exemplar of any pattern the ticket established, flag ADR-worthy decisions and possible patterns, write the PR body, and open the PR once the developer has pushed.
 disable-model-invocation: true
 argument-hint: "[plan path | feature NN]"
 ---
@@ -23,7 +23,7 @@ What the user asked for: $ARGUMENTS
 ## 2. Check git
 
 - **The branch** must be the plan's branch, `ticket/<feature>-NN-<slug>`. If it isn't, stop and say so.
-- **Uncommitted changes:** stop and ask. The checks should run against what will actually be pushed. The exception is this skill's own changes from an earlier run (statuses, an archive move, link fixes), which the developer may not have committed yet. Say that's what you see and carry on.
+- **Uncommitted changes:** stop and ask. The checks should run against what will actually be pushed. The exception is this skill's own changes from an earlier run (statuses, an archive move, link fixes, exemplars filled in), which the developer may not have committed yet. Say that's what you see and carry on.
 - **`main` has moved ahead** (`git log HEAD..main --oneline` isn't empty): mention it, so the developer can rebase or merge before pushing. Don't do either yourself.
 
 ## 3. Check the plan is complete
@@ -57,14 +57,23 @@ Run **every** check, even after one fails, so the developer sees all the problem
 
    A feature without a spec is archived the same way when all its tickets are done.
 
-## 6. Flag follow-ups
+## 6. Fill in exemplars
+
+For each step with an **Establishes** line, the pattern it names now has its first real example. Open that pattern doc:
+
+- **Its Exemplar section is already filled in** (an earlier run, or another ticket got there first): skip it.
+- **It says "None yet":** propose the exemplar from the step's **Files**: the path plus the main symbol that shows the pattern, with a line on what to look at. Picking the symbol needs a quick look at the named file. That's a small exception to not reading the code, so read only files the step names. Show the proposal, let the developer confirm or correct it, then write it into the Exemplar section, replacing "None yet".
+
+The `pattern` skill describes the Exemplar section; call the Skill tool with `pattern` if you need the details.
+
+## 7. Flag follow-ups
 
 Read the plan's **Planning decisions** and **Notes**, not the code:
 
 - **Decisions that look ADR-worthy:** a decision is ADR-worthy when it's hard to reverse, surprising without context, or a real trade-off. List these and suggest `/to-adr`. Don't write ADRs here.
-- **Possible new patterns** recorded during planning: remind the developer they're still to be written up.
+- **`Possible pattern:` notes** from implementation: list them and suggest `/to-pattern make <file> a pattern` for each the developer wants written up. Don't write them here.
 
-## 7. Write the PR body
+## 8. Write the PR body
 
 Read the ticket, the plan, `git log main..HEAD --oneline` and `git diff main...HEAD --stat`. Not the full diff.
 
@@ -98,26 +107,27 @@ Ticket: [{feature} 02: {ticket title}]({path to the ticket}) · Plan: [plan]({pa
 
 ## Follow-ups
 
-{ADR and pattern suggestions from step 6, or "None".}
+{ADR and pattern suggestions from step 7, or "None".}
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 - **Links use the final paths,** under `specs/archive/` if step 5 archived the feature. Make them repo-relative so they work from the PR page.
 
-## 8. Hand over to the developer
+## 9. Hand over to the developer
 
 Stop here and report:
 
 - the check results;
 - the status changes, and the archive move if there was one;
-- the follow-ups from step 6;
+- the exemplars filled in, if any;
+- the follow-ups from step 7;
 - the PR title and body file;
 - a suggested commit message for the status and archive changes, e.g. `chore: finish ticket tournament-seeding 02`.
 
 Don't commit or push. The developer commits (signing goes through 1Password) and pushes from their own terminal, then tells you when it's done.
 
-## 9. Open the PR
+## 10. Open the PR
 
 Once the developer says they've pushed:
 
