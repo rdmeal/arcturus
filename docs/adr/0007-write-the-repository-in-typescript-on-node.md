@@ -34,7 +34,7 @@ Games and agents in other languages, built to learn other stacks, live in their 
 - The learning goal moves out of this repository. Other-language games and agents get no special treatment: they use the protocols exactly as an outside author would, which keeps the protocols honest.
 - Types don't exist at runtime, so every boundary (HTTP, callbacks, background jobs, database rows) needs explicit runtime validation.
 - Libraries are chosen for Node. Code meant to run elsewhere (for example any future SDK for players) can still be kept runtime-portable by building on Web-standard APIs.
-- Node can run TypeScript directly by stripping types, but only for erasable syntax (no enums, decorators or constructor parameter properties). This only matters if services are ever run without a build step.
+- Node can run TypeScript directly by stripping types, but only for erasable syntax (no enums, decorators or constructor parameter properties). Services do run without a build step (see [Run TypeScript source directly, with no build step](./0018-run-typescript-source-directly.md)), so this limit applies.
 
 ## Alternatives considered
 
