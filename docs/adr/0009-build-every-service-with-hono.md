@@ -16,7 +16,7 @@ The forces:
 
 - **Type safety at every layer.** Request validation, handler inputs and response bodies should all be checked by the compiler, without a second schema system next to zod (see [Use zod as the only schema library](./0010-use-zod-as-the-only-schema-library.md)).
 - **A typed frontend client.** The web frontend calls only the tournament runner, and it would be good to get end-to-end types without a code-generation step.
-- **The build toolchain.** The repository is moving to Oxc-based tools, which transform one file at a time. Anything that needs type information at emit time, such as `emitDecoratorMetadata`, works poorly or not at all.
+- **Freedom in build tooling.** Many modern TypeScript build and test tools (esbuild, SWC, Oxc and others) transform one file at a time without type information, so they don't understand `emitDecoratorMetadata`, or only approximate it. A framework that depends on it would narrow the choice of tooling, which is not decided yet.
 - **Portability.** Code built on the Web-standard `fetch` handler (`(req: Request) => Promise<Response>`) runs on Node, Bun, Deno and serverless platforms alike. Whether to publish SDKs for game and player authors is not decided, but this would make them easy to offer on any runtime.
 
 The previous scaffolding used NestJS.
@@ -31,7 +31,7 @@ Each service wires its dependencies by hand in a single composition root, using 
 
 - Validators feed typed values into handlers, response bodies are checked per status code, and context variables are typed per app instance rather than through global module augmentation.
 - The frontend can use Hono's RPC client with the tournament runner's API type and no code generation.
-- Plain TypeScript with no decorators or type-dependent emit, so it works with Oxc-based building and testing without workarounds.
+- Plain TypeScript with no decorators or type-dependent emit, so any build or test tool that strips types will work without workarounds.
 - The service lifecycle is ours to write: startup ordering and graceful shutdown of the database pool and background-job workers.
 - Route types for the RPC client are only inferred when routes are chained and sub-apps are mounted with `app.route()`; handlers defined apart from their routes lose inference unless created through Hono's factory helpers. Conventions for this are needed early, but are not part of this decision.
 - Hono enforces no structure. How services are layered, and the exact shape of the composition root, are conventions to settle when the first service is built.
