@@ -11,7 +11,7 @@ The language shared across the whole of Arcturus: the platform, the protocols be
 ### Arcturus and its parts
 
 **Arcturus**:
-The whole project: the platform, the core games and agents, and the protocols and SDKs that let others add their own.
+The whole project: the platform, the core games and agents, and the protocols that let others add their own.
 
 **Platform**:
 The game-independent part of Arcturus: the tournament runner, the player gateway and the web frontend.

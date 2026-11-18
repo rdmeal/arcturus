@@ -10,7 +10,7 @@ tags: [architecture, game-protocol, player-protocol]
 
 ## Context
 
-Anyone should be able to add a game or a player from their own repository, in any language. Core games and agents, maintained in this repository, are also meant to be built in a range of stacks, as a way of learning them. The users are tech enthusiasts writing players for hackathons and learning projects, so the barrier to entry has to be low.
+Anyone should be able to add a game or a player from their own repository, in any language. Games and agents in other languages, built as a way of learning other stacks, will live in their own repositories rather than in this one. The users are tech enthusiasts writing players for hackathons and learning projects, so the barrier to entry has to be low.
 
 Since every service talks over HTTP (see [Build Arcturus as independent services connected by HTTP](./0001-build-arcturus-as-services-connected-by-http.md)), the question is what defines the extension point: a library to depend on, or a contract to implement.
 
@@ -25,7 +25,7 @@ We will make two published, language-neutral HTTP contracts the only ways to ext
 
 The contracts are defined first, in a language-neutral form, and code in every language follows them. Any service that implements the game protocol is a game service, and anything that implements the player protocol can be registered as a player, whichever repository it comes from.
 
-Core games and agents use only the published protocols and SDKs, never platform internals. SDKs, published for the language the platform and core games are written in, are a convenience and never a requirement.
+Core games and agents use only the published protocols, never platform internals. Any SDKs, if published, are a convenience, never a requirement.
 
 ## Consequences
 
@@ -33,7 +33,7 @@ Core games and agents use only the published protocols and SDKs, never platform 
 - Core games and agents go through what an outside author goes through, so gaps and rough edges in the protocols show up early.
 - The protocols are a public contract. Changing them needs versioning and care, even while the only consumers are in this repository.
 - The protocols must be documented well enough to implement without reading platform code.
-- Follow-on decisions: the specification format and schema tooling, how protocols are versioned, and the language of the platform and its SDKs.
+- Follow-on decisions: the specification format and schema tooling, how protocols are versioned, whether to publish SDKs, and the language of the repository (see [Write the repository in TypeScript on Node](./0007-write-the-repository-in-typescript-on-node.md)).
 
 ## Alternatives considered
 

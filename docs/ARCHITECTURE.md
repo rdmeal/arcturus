@@ -2,7 +2,23 @@
 
 How the parts of Arcturus fit together. This page describes the current picture and is kept up to date. The reasons behind it are in the ADRs in [`adr/`](./adr/), and the terms are defined in [GLOSSARY.md](./GLOSSARY.md).
 
-Technology choices (languages, frameworks, databases) are not decided yet and will be added here as their ADRs are written.
+## Technology
+
+Everything in this repository is TypeScript. Games and agents in other languages live in their own repositories and connect through the protocols.
+
+| Part                  | Choice                                                                           | ADR                                                                          |
+| --------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Language and runtime  | TypeScript on Node                                                               | [0007](./adr/0007-write-the-repository-in-typescript-on-node.md)             |
+| Database              | PostgreSQL, one database per service                                             | [0008](./adr/0008-store-service-data-in-postgresql.md)                       |
+| HTTP framework        | Hono for every service, wired by hand with no DI container                       | [0009](./adr/0009-build-every-service-with-hono.md)                          |
+| Validation            | zod at every boundary                                                            | [0010](./adr/0010-use-zod-as-the-only-schema-library.md)                     |
+| Database access       | Slonik, plain SQL with rows validated by zod                                     | [0011](./adr/0011-access-postgresql-with-slonik.md)                          |
+| Background jobs       | graphile-worker, queued in the same transaction as the data                      | [0012](./adr/0012-run-background-jobs-with-graphile-worker.md)               |
+| Migrations            | Graphile Migrate, plain SQL, forward-only                                        | [0013](./adr/0013-migrate-databases-with-graphile-migrate.md)                |
+| Web frontend          | React SPA on Vite: Mantine, TanStack Router, TanStack Query with Hono's RPC client | [0014](./adr/0014-build-the-frontend-as-a-react-spa.md)                    |
+| Translations          | react-i18next, English only for now                                              | [0015](./adr/0015-set-up-translations-from-the-start.md)                     |
+
+Build tooling, observability, local development and authentication are not decided yet.
 
 ## Components
 
@@ -60,7 +76,7 @@ When a player fails, the tournament runner decides what happens to the match. Th
 
 ## Extending Arcturus
 
-Games and players are added by implementing the **game protocol** or the **player protocol**. Core games and agents use only these protocols and the published SDKs, never platform internals.
+Games and players are added by implementing the **game protocol** or the **player protocol**. Core games and agents use only these protocols, never platform internals.
 
 ## Decisions
 
@@ -70,3 +86,12 @@ Games and players are added by implementing the **game protocol** or the **playe
 - [Extend Arcturus only through published protocols](./adr/0004-extend-arcturus-through-published-protocols.md)
 - [Co-host game services with the platform and register players at runtime](./adr/0005-co-host-game-services-and-register-players-at-runtime.md)
 - [Show replays from the game's own page on a separate origin](./adr/0006-show-replays-from-game-pages-on-a-separate-origin.md)
+- [Write the repository in TypeScript on Node](./adr/0007-write-the-repository-in-typescript-on-node.md)
+- [Store service data in PostgreSQL](./adr/0008-store-service-data-in-postgresql.md)
+- [Build every service with Hono, wired by hand](./adr/0009-build-every-service-with-hono.md)
+- [Use zod as the only schema library](./adr/0010-use-zod-as-the-only-schema-library.md)
+- [Access PostgreSQL with Slonik](./adr/0011-access-postgresql-with-slonik.md)
+- [Run background jobs with graphile-worker](./adr/0012-run-background-jobs-with-graphile-worker.md)
+- [Migrate databases with Graphile Migrate](./adr/0013-migrate-databases-with-graphile-migrate.md)
+- [Build the frontend as a React single-page app](./adr/0014-build-the-frontend-as-a-react-spa.md)
+- [Set up translations from the start](./adr/0015-set-up-translations-from-the-start.md)

@@ -29,7 +29,7 @@ The platform knows about matches, not about anything inside them: rounds, turns 
 
 - Hidden information, simultaneous decisions and multi-step turns are handled inside the game, so the platform needs no special cases for them.
 - Game authors have full freedom in how they model and store a game, in any language.
-- Every game implements its own match loop, deadlines, resolution of simultaneous decisions and redaction of history. An SDK published for the language the platform and core games are written in can take most of that away for authors using that language; authors in other languages start from the game protocol.
+- Every game implements its own match loop, deadlines, resolution of simultaneous decisions and redaction of history. An SDK could take most of that away for authors in its language; authors in other languages start from the game protocol.
 - A buggy or malicious game service could report a wrong result. This is acceptable because game services are trusted and deployed by the operator (see [Co-host game services with the platform and register players at runtime](./0005-co-host-game-services-and-register-players-at-runtime.md)).
 - Game services are stateful and have their own storage, so each one is a little heavier to run than a set of pure functions would be.
 
