@@ -13,7 +13,7 @@ Write a **task brief** that lets another session, usually on a cheaper model, ca
 - **The brief points at everything on disk.** Give paths and symbol names, and let the implementer do the reading. Its reading is cheap and this session's isn't. If you read every file to copy it into the brief, you pay the expensive tokens and delegating saves little.
 - **The reply is a claim, not a fact.** The implementer writes a report file, and `/implement` checks the work before anything is ticked. The plan has one writer, and it isn't the implementer.
 
-The developer starts the implementer session themselves. Spawn a subagent (with `model: sonnet`) only if the developer asks.
+The developer starts the implementer session themselves. Spawn a subagent (with `model: sonnet`) only if the developer asks. `/implement`'s orchestrate mode does that routinely: it writes briefs from this skill's template, runs each one as a Sonnet subagent and checks the result.
 
 ## 1. Find the plan and the steps
 

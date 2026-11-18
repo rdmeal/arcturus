@@ -49,4 +49,4 @@ It writes its report to the same path with `.report.md`. The report has a sectio
 
 Review the diff, then run `/implement` and say the step was done by an agent. `implement` reads the report, checks each step against the diff, runs its check and ticks it if it passes. Then commit.
 
-If you'd rather not start the session yourself, ask Claude to run the brief as a subagent instead.
+If you'd rather not start the session yourself, pick orchestrate when `/implement` asks who should do the step. It writes the same brief, runs it as a Sonnet subagent and checks the result in one go.

@@ -18,14 +18,25 @@ Once a ticket has a plan and you've committed it. Use it again for each step unt
 | `/implement tournament-seeding 02`      | the next step of that ticket's plan                             |
 | `/implement specs/active/…/plans/02-….md` | the next step of that plan                                      |
 | `/implement --steps 3`                  | up to three steps in a row, stopping early if one fails or needs your decision |
+| `/implement --mode orchestrate`         | the next step, done by a Sonnet subagent, without asking who should do it |
 
 If it can't work out the plan, it lists the plans that still have steps left and asks.
+
+## Who does the step
+
+Unless you pass `--mode`, Claude asks who should do the step, and recommends one:
+
+- **direct:** Claude does it in this session. Best for steps that need your judgement as they go, like the first code to follow a new pattern, or a step too small to be worth briefing.
+- **orchestrate:** Claude writes a brief (the same one [to-agent-task](./to-agent-task.md) writes) and hands it to a Sonnet subagent. Then it checks the subagent's diff, runs the step's check itself and ticks the step only if it passes. Questions that would change the plan still come to you. Best for well-defined steps, and for `--steps N` runs, because it keeps the main session's context small. Subagents run one at a time, since they share your working tree.
+- **brief:** Claude runs `/to-agent-task`, which writes a brief for you to give to any agent, Claude or not. When it's done, run `/implement` again and say the step was done by an agent.
 
 ## Before it starts
 
 It checks that you're on the plan's branch. If there are uncommitted changes, it asks whether they're the previous step (commit them first, so each step is its own diff) or work to keep in this step. It never stashes or discards anything.
 
 ## What Claude reads
+
+In orchestrate mode, Claude reads the plan and leaves the rest to the subagent. Otherwise:
 
 - The plan, including its Notes.
 - The patterns, ADRs and docs that the step's "Read first" names.
@@ -44,6 +55,7 @@ It asks before searching more widely.
 ## What you get after each step
 
 - The step ticked in the plan, or the reason it wasn't.
+- Who did it: this session, a Sonnet subagent, or an agent from a brief.
 - The changed files, the check and its result, and any deviations or notes added.
 - A suggested commit message.
 - The title of the next step.
