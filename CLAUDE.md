@@ -16,8 +16,12 @@ This repository is TypeScript only, running on Node (version in `.nvmrc`). Games
 - **Validation:** zod at every boundary (HTTP, callbacks, job payloads, database rows); types are inferred from schemas.
 - **Data:** PostgreSQL, one database per service; Slonik with plain SQL; graphile-worker for background jobs, queued in the same transaction as the data; Graphile Migrate for forward-only SQL migrations.
 - **Frontend:** React SPA on Vite, Mantine, TanStack Router, TanStack Query with Hono's RPC client, react-i18next.
+- **Repository:** pnpm workspaces, a `package.json` per package: `apps/web`, `services/*`, `packages/*` (shared libraries), `games/<game>/{service,agents}`, `tools/*` (repo tooling, never imported by services or games).
+- **Tooling:** Vite+ (`vp`) as the one toolchain and task runner, with Vitest, Oxlint and Oxfmt; no Nx. Run `vp` commands directly, with no root script aliases.
+- **Running code:** services and libraries run from `.ts` source with Node's type stripping, with no build step, ESM only. Write erasable TypeScript only (no enums, namespaces or constructor parameter properties), and import with `.ts` extensions.
+- **CI:** a pull-request workflow and a main workflow, both calling a reusable quality-check workflow.
 
-Build tooling, commands and CI are not set up yet. Don't follow leftover Nx, Yarn, NestJS, Jest or Kafka config or references (for example in `.github/workflows/`): they belong to the old stack.
+The tooling and CI are decided but not set up yet, so there are no commands to run. Don't follow leftover Nx, Yarn, NestJS, Jest or Kafka config or references (for example in `.github/workflows/`): they belong to the old stack.
 
 ## Architecture and decisions
 

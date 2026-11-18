@@ -17,8 +17,12 @@ Everything in this repository is TypeScript. Games and agents in other languages
 | Migrations            | Graphile Migrate, plain SQL, forward-only                                        | [0013](./adr/0013-migrate-databases-with-graphile-migrate.md)                |
 | Web frontend          | React SPA on Vite: Mantine, TanStack Router, TanStack Query with Hono's RPC client | [0014](./adr/0014-build-the-frontend-as-a-react-spa.md)                    |
 | Translations          | react-i18next, English only for now                                              | [0015](./adr/0015-set-up-translations-from-the-start.md)                     |
+| Repository layout     | pnpm package-based workspaces, a `package.json` per package                      | [0016](./adr/0016-organise-the-repository-as-pnpm-workspaces.md)             |
+| Build tooling         | Vite+ (`vp`): Vitest, Oxlint, Oxfmt, type checks in `vp check`; no Nx            | [0017](./adr/0017-build-test-lint-and-format-with-vite-plus.md)              |
+| Running TypeScript    | Services and libraries run from source with Node's type stripping, ESM only      | [0018](./adr/0018-run-typescript-source-directly.md)                         |
+| CI                    | PR and main workflows calling a reusable quality-check workflow                  | [0019](./adr/0019-compose-ci-from-reusable-workflows.md)                     |
 
-Build tooling, observability, local development and authentication are not decided yet.
+Observability, local development and authentication are not decided yet.
 
 ## Components
 
@@ -95,3 +99,7 @@ Games and players are added by implementing the **game protocol** or the **playe
 - [Migrate databases with Graphile Migrate](./adr/0013-migrate-databases-with-graphile-migrate.md)
 - [Build the frontend as a React single-page app](./adr/0014-build-the-frontend-as-a-react-spa.md)
 - [Set up translations from the start](./adr/0015-set-up-translations-from-the-start.md)
+- [Organise the repository as pnpm package-based workspaces](./adr/0016-organise-the-repository-as-pnpm-workspaces.md)
+- [Build, test, lint and format with Vite+](./adr/0017-build-test-lint-and-format-with-vite-plus.md)
+- [Run TypeScript source directly, with no build step](./adr/0018-run-typescript-source-directly.md)
+- [Compose CI from reusable workflows](./adr/0019-compose-ci-from-reusable-workflows.md)
