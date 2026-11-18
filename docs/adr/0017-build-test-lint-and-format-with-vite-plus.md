@@ -34,7 +34,7 @@ We will use Vite+ as the single toolchain and task runner, with no Nx:
 - **Vite** for the frontend build;
 - **`vp check`** for format, lint and type checks in one command, with type-aware linting and type checking turned on.
 
-The repository pins its Vite+ version, so every machine and CI run the same toolchain. Commands are run through `vp` directly, without root-level script aliases.
+The repository pins its Vite+ version, so every machine and CI run the same toolchain.
 
 ## Consequences
 
