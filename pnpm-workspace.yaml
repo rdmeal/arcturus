@@ -1,0 +1,20 @@
+# Workspace globs from ADR 0016.
+packages:
+  - apps/web
+  - services/*
+  - packages/*
+  - games/*/service
+  - games/*/agents
+  - tools/*
+
+# Supply-chain settings: https://pnpm.io/supply-chain-security
+#
+# No dependency may run a build script unless it is listed in `allowBuilds`
+# by name, after review. `strictDepBuilds` (fail the install on an unlisted
+# build script) and `blockExoticSubdeps` (no git or tarball sources in
+# transitive dependencies) are deliberately left on, at their defaults.
+minimumReleaseAge: 10080 # one week, in minutes
+trustPolicy: no-downgrade
+
+# https://pnpm.io/typescript
+addMissingPeerTypes: true

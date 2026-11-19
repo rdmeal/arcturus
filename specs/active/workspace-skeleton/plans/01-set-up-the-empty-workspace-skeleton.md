@@ -18,7 +18,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - **Planning decisions:**
   - **Root scripts:** the root `package.json` gets `check`, `test` and `build` scripts that call `vp`, following the [Vite+ local CLI best practices](https://viteplus.dev/guide/local-cli#best-practices). They let collaborators run the checks through pnpm without the global CLI. ADR 0017 was edited during planning to drop its "no root script aliases" sentence. This overrides the ticket's note that commands run "without root `package.json` script aliases", and `CLAUDE.md`'s matching line, which step 6 changes.
   - **Installing `vp`:** locally, the Vite+ global CLI together with the project's `vite-plus` dev dependency, as Vite+ recommends. The global CLI needs no Node installed first: it reads `.nvmrc` for Node and `packageManager` for pnpm, and hands commands to the project's `vite-plus`. In CI, `voidzero-dev/setup-vp`, with Node from `.nvmrc`. It runs `vp install` and handles caching.
-  - **pnpm settings:** follow [pnpm supply-chain security](https://pnpm.io/supply-chain-security). Pin pnpm 11, because these defaults come from it. `allowBuilds` starts empty and `strictDepBuilds` stays on: if a dependency needs a build script, add it to `allowBuilds` by name, after review. Keep `blockExoticSubdeps` on. Set `minimumReleaseAge: 10080` (one week) and `trustPolicy: no-downgrade`. Commit `pnpm-lock.yaml`. Skip `namedRegistries`, because only the npm registry is used.
+  - **pnpm settings:** follow [pnpm supply-chain security](https://pnpm.io/supply-chain-security). Pin pnpm 12, which keeps the defaults pnpm 11 introduced and is the first major with `addMissingPeerTypes`. `allowBuilds` starts empty and `strictDepBuilds` stays on: if a dependency needs a build script, add it to `allowBuilds` by name, after review. Keep `blockExoticSubdeps` on. Set `minimumReleaseAge: 10080` (one week) and `trustPolicy: no-downgrade`. Commit `pnpm-lock.yaml`. Skip `namedRegistries`, because only the npm registry is used.
   - **pnpm and TypeScript:** follow [pnpm TypeScript](https://pnpm.io/typescript). Set `addMissingPeerTypes: true`, and never set `preserveSymlinks` in a tsconfig.
   - **The base tsconfig:** `tsconfig.base.json` at the root, which packages extend by relative path. A root `tsconfig.json` extends it and includes only the root `*.ts` files, today just `vite.config.ts`. Putting it in a `packages/tsconfig` package was rejected: it adds a dependency to every package for no gain.
   - **Workspace folders:** only the globs in `pnpm-workspace.yaml`, with no `.gitkeep` placeholders. The first package creates its own folder.
@@ -42,12 +42,12 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **Tests:** none, since this is config removal.
   - **Check:** `git grep -n -i -E '\bnx\b|yarn|nestjs|jest|kafka|prettier' -- ':!docs' ':!specs' ':!scratchpad' ':!.claude/skills' ':!CLAUDE.md'` returns nothing. Docs, specs and skills may mention the old stack as history; `CLAUDE.md` is cleared by step 6.
 
-- [ ] **2. Add the pnpm workspace with pinned pnpm and Vite+**
+- [x] **2. Add the pnpm workspace with pinned pnpm and Vite+**
   - **Goal:** `vp install` succeeds on a fresh clone, and installs the pinned pnpm and Vite+.
   - **Files:**
     - `package.json`:
       - `"name": "arcturus"`, `"private": true`, `"type": "module"`.
-      - `"packageManager": "pnpm@11.<x>.<y>"`, the latest pnpm 11 release that is at least a week old.
+      - `"packageManager": "pnpm@12.<x>.<y>"`, the latest pnpm 12 release that is at least a week old.
       - `devDependencies` with `vite-plus` at an exact version, one at least a week old because `minimumReleaseAge` would refuse anything newer.
       - `scripts`: `"check": "vp check"`, `"test": "vp test"`, `"build": "vp run -r build"`. Vite Task prunes the root's self-reference in the recursive build.
     - `pnpm-workspace.yaml`:
@@ -127,3 +127,6 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 ## Notes
 
 - 2026-11-19: Step 1's `git grep` excludes `.claude/skills` (their Yarn mentions are worked examples, not config) and, until step 6 rewrites it, `CLAUDE.md`. The step 7 criterion runs it without the `CLAUDE.md` exclusion.
+- 2026-11-19: Pinned pnpm 12 instead of 11: `addMissingPeerTypes` was added in pnpm 12.12.0, and pnpm 11 warns that it is an unrecognised v12 setting. pnpm 12 keeps the same supply-chain defaults.
+- 2026-11-19: `vp install` warns of an unmet peer: `vitest` and `@vitest/mocker` 5.1.0 want `vite` `^6 || ^7 || ^8`, but the `vite` installed by `vite-plus@1.6.0` reports 1.6.0. It installs fine. Step 3 should check `vp test` isn't affected.
+- 2026-11-19: In the sandbox, `vp install` can't write to `~/.local/share/vite-plus` (read-only), so it runs outside the sandbox. Its Node and pnpm shims are in `~/.local/share/vite-plus/bin` and come before nvm on the developer's PATH; the sandbox shell may not have them on PATH.
