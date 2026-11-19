@@ -97,7 +97,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **Tests:** none. actionlint is the check.
   - **Check:** run the same `docker run … rhysd/actionlint@sha256:<digest>` locally if Docker works in the sandbox. If it doesn't, the developer runs it, or it's proven by the PR run in step 7. `vp check` still passes.
 
-- [ ] **6. Document the commands and getting started**
+- [x] **6. Document the commands and getting started**
   - **Goal:** people and agents know how to get set up and which commands to run, and nothing says the tooling is unset.
   - **Files:**
     - `CLAUDE.md`:

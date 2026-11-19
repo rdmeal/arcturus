@@ -17,11 +17,21 @@ This repository is TypeScript only, running on Node (version in `.nvmrc`). Games
 - **Data:** PostgreSQL, one database per service; Slonik with plain SQL; graphile-worker for background jobs, queued in the same transaction as the data; Graphile Migrate for forward-only SQL migrations.
 - **Frontend:** React SPA on Vite, Mantine, TanStack Router, TanStack Query with Hono's RPC client, react-i18next.
 - **Repository:** pnpm workspaces, a `package.json` per package: `apps/web`, `services/*`, `packages/*` (shared libraries), `games/<game>/{service,agents}`, `tools/*` (repo tooling, never imported by services or games).
-- **Tooling:** Vite+ (`vp`) as the one toolchain and task runner, with Vitest, Oxlint and Oxfmt; no Nx. Run `vp` commands directly, with no root script aliases.
+- **Tooling:** Vite+ (`vp`) as the one toolchain and task runner, with Vitest, Oxlint and Oxfmt.
 - **Running code:** services and libraries run from `.ts` source with Node's type stripping, with no build step, ESM only. Write erasable TypeScript only (no enums, namespaces or constructor parameter properties), and import with `.ts` extensions.
 - **CI:** a pull-request workflow and a main workflow, both calling a reusable quality-check workflow.
 
-The tooling and CI are decided but not set up yet, so there are no commands to run. Don't follow leftover Nx, Yarn, NestJS, Jest or Kafka config or references (for example in `.github/workflows/`): they belong to the old stack.
+## Commands
+
+Run these from the repository root:
+
+- `vp install`: install dependencies, with the pnpm version pinned in `package.json`.
+- `vp check`: format check, lint and type check, all in one. Lint warnings fail it too.
+- `vp fmt`: fix formatting. Markdown, JSON and YAML are formatted as well as code, so run it after editing docs.
+- `vp test`: run every test. `vp test <path>` runs one test file.
+- `vp run -r build`: build every package that has a `build` script.
+
+`pnpm run check`, `pnpm run test` and `pnpm run build` do the same as `vp check`, `vp test` and `vp run -r build`.
 
 ## Architecture and decisions
 

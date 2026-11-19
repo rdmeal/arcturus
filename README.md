@@ -19,6 +19,34 @@ This repository is written in TypeScript; games and players can be written in an
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the parts fit together and [docs/GLOSSARY.md](docs/GLOSSARY.md) for the terms used throughout.
 
+## Development
+
+### Getting started
+
+1. Install [Git](https://git-scm.com/downloads).
+2. Install the [Vite+ command-line tool, `vp`](https://viteplus.dev/guide/global-cli). It installs the right versions of Node and pnpm for this repository itself, so you don't need to install them first. When the installer asks whether `vp` should manage your Node installs and package managers, say yes.
+3. Open a new terminal, so that `vp` is on your path, and get the code:
+
+   ```bash
+   git clone https://github.com/rdmeal/arcturus.git
+   cd arcturus
+   ```
+
+4. Install the dependencies:
+
+   ```bash
+   vp install
+   ```
+
+5. Check that everything works:
+
+   ```bash
+   vp check
+   vp test
+   ```
+
+   Both should finish without errors.
+
 ## Setting up Claude Code
 
 This repository is set up for working with [Claude Code](https://code.claude.com). These are the external tools it uses that you need to set up yourself. See [docs/skills/README.md](docs/skills/README.md) for the workflow commands you can run.
