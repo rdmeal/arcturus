@@ -117,12 +117,12 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 **7. Acceptance criteria**, checked at the test boundary:
 
 - [ ] On a fresh clone, with the Node version from `.nvmrc`, `vp install` succeeds and installs the pinned pnpm and Vite+: proven by a fresh `git clone` into `$TMPDIR` and `vp install` there, with `vp env current` showing the pinned versions. The developer may need to run this outside the sandbox.
-- [ ] `vp check`, `vp test` and `vp run -r build` each succeed at the root of the empty workspace: proven by running them in the fresh clone, along with `pnpm run check`, `pnpm run test` and `pnpm run build`.
-- [ ] `vp check` fails on a deliberately introduced formatting error, lint error and type error (checked once, then reverted): proven by the manual check in step 3.
-- [ ] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green: proven by the developer pushing the branch and opening a draft PR from their own terminal.
-- [ ] The pull-request workflow can be started by hand, and the main workflow is triggered by pushes to `main` and calls the same quality-check workflow: proven by a manual `workflow_dispatch` run on the branch, and by inspecting `main.yml`, whose `on.push.branches` is `[main]` and whose job calls `./.github/workflows/quality-check.yml`.
-- [ ] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings: proven by the `git grep` in step 1's Check, run after step 6 without the `':!CLAUDE.md'` exclusion.
-- [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a _Development_ section: proven by inspecting both files after step 6.
+- [x] `vp check`, `vp test` and `vp run -r build` each succeed at the root of the empty workspace: proven by running them in the fresh clone, along with `pnpm run check`, `pnpm run test` and `pnpm run build`.
+- [x] `vp check` fails on a deliberately introduced formatting error, lint error and type error (checked once, then reverted): proven by the manual check in step 3.
+- [x] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green: proven by the developer pushing the branch and opening a draft PR from their own terminal.
+- [x] The pull-request workflow can be started by hand, and the main workflow is triggered by pushes to `main` and calls the same quality-check workflow: proven by a manual `workflow_dispatch` run on the branch, and by inspecting `main.yml`, whose `on.push.branches` is `[main]` and whose job calls `./.github/workflows/quality-check.yml`.
+- [x] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings: proven by the `git grep` in step 1's Check, run after step 6 without the `':!CLAUDE.md'` exclusion.
+- [x] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a _Development_ section: proven by inspecting both files after step 6.
 
 ## Notes
 
@@ -134,3 +134,6 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - 2026-11-19: Oxlint reports most rules as warnings, which don't fail `vp check`, so `vite.config.ts` sets `lint.options.denyWarnings: true`.
 - 2026-11-19: Run `vp check` outside the sandbox. Inside it, unreadable sandbox-only placeholder files (`.claude/loop.md` and others) make formatting fail. `vp test` passed despite the unmet `vite` peer warning.
 - 2026-11-19: Docker isn't installed in WSL, so actionlint hasn't run on the workflows yet. Step 5's Check allows the step 7 PR run to prove it; that run is the first real actionlint pass. The pinned digest is the 1.7.12 OCI index digest from Docker Hub's tag API.
+- 2026-11-19: The developer chose to skip the fresh-clone criterion for now and assume `vp install` works there, so it stays unticked. The check, test and build criterion was run in the working tree at `92ebe96` instead of a fresh clone.
+- 2026-11-19: Draft PR #13 ran the *Pull request* workflow (run 44632414233, `pull_request` event, at `92ebe96`). Its one job, *quality-check / Quality check*, succeeded, and that job includes the actionlint step, so this was actionlint's first real pass.
+- 2026-11-19: The manual-run criterion was ticked by inspection, as the developer chose: `pull-request.yml` declares `workflow_dispatch`, and `main.yml` runs on pushes to `[main]` and calls `quality-check.yml`. No manual run was done, because GitHub only offers *Run workflow* once the workflow file is on the default branch, which happens at merge.
