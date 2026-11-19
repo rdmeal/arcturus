@@ -116,7 +116,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 
 **7. Acceptance criteria**, checked at the test boundary:
 
-- [ ] On a fresh clone, with the Node version from `.nvmrc`, `vp install` succeeds and installs the pinned pnpm and Vite+: proven by a fresh `git clone` into `$TMPDIR` and `vp install` there, with `vp env current` showing the pinned versions. The developer may need to run this outside the sandbox.
+- [x] In CI, a fresh checkout installs with `vp install`, using the Node version from `.nvmrc`, and passes check, test and build: proven by the _Pull request_ workflow run on PR #13 (run 44632414233), where `setup-vp` installs from `.nvmrc` before `vp check`, `vp test` and `vp run -r build`.
 - [x] `vp check`, `vp test` and `vp run -r build` each succeed at the root of the empty workspace: proven by running them in the fresh clone, along with `pnpm run check`, `pnpm run test` and `pnpm run build`.
 - [x] `vp check` fails on a deliberately introduced formatting error, lint error and type error (checked once, then reverted): proven by the manual check in step 3.
 - [x] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green: proven by the developer pushing the branch and opening a draft PR from their own terminal.
@@ -135,5 +135,6 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - 2026-11-19: Run `vp check` outside the sandbox. Inside it, unreadable sandbox-only placeholder files (`.claude/loop.md` and others) make formatting fail. `vp test` passed despite the unmet `vite` peer warning.
 - 2026-11-19: Docker isn't installed in WSL, so actionlint hasn't run on the workflows yet. Step 5's Check allows the step 7 PR run to prove it; that run is the first real actionlint pass. The pinned digest is the 1.7.12 OCI index digest from Docker Hub's tag API.
 - 2026-11-19: The developer chose to skip the fresh-clone criterion for now and assume `vp install` works there, so it stays unticked. The check, test and build criterion was run in the working tree at `92ebe96` instead of a fresh clone.
-- 2026-11-19: Draft PR #13 ran the *Pull request* workflow (run 44632414233, `pull_request` event, at `92ebe96`). Its one job, *quality-check / Quality check*, succeeded, and that job includes the actionlint step, so this was actionlint's first real pass.
-- 2026-11-19: The manual-run criterion was ticked by inspection, as the developer chose: `pull-request.yml` declares `workflow_dispatch`, and `main.yml` runs on pushes to `[main]` and calls `quality-check.yml`. No manual run was done, because GitHub only offers *Run workflow* once the workflow file is on the default branch, which happens at merge.
+- 2026-11-19: Draft PR #13 ran the _Pull request_ workflow (run 44632414233, `pull_request` event, at `92ebe96`). Its one job, _quality-check / Quality check_, succeeded, and that job includes the actionlint step, so this was actionlint's first real pass.
+- 2026-11-19: The manual-run criterion was ticked by inspection, as the developer chose: `pull-request.yml` declares `workflow_dispatch`, and `main.yml` runs on pushes to `[main]` and calls `quality-check.yml`. No manual run was done, because GitHub only offers _Run workflow_ once the workflow file is on the default branch, which happens at merge.
+- 2026-11-19: The developer changed the ticket: the fresh-clone criterion now asks only for a fresh checkout in CI, dropping the local `vp install` with `vp env current` check. It was ticked against the PR #13 run.

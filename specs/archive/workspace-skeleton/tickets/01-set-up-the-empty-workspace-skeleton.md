@@ -1,6 +1,6 @@
 ---
 type: ticket
-status: in-progress
+status: done
 blocked-by: []
 scopes: [arcturus]
 ---
@@ -9,7 +9,7 @@ scopes: [arcturus]
 
 ## What to build
 
-The repository becomes an empty but working workspace on the new toolchain. A fresh clone installs and passes check, test and build with `vp`, both on the maintainer's machine and in CI. The workspace has no packages yet. Nothing from the old stack (Nx, Yarn, NestJS, Jest, Kafka) is left in config, CI or editor settings, so neither people nor agents get steered towards it.
+The repository becomes an empty but working workspace on the new toolchain. Check, test and build pass with `vp` on the maintainer's machine, and a fresh checkout installs and passes them in CI. The workspace has no packages yet. Nothing from the old stack (Nx, Yarn, NestJS, Jest, Kafka) is left in config, CI or editor settings, so neither people nor agents get steered towards it.
 
 The skeleton contains:
 
@@ -23,7 +23,7 @@ The skeleton contains:
 
 ## Acceptance criteria
 
-- [ ] On a fresh clone, with the Node version from `.nvmrc`, `vp install` succeeds and installs the pinned pnpm and Vite+.
+- [ ] In CI, a fresh checkout installs with `vp install`, using the Node version from `.nvmrc`, and passes check, test and build.
 - [ ] `vp check`, `vp test` and `vp run -r build` each succeed at the root of the empty workspace.
 - [ ] `vp check` fails on a deliberately introduced formatting error, lint error and type error (checked once, then reverted).
 - [ ] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green.
