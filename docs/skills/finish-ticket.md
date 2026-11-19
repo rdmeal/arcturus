@@ -14,10 +14,10 @@ When every step of the plan is ticked and you've committed the work.
 
 ## How to use it
 
-| You type                               | Claude finishes                                  |
-| -------------------------------------- | ------------------------------------------------ |
+| You type                               | Claude finishes                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------ |
 | `/finish-ticket`                       | the ticket in the conversation, or else the ticket for the current `ticket/…` branch |
-| `/finish-ticket tournament-seeding 02` | that ticket                                      |
+| `/finish-ticket tournament-seeding 02` | that ticket                                                                          |
 
 ## What it does
 

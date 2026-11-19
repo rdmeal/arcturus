@@ -6,21 +6,21 @@ type: index
 
 The Claude skills you can use in this repo. Type a skill's command in Claude Code to run it.
 
-| Skill                       | Command                 | Use it to…                                               |
-| --------------------------- | ----------------------- | -------------------------------------------------------- |
-| [grill-me](./grill-me.md)   | `/grill-me [subject]`   | have a plan or design stress-tested, without writing docs |
-| [grill-me-with-docs](./grill-me-with-docs.md) | `/grill-me-with-docs [topic]` | stress-test a design while writing glossary terms and recording decisions |
-| [to-adr](./to-adr.md)       | `/to-adr [decision or topic]` | turn settled decisions into ADRs                          |
-| [to-pattern](./to-pattern.md) | `/to-pattern [pattern, topic or file]` | turn agreed coding patterns into pattern docs      |
-| [to-spec](./to-spec.md)     | `/to-spec [feature or topic]` | write up a discussed feature as a spec                    |
-| [to-tickets](./to-tickets.md) | `/to-tickets [feature]` | break a spec or feature into tickets                      |
-| [plan-ticket](./plan-ticket.md) | `/plan-ticket [ticket or feature]` | plan a ticket with Claude, as a step-by-step plan file |
-| [implement](./implement.md) | `/implement [plan] [--steps N] [--mode …]` | build a planned ticket one step at a time, reviewing each |
-| [finish-ticket](./finish-ticket.md) | `/finish-ticket [ticket]` | check a finished ticket, mark it done and open its PR |
-| [to-agent-task](./to-agent-task.md) | `/to-agent-task [plan] [step K \| steps K-M]` | hand plan steps to a cheaper model as a task brief |
-| [handoff](./handoff.md)   | `/handoff [what's next]` | stop a conversation and resume it later in a fresh session |
-| [pick-up](./pick-up.md)   | `/pick-up [handoff or what it was about]` | carry on from a handoff in a fresh session |
-| [wait-what](./wait-what.md) | `/wait-what [the part you lost]` | have Claude's last message re-pitched more simply         |
+| Skill                                         | Command                                       | Use it to…                                                                |
+| --------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------- |
+| [grill-me](./grill-me.md)                     | `/grill-me [subject]`                         | have a plan or design stress-tested, without writing docs                 |
+| [grill-me-with-docs](./grill-me-with-docs.md) | `/grill-me-with-docs [topic]`                 | stress-test a design while writing glossary terms and recording decisions |
+| [to-adr](./to-adr.md)                         | `/to-adr [decision or topic]`                 | turn settled decisions into ADRs                                          |
+| [to-pattern](./to-pattern.md)                 | `/to-pattern [pattern, topic or file]`        | turn agreed coding patterns into pattern docs                             |
+| [to-spec](./to-spec.md)                       | `/to-spec [feature or topic]`                 | write up a discussed feature as a spec                                    |
+| [to-tickets](./to-tickets.md)                 | `/to-tickets [feature]`                       | break a spec or feature into tickets                                      |
+| [plan-ticket](./plan-ticket.md)               | `/plan-ticket [ticket or feature]`            | plan a ticket with Claude, as a step-by-step plan file                    |
+| [implement](./implement.md)                   | `/implement [plan] [--steps N] [--mode …]`    | build a planned ticket one step at a time, reviewing each                 |
+| [finish-ticket](./finish-ticket.md)           | `/finish-ticket [ticket]`                     | check a finished ticket, mark it done and open its PR                     |
+| [to-agent-task](./to-agent-task.md)           | `/to-agent-task [plan] [step K \| steps K-M]` | hand plan steps to a cheaper model as a task brief                        |
+| [handoff](./handoff.md)                       | `/handoff [what's next]`                      | stop a conversation and resume it later in a fresh session                |
+| [pick-up](./pick-up.md)                       | `/pick-up [handoff or what it was about]`     | carry on from a handoff in a fresh session                                |
+| [wait-what](./wait-what.md)                   | `/wait-what [the part you lost]`              | have Claude's last message re-pitched more simply                         |
 
 ## The usual flow
 

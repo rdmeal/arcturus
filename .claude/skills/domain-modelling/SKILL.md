@@ -8,7 +8,7 @@ user-invocable: false
 
 Build the domain model actively while designing: challenge the words being used, pin down what they mean, and write them down as soon as they settle. A shared, precise language is what lets the user, the code, the docs and every future agent mean the same thing by the same word.
 
-This is the *active* discipline, for when the model is being changed. Simply using the glossary's words while working is something every session does; it isn't this skill.
+This is the _active_ discipline, for when the model is being changed. Simply using the glossary's words while working is something every session does; it isn't this skill.
 
 The examples below use an invented library-lending domain, not Arcturus's terms.
 
@@ -26,7 +26,7 @@ Read the shared glossary, and the glossary of any scope the discussion touches, 
 
 ## During the session
 
-**Challenge against the glossary.** When the user uses a word in a way that conflicts with a glossary, say so immediately: "The glossary defines *X* as …, but you seem to mean … Which is it?"
+**Challenge against the glossary.** When the user uses a word in a way that conflicts with a glossary, say so immediately: "The glossary defines _X_ as …, but you seem to mean … Which is it?"
 
 **Sharpen vague language.** When a word is vague or overloaded, propose a precise term: "By 'the book' here, do you mean the title, or one physical copy of it?" Prefer an existing glossary term over inventing a new one.
 
@@ -59,7 +59,7 @@ _Avoid_: item, book (for one physical instance)
 ```
 
 - **Be opinionated.** When several words exist for one concept, pick the best and list the rest under `_Avoid_`.
-- **Define what the term *is*,** in one or two sentences. When two terms are easily confused, say so in a short clause in the definition ("not to be confused with **Title**").
+- **Define what the term _is_,** in one or two sentences. When two terms are easily confused, say so in a short clause in the definition ("not to be confused with **Title**").
 - **Only terms specific to this project.** General programming concepts (timeouts, retries, caching) don't belong, however much the project uses them.
 - **No implementation details.** The glossary is not a spec or a scratchpad: no field names, endpoints or storage.
 - **Group terms under subheadings** once natural clusters emerge; a flat list is fine until then.

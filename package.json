@@ -2,7 +2,6 @@
   "name": "arcturus",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.19.0",
   "scripts": {
     "build": "vp run -r build",
     "check": "vp check",
@@ -10,5 +9,6 @@
   },
   "devDependencies": {
     "vite-plus": "1.6.0"
-  }
+  },
+  "packageManager": "pnpm@12.19.0"
 }

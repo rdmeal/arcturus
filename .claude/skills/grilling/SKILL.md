@@ -10,7 +10,7 @@ Interview the user relentlessly until you both understand the plan the same way.
 
 ## The design tree
 
-Treat the subject as a **design tree**: every decision branches into the decisions that hang off it. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask *now* without guessing at answers you haven't heard yet.
+Treat the subject as a **design tree**: every decision branches into the decisions that hang off it. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet.
 
 Work the tree in **rounds**. Each round asks the whole frontier, then waits for the user's answers. Answers settle decisions and push the frontier outward, so recompute it from scratch before the next round. A question whose answer depends on another question still open in this round belongs to a later round.
 

@@ -8,11 +8,11 @@ Arcturus is a self-hostable platform for running tournaments of turn-based games
 
 ## What Arcturus is made of
 
-| Part             | What it is                                                                                                          |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **The platform** | The game-independent services that run tournaments: the tournament runner, the player gateway and the web frontend |
-| **Core games**   | Games maintained in this repository, each running as its own game service                                          |
-| **Core agents**  | Automated players maintained in this repository, at least one per core game                                        |
+| Part              | What it is                                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **The platform**  | The game-independent services that run tournaments: the tournament runner, the player gateway and the web frontend |
+| **Core games**    | Games maintained in this repository, each running as its own game service                                          |
+| **Core agents**   | Automated players maintained in this repository, at least one per core game                                        |
 | **The protocols** | The game protocol and player protocol: implement one to add a game or a player, in any language                    |
 
 This repository is written in TypeScript; games and players can be written in any language, in their own repositories.

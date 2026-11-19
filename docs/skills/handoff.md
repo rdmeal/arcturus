@@ -8,10 +8,10 @@ Type it when you want to stop a conversation and pick it up later in a fresh ses
 
 ## How to use it
 
-| You type                                   | Claude writes                                           |
-| ------------------------------------------ | ------------------------------------------------------- |
-| `/handoff`                                 | a handoff, working out the next step itself             |
-| `/handoff finish the seeding tiebreaks`    | a handoff weighted towards that as the next session's job |
+| You type                                | Claude writes                                             |
+| --------------------------------------- | --------------------------------------------------------- |
+| `/handoff`                              | a handoff, working out the next step itself               |
+| `/handoff finish the seeding tiebreaks` | a handoff weighted towards that as the next session's job |
 
 It works in any conversation, not only on a ticket. Each run writes a new file, `YYYY-MM-DD-HHMM-<slug>.md`, so the latest sorts last. Older handoffs are never changed.
 

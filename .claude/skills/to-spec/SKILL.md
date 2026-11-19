@@ -7,7 +7,7 @@ argument-hint: "[feature or discussion topic]"
 
 # To Spec
 
-Turn a feature that has already been worked through into a **spec**: the *what and why* of the feature, for whoever later breaks it into tickets and builds it. This is a write-up, not an interview: the design has been done, and the job is to record it faithfully. The only questions you ask are in the confirmation step.
+Turn a feature that has already been worked through into a **spec**: the _what and why_ of the feature, for whoever later breaks it into tickets and builds it. This is a write-up, not an interview: the design has been done, and the job is to record it faithfully. The only questions you ask are in the confirmation step.
 
 A spec describes intent, not implementation. It links ADRs and uses glossary terms rather than restating them. It never changes the glossary or ADRs; it only reads them.
 

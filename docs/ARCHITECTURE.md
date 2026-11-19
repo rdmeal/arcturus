@@ -6,21 +6,21 @@ How the parts of Arcturus fit together. This page describes the current picture 
 
 Everything in this repository is TypeScript. Games and agents in other languages live in their own repositories and connect through the protocols.
 
-| Part                  | Choice                                                                           | ADR                                                                          |
-| --------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Language and runtime  | TypeScript on Node                                                               | [0007](./adr/0007-write-the-repository-in-typescript-on-node.md)             |
-| Database              | PostgreSQL, one database per service                                             | [0008](./adr/0008-store-service-data-in-postgresql.md)                       |
-| HTTP framework        | Hono for every service, wired by hand with no DI container                       | [0009](./adr/0009-build-every-service-with-hono.md)                          |
-| Validation            | zod at every boundary                                                            | [0010](./adr/0010-use-zod-as-the-only-schema-library.md)                     |
-| Database access       | Slonik, plain SQL with rows validated by zod                                     | [0011](./adr/0011-access-postgresql-with-slonik.md)                          |
-| Background jobs       | graphile-worker, queued in the same transaction as the data                      | [0012](./adr/0012-run-background-jobs-with-graphile-worker.md)               |
-| Migrations            | Graphile Migrate, plain SQL, forward-only                                        | [0013](./adr/0013-migrate-databases-with-graphile-migrate.md)                |
-| Web frontend          | React SPA on Vite: Mantine, TanStack Router, TanStack Query with Hono's RPC client | [0014](./adr/0014-build-the-frontend-as-a-react-spa.md)                    |
-| Translations          | react-i18next, English only for now                                              | [0015](./adr/0015-set-up-translations-from-the-start.md)                     |
-| Repository layout     | pnpm package-based workspaces, a `package.json` per package                      | [0016](./adr/0016-organise-the-repository-as-pnpm-workspaces.md)             |
-| Build tooling         | Vite+ (`vp`): Vitest, Oxlint, Oxfmt, type checks in `vp check`; no Nx            | [0017](./adr/0017-build-test-lint-and-format-with-vite-plus.md)              |
-| Running TypeScript    | Services and libraries run from source with Node's type stripping, ESM only      | [0018](./adr/0018-run-typescript-source-directly.md)                         |
-| CI                    | PR and main workflows calling a reusable quality-check workflow                  | [0019](./adr/0019-compose-ci-from-reusable-workflows.md)                     |
+| Part                 | Choice                                                                             | ADR                                                              |
+| -------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Language and runtime | TypeScript on Node                                                                 | [0007](./adr/0007-write-the-repository-in-typescript-on-node.md) |
+| Database             | PostgreSQL, one database per service                                               | [0008](./adr/0008-store-service-data-in-postgresql.md)           |
+| HTTP framework       | Hono for every service, wired by hand with no DI container                         | [0009](./adr/0009-build-every-service-with-hono.md)              |
+| Validation           | zod at every boundary                                                              | [0010](./adr/0010-use-zod-as-the-only-schema-library.md)         |
+| Database access      | Slonik, plain SQL with rows validated by zod                                       | [0011](./adr/0011-access-postgresql-with-slonik.md)              |
+| Background jobs      | graphile-worker, queued in the same transaction as the data                        | [0012](./adr/0012-run-background-jobs-with-graphile-worker.md)   |
+| Migrations           | Graphile Migrate, plain SQL, forward-only                                          | [0013](./adr/0013-migrate-databases-with-graphile-migrate.md)    |
+| Web frontend         | React SPA on Vite: Mantine, TanStack Router, TanStack Query with Hono's RPC client | [0014](./adr/0014-build-the-frontend-as-a-react-spa.md)          |
+| Translations         | react-i18next, English only for now                                                | [0015](./adr/0015-set-up-translations-from-the-start.md)         |
+| Repository layout    | pnpm package-based workspaces, a `package.json` per package                        | [0016](./adr/0016-organise-the-repository-as-pnpm-workspaces.md) |
+| Build tooling        | Vite+ (`vp`): Vitest, Oxlint, Oxfmt, type checks in `vp check`; no Nx              | [0017](./adr/0017-build-test-lint-and-format-with-vite-plus.md)  |
+| Running TypeScript   | Services and libraries run from source with Node's type stripping, ESM only        | [0018](./adr/0018-run-typescript-source-directly.md)             |
+| CI                   | PR and main workflows calling a reusable quality-check workflow                    | [0019](./adr/0019-compose-ci-from-reusable-workflows.md)         |
 
 Observability, local development and authentication are not decided yet.
 
@@ -54,12 +54,12 @@ flowchart LR
     players -. act later .-> gateway
 ```
 
-| Component             | Owns                                                                                   |
-| --------------------- | -------------------------------------------------------------------------------------- |
+| Component             | Owns                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------ |
 | **Tournament runner** | Users, tournaments, the player registry (including house agents), results, standings |
-| **Player gateway**    | The log of decision requests and responses                                             |
-| **Game service**      | The state of each of its matches                                                       |
-| **Web frontend**      | Nothing; it calls only the tournament runner                                           |
+| **Player gateway**    | The log of decision requests and responses                                           |
+| **Game service**      | The state of each of its matches                                                     |
+| **Web frontend**      | Nothing; it calls only the tournament runner                                         |
 
 Each service owns its data, and no service reads another's database. Players are external: users register them at runtime, and only the player gateway contacts them. Game services are deployed by the operator beside the platform, on a private network.
 

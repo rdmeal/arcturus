@@ -4,7 +4,7 @@ type: skill-guide
 
 # to-tickets
 
-Breaks a feature into tickets: small files in `specs/active/<feature>/tickets/`, each a thin slice of the feature that works end to end, says which tickets must be done first, and lists how to tell it's done. Tickets say *what* should work, not which files to change, so an agent (or you) can pick one up and plan the code when it's time to build it.
+Breaks a feature into tickets: small files in `specs/active/<feature>/tickets/`, each a thin slice of the feature that works end to end, says which tickets must be done first, and lists how to tell it's done. Tickets say _what_ should work, not which files to change, so an agent (or you) can pick one up and plan the code when it's time to build it.
 
 ## When to use it
 
@@ -15,11 +15,11 @@ If the work is bigger, or rests on decisions that aren't recorded anywhere, Clau
 
 ## How to use it
 
-| You type                          | Claude breaks down                                                  |
-| --------------------------------- | ------------------------------------------------------------------- |
-| `/to-tickets`                     | the spec written or discussed in this conversation, or else the feature discussed |
-| `/to-tickets tournament-seeding`  | the spec in `specs/active/tournament-seeding/`                      |
-| `/to-tickets add a draw outcome`  | that feature, from its spec if there is one, or the conversation    |
+| You type                         | Claude breaks down                                                                |
+| -------------------------------- | --------------------------------------------------------------------------------- |
+| `/to-tickets`                    | the spec written or discussed in this conversation, or else the feature discussed |
+| `/to-tickets tournament-seeding` | the spec in `specs/active/tournament-seeding/`                                    |
+| `/to-tickets add a draw outcome` | that feature, from its spec if there is one, or the conversation                  |
 
 When there's a spec, it wins: if the conversation says something different, Claude points it out rather than picking one.
 

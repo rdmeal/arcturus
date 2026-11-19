@@ -19,7 +19,7 @@ The skeleton contains:
 - **The shared base tsconfig:** for packages to extend, set up for running TypeScript source directly (strict, erasable syntax only, `.ts` import extensions, no emit).
 - **CI:** composed as the CI ADR describes. A reusable quality-check workflow installs and runs check, test, build and actionlint. A pull-request workflow (on pull requests, and runnable by hand) and a main workflow (on pushes to `main`) both call it. These replace the old branch and main workflows.
 - **A rewritten `.gitignore`:** Yarn and Nx entries go, and `scratchpad/` stays ignored.
-- **Docs:** `CLAUDE.md` gains a *Commands* section listing the `vp` commands to run. Its note that tooling isn't set up, and its warning about leftover old-stack config, are removed. The README gains a short *Development* section on getting set up and running the checks.
+- **Docs:** `CLAUDE.md` gains a _Commands_ section listing the `vp` commands to run. Its note that tooling isn't set up, and its warning about leftover old-stack config, are removed. The README gains a short _Development_ section on getting set up and running the checks.
 
 ## Acceptance criteria
 
@@ -29,7 +29,7 @@ The skeleton contains:
 - [ ] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green.
 - [ ] The pull-request workflow can be started by hand, and the main workflow is triggered by pushes to `main` and calls the same quality-check workflow.
 - [ ] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings.
-- [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a *Development* section.
+- [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a _Development_ section.
 
 ## Notes
 

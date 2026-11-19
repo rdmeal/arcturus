@@ -8,7 +8,7 @@ user-invocable: false
 
 An ADR is a short record of one architecturally significant decision: the forces that led to it, what was decided, and what follows from it. They exist because the reasoning behind a decision is the first thing to be lost. Without it, a future developer (or agent) is left with two bad options: blindly accept a decision they don't understand, and become afraid to change anything; or blindly reverse it, and break something that depended on a reason nobody wrote down.
 
-Write each ADR as a conversation with that future developer: full sentences, specific to this project, explaining *why*.
+Write each ADR as a conversation with that future developer: full sentences, specific to this project, explaining _why_.
 
 ## Does this decision deserve an ADR?
 

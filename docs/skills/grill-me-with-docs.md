@@ -32,10 +32,10 @@ When the discussion turns to how a kind of code should be written each time, Cla
 
 ## What gets written
 
-| What            | Where                                        | When                          |
-| --------------- | -------------------------------------------- | ----------------------------- |
-| Glossary terms  | `docs/GLOSSARY.md`, or a scope's glossary    | As soon as you agree a term   |
-| Decisions       | `scratchpad/discussions/<topic>.md`          | After every round             |
+| What           | Where                                     | When                        |
+| -------------- | ----------------------------------------- | --------------------------- |
+| Glossary terms | `docs/GLOSSARY.md`, or a scope's glossary | As soon as you agree a term |
+| Decisions      | `scratchpad/discussions/<topic>.md`       | After every round           |
 
 Claude says in one line whenever it adds a glossary term. If a term belongs to a service, game or game's agents that has no docs yet, it asks before adding the new scope to `docs/CONTEXT-MAP.md`.
 

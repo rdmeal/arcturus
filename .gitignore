@@ -23,3 +23,6 @@ coverage/
 
 # Local scratch notes (not committed)
 scratchpad/
+
+# Claude Code personal settings
+.claude/settings.local.json

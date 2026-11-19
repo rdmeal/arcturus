@@ -14,12 +14,12 @@ Turns decisions into ADRs (architecture decision records): short documents in `d
 
 ## How to use it
 
-| You type                                   | Claude records                                                        |
-| ------------------------------------------ | --------------------------------------------------------------------- |
-| `/to-adr`                                  | the decisions settled in this conversation (or its discussion record) |
-| `/to-adr use pnpm and drop yarn`           | that decision                                                         |
-| `/to-adr player failure outcomes`          | the ADR candidates in that discussion record                          |
-| `/to-adr` with nothing discussed yet       | asks what decision you want to record, then the reasons behind it     |
+| You type                             | Claude records                                                        |
+| ------------------------------------ | --------------------------------------------------------------------- |
+| `/to-adr`                            | the decisions settled in this conversation (or its discussion record) |
+| `/to-adr use pnpm and drop yarn`     | that decision                                                         |
+| `/to-adr player failure outcomes`    | the ADR candidates in that discussion record                          |
+| `/to-adr` with nothing discussed yet | asks what decision you want to record, then the reasons behind it     |
 
 From a discussion record, Claude picks up the decisions marked as ADR candidates that are settled and not yet written. Open and deferred decisions are never written; Claude tells you which it skipped. To include a decision marked as not needing an ADR, name it.
 

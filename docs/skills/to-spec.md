@@ -15,10 +15,10 @@ It writes up a design; it doesn't create one. If the feature hasn't been discuss
 
 ## How to use it
 
-| You type                          | Claude writes up                                                       |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| `/to-spec`                        | the feature discussed in this conversation (or its discussion record)  |
-| `/to-spec tournament seeding`     | that feature, from the conversation or the matching discussion record  |
+| You type                      | Claude writes up                                                      |
+| ----------------------------- | --------------------------------------------------------------------- |
+| `/to-spec`                    | the feature discussed in this conversation (or its discussion record) |
+| `/to-spec tournament seeding` | that feature, from the conversation or the matching discussion record |
 
 Only what you agreed to goes in the spec. Suggestions Claude made that nobody answered don't.
 

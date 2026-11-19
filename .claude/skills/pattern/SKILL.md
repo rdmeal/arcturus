@@ -10,7 +10,7 @@ A pattern doc records how one kind of code is written in this repo, so that ever
 
 Patterns are usually **agreed before they're first implemented**. The doc's core is therefore its **rules**, written in prose, which can be followed before any code exists. The exemplar, a real file that follows the rules, illustrates them once the first implementation lands; it isn't the pattern itself.
 
-The decision *behind* a pattern ("we mock external endpoints with MSW, because…") belongs in an ADR if it clears the ADR bar. The pattern doc holds the *how*, and links the ADR.
+The decision _behind_ a pattern ("we mock external endpoints with MSW, because…") belongs in an ADR if it clears the ADR bar. The pattern doc holds the _how_, and links the ADR.
 
 The examples below use an invented library-lending domain, not Arcturus's terms.
 
@@ -80,7 +80,7 @@ tags: [testing]
 ```
 
 - **`type`:** always `pattern`. Tooling uses it to find patterns.
-- **`summary`:** one line, **always starting "Use when …"**. Planning greps these lines to suggest which patterns apply, so the summary has to say *when* the pattern applies, not just what it is.
+- **`summary`:** one line, **always starting "Use when …"**. Planning greps these lines to suggest which patterns apply, so the summary has to say _when_ the pattern applies, not just what it is.
 - **`tags`:** optional; what the pattern is about, in kebab-case. **Reuse tags already used by patterns in the same folder** (check their frontmatter) before inventing a new one.
 
 There is **no `status`**:
@@ -162,7 +162,7 @@ Whenever a test needs a domain object, such as a member, a copy or a loan, that 
 
 ## When not to
 
-- When the object's construction *is* what's being tested. Build it explicitly in the test, so the test shows what it checks.
+- When the object's construction _is_ what's being tested. Build it explicitly in the test, so the test shows what it checks.
 - For request and response payloads at a service boundary. Those follow the contract, not the domain type; build them from the contract's own examples.
 
 ## Rules

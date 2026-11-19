@@ -27,7 +27,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **actionlint:** the `rhysd/actionlint` Docker image, pinned by digest, with the version in a comment. It executes no remote script, the digest is immutable, and it bundles shellcheck.
   - **Third-party actions:** pinned to a full commit SHA, with the version in a comment, in keeping with the supply-chain settings above.
   - **Editor settings:** `.vscode/settings.json` makes the Oxc extension the default formatter, and `.vscode/extensions.json` recommends it.
-  - **README:** a *Development* section with a *Getting started* subsection, rather than the ticket's plain *Development* section. It is a zero-to-hero guide that assumes no prior knowledge: it links each install step to that tool's official installation page, and explains nothing that isn't needed to get the code running.
+  - **README:** a _Development_ section with a _Getting started_ subsection, rather than the ticket's plain _Development_ section. It is a zero-to-hero guide that assumes no prior knowledge: it links each install step to that tool's official installation page, and explains nothing that isn't needed to get the code running.
 
 ## Steps
 
@@ -59,7 +59,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **Tests:** none.
   - **Check:** `vp install`, then `vp env current` shows Node from `.nvmrc` and pnpm from `packageManager`. The sandbox may block the global installer or registry access. If it does, ask the developer to run `! vp install`.
 
-- [ ] **3. Configure Vite+ and add the shared base tsconfig**
+- [x] **3. Configure Vite+ and add the shared base tsconfig**
   - **Goal:** `vp check`, `vp test` and `vp run -r build` pass on the empty workspace, as do their pnpm script forms. `vp check` catches format, lint and type errors.
   - **Files:**
     - `tsconfig.base.json`:
@@ -102,14 +102,14 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **Files:**
     - `CLAUDE.md`:
       - Remove the paragraph "The tooling and CI are decided but not set up yet…", including its leftover-config warning.
-      - Change the *Tooling* bullet so it no longer says "with no root script aliases".
-      - Add a *Commands* section listing `vp install`, `vp check`, `vp test`, `vp run -r build`, `vp fmt` for fixing formatting, and a single test file run. Note that the pnpm scripts (`pnpm run check`, `pnpm run test`, `pnpm run build`) are equivalents.
-    - `README.md`: a *Development* section with a *Getting started* subsection, written as a zero-to-hero guide that assumes no prior knowledge.
+      - Change the _Tooling_ bullet so it no longer says "with no root script aliases".
+      - Add a _Commands_ section listing `vp install`, `vp check`, `vp test`, `vp run -r build`, `vp fmt` for fixing formatting, and a single test file run. Note that the pnpm scripts (`pnpm run check`, `pnpm run test`, `pnpm run build`) are equivalents.
+    - `README.md`: a _Development_ section with a _Getting started_ subsection, written as a zero-to-hero guide that assumes no prior knowledge.
       - Install Git, linking to the official Git downloads page.
       - Install the Vite+ global CLI, linking to <https://viteplus.dev/guide/global-cli>. It brings the right Node and pnpm itself.
       - Clone the repository, run `vp install`, then `vp check` and `vp test`.
       - Explain nothing beyond what is needed to get it running. Other sections do the explaining.
-      - Place it so it fits the README's existing sections, near *Setting up Claude Code*.
+      - Place it so it fits the README's existing sections, near _Setting up Claude Code_.
   - **Read first:** `README.md` and `CLAUDE.md` in full.
   - **Tests:** none.
   - **Check:** `vp check` passes; it formats Markdown too, if it is configured to. Read the README guide through as a newcomer: every step is a link or a command, and nothing is assumed.
@@ -122,7 +122,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - [ ] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green: proven by the developer pushing the branch and opening a draft PR from their own terminal.
 - [ ] The pull-request workflow can be started by hand, and the main workflow is triggered by pushes to `main` and calls the same quality-check workflow: proven by a manual `workflow_dispatch` run on the branch, and by inspecting `main.yml`, whose `on.push.branches` is `[main]` and whose job calls `./.github/workflows/quality-check.yml`.
 - [ ] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings: proven by the `git grep` in step 1's Check, run after step 6 without the `':!CLAUDE.md'` exclusion.
-- [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a *Development* section: proven by inspecting both files after step 6.
+- [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a _Development_ section: proven by inspecting both files after step 6.
 
 ## Notes
 
@@ -130,3 +130,6 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - 2026-11-19: Pinned pnpm 12 instead of 11: `addMissingPeerTypes` was added in pnpm 12.12.0, and pnpm 11 warns that it is an unrecognised v12 setting. pnpm 12 keeps the same supply-chain defaults.
 - 2026-11-19: `vp install` warns of an unmet peer: `vitest` and `@vitest/mocker` 5.1.0 want `vite` `^6 || ^7 || ^8`, but the `vite` installed by `vite-plus@1.6.0` reports 1.6.0. It installs fine. Step 3 should check `vp test` isn't affected.
 - 2026-11-19: In the sandbox, `vp install` can't write to `~/.local/share/vite-plus` (read-only), so it runs outside the sandbox. Its Node and pnpm shims are in `~/.local/share/vite-plus/bin` and come before nvm on the developer's PATH; the sandbox shell may not have them on PATH.
+- 2026-11-19: Step 3 ran `vp fmt` over the whole repo (as agreed), so Markdown and JSON are formatted and checked like code. Docs written in later steps must pass `vp check` too; run `vp fmt` after editing them.
+- 2026-11-19: Oxlint reports most rules as warnings, which don't fail `vp check`, so `vite.config.ts` sets `lint.options.denyWarnings: true`.
+- 2026-11-19: Run `vp check` outside the sandbox. Inside it, unreadable sandbox-only placeholder files (`.claude/loop.md` and others) make formatting fail. `vp test` passed despite the unmet `vite` peer warning.

@@ -8,9 +8,9 @@ Type it when Claude's last message didn't land. Claude says it again, more simpl
 
 ## How to use it
 
-| You type                             | Claude re-pitches               |
-| ------------------------------------ | ------------------------------- |
-| `/wait-what`                         | the whole of its last message   |
-| `/wait-what the bit about seats`     | just that part                  |
+| You type                         | Claude re-pitches             |
+| -------------------------------- | ----------------------------- |
+| `/wait-what`                     | the whole of its last message |
+| `/wait-what the bit about seats` | just that part                |
 
 It works anywhere, in any conversation, including in the middle of a grilling session. It adds nothing new; it only makes the last message easier to follow.

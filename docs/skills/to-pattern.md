@@ -17,13 +17,13 @@ A pattern is usually agreed **before** it's first implemented. The doc's rules a
 
 ## How to use it
 
-| You type                                                  | Claude writes                                                          |
-| --------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `/to-pattern`                                             | the patterns agreed in this conversation (or its discussion record)    |
-| `/to-pattern test data`                                   | the patterns in that discussion record                                 |
-| `/to-pattern mock external endpoints with MSW, one handler module per service` | that pattern                                 |
-| `/to-pattern make src/test/member.mother.ts a pattern`    | a pattern drafted from that file, with the file as its exemplar        |
-| `/to-pattern` with nothing discussed yet                  | asks what kind of code it's for, then the rules                        |
+| You type                                                                       | Claude writes                                                       |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `/to-pattern`                                                                  | the patterns agreed in this conversation (or its discussion record) |
+| `/to-pattern test data`                                                        | the patterns in that discussion record                              |
+| `/to-pattern mock external endpoints with MSW, one handler module per service` | that pattern                                                        |
+| `/to-pattern make src/test/member.mother.ts a pattern`                         | a pattern drafted from that file, with the file as its exemplar     |
+| `/to-pattern` with nothing discussed yet                                       | asks what kind of code it's for, then the rules                     |
 
 From a discussion record, Claude picks up the settled decisions marked with a pattern, grouping them into one doc per pattern. Open and deferred decisions are never used; Claude tells you which it skipped.
 

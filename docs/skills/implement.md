@@ -12,13 +12,13 @@ Once a ticket has a plan and you've committed it. Use it again for each step unt
 
 ## How to use it
 
-| You type                                | Claude does                                                     |
-| --------------------------------------- | --------------------------------------------------------------- |
-| `/implement`                            | the next step of the plan discussed in the conversation, or else the plan for the current `ticket/…` branch |
-| `/implement tournament-seeding 02`      | the next step of that ticket's plan                             |
-| `/implement specs/active/…/plans/02-….md` | the next step of that plan                                      |
-| `/implement --steps 3`                  | up to three steps in a row, stopping early if one fails or needs your decision |
-| `/implement --mode orchestrate`         | the next step, done by a Sonnet subagent, without asking who should do it |
+| You type                                  | Claude does                                                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `/implement`                              | the next step of the plan discussed in the conversation, or else the plan for the current `ticket/…` branch |
+| `/implement tournament-seeding 02`        | the next step of that ticket's plan                                                                         |
+| `/implement specs/active/…/plans/02-….md` | the next step of that plan                                                                                  |
+| `/implement --steps 3`                    | up to three steps in a row, stopping early if one fails or needs your decision                              |
+| `/implement --mode orchestrate`           | the next step, done by a Sonnet subagent, without asking who should do it                                   |
 
 If it can't work out the plan, it lists the plans that still have steps left and asks.
 

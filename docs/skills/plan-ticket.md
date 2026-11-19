@@ -14,12 +14,12 @@ When a ticket is ready to build: its status is `ready` and its blockers are `don
 
 ## How to use it
 
-| You type                             | Claude plans                                                    |
-| ------------------------------------ | --------------------------------------------------------------- |
-| `/plan-ticket tournament-seeding 02` | ticket 02 of that feature                                       |
-| `/plan-ticket specs/active/…/02-….md` | that ticket                                                     |
-| `/plan-ticket tournament-seeding`    | lists that feature's tickets that can start now, and asks which |
-| `/plan-ticket`                       | the ticket discussed in the conversation, or else lists every ticket that can start now |
+| You type                              | Claude plans                                                                            |
+| ------------------------------------- | --------------------------------------------------------------------------------------- |
+| `/plan-ticket tournament-seeding 02`  | ticket 02 of that feature                                                               |
+| `/plan-ticket specs/active/…/02-….md` | that ticket                                                                             |
+| `/plan-ticket tournament-seeding`     | lists that feature's tickets that can start now, and asks which                         |
+| `/plan-ticket`                        | the ticket discussed in the conversation, or else lists every ticket that can start now |
 
 ## What Claude reads
 
@@ -53,6 +53,7 @@ It stops if the ticket depends on one of the spec's open questions, and suggests
   - a command that checks it.
 
   The last step lists each acceptance criterion with the test that proves it.
+
 - The ticket set to `in-progress`, and the spec too if this is its first ticket.
 - Any new pattern doc agreed during planning, in `docs/patterns/` (or a scope's own), to commit with the plan.
 - A list of any decisions that look worth an ADR (use [to-adr](./to-adr.md)).

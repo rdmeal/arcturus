@@ -14,11 +14,11 @@ During [implement](./implement.md), for steps that are well defined and don't ne
 
 ## How to use it
 
-| You type                                     | Claude writes a brief for                                   |
-| -------------------------------------------- | ----------------------------------------------------------- |
-| `/to-agent-task tournament-seeding 02 step 3` | step 3 of that ticket's plan                                |
-| `/to-agent-task steps 3-4`                   | steps 3 and 4 as one run, for the plan of the current branch |
-| `/to-agent-task`                             | proposes which steps to hand over and how to split them, and asks you |
+| You type                                      | Claude writes a brief for                                             |
+| --------------------------------------------- | --------------------------------------------------------------------- |
+| `/to-agent-task tournament-seeding 02 step 3` | step 3 of that ticket's plan                                          |
+| `/to-agent-task steps 3-4`                    | steps 3 and 4 as one run, for the plan of the current branch          |
+| `/to-agent-task`                              | proposes which steps to hand over and how to split them, and asks you |
 
 The plan is found as in `implement`: the one discussed in the conversation, or else the plan for the current `ticket/…` branch.
 

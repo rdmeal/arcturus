@@ -40,13 +40,13 @@ Your answers unlock the next round's questions. Claude looks up facts (code, doc
 
 Answer by number, in your own words:
 
-| You say                | What it means                                                                 |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| `Q3 yes`               | Accept the recommendation. Questions are worded so "yes" always means this.   |
-| `Q3 no, because …`     | Reject it, and explain; Claude follows up if needed.                          |
-| `Q3 defer`             | Leave it for later. It won't be asked again or block the end of the session.  |
-| `Q3 your call`         | Adopt Claude's recommendation; it's recorded as Claude's, accepted by you.    |
-| `wrap up`              | Stop asking and go to the summary.                                            |
+| You say            | What it means                                                                |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `Q3 yes`           | Accept the recommendation. Questions are worded so "yes" always means this.  |
+| `Q3 no, because …` | Reject it, and explain; Claude follows up if needed.                         |
+| `Q3 defer`         | Leave it for later. It won't be asked again or block the end of the session. |
+| `Q3 your call`     | Adopt Claude's recommendation; it's recorded as Claude's, accepted by you.   |
+| `wrap up`          | Stop asking and go to the summary.                                           |
 
 There is no limit on the number of questions. If a session runs very long, the subject is probably too big: wrap up and grill the pieces separately.
 

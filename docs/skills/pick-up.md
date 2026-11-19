@@ -8,11 +8,11 @@ Type it at the start of a fresh session to carry on from a handoff written by [`
 
 ## How to use it
 
-| You type                                                    | Claude picks up from                                     |
-| ----------------------------------------------------------- | -------------------------------------------------------- |
-| `/pick-up`                                                  | the latest handoff                                       |
-| `/pick-up scratchpad/handoffs/2026-11-16-1430-seeding-tiebreaks.md` | that handoff                                     |
-| `/pick-up the seeding tiebreaks`                            | the handoff that matches, by its title and file name     |
+| You type                                                            | Claude picks up from                                 |
+| ------------------------------------------------------------------- | ---------------------------------------------------- |
+| `/pick-up`                                                          | the latest handoff                                   |
+| `/pick-up scratchpad/handoffs/2026-11-16-1430-seeding-tiebreaks.md` | that handoff                                         |
+| `/pick-up the seeding tiebreaks`                                    | the handoff that matches, by its title and file name |
 
 If a description matches more than one handoff, Claude shows up to three and asks. It always names the handoff it took, so you can stop it if it's the wrong one.
 
