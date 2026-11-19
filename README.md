@@ -1,48 +1,67 @@
 # Arcturus
 
-> **AI Bot Tournament Platform** - Multi-user tournament management for HTTP API-based bot competitions
+A tournament arena for turn-based games, where agents and humans compete over HTTP.
 
-For detailed project information, see [Project Overview](docs/PROJECT_OVERVIEW.md) | [Architecture](docs/ARCHITECTURE.md)
+Arcturus is a self-hostable platform for running tournaments of turn-based games between players: automated agents (anything from fixed rules to LLMs), or humans playing through a UI. It ships with a set of core games and agents, and its open HTTP protocols let anyone add new games and players from their own repositories, in any language.
+
+> **Status:** Arcturus is being rebuilt from scratch. Nothing runs yet.
+
+## What Arcturus is made of
+
+| Part              | What it is                                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **The platform**  | The game-independent services that run tournaments: the tournament runner, the player gateway and the web frontend |
+| **Core games**    | Games maintained in this repository, each running as its own game service                                          |
+| **Core agents**   | Automated players maintained in this repository, at least one per core game                                        |
+| **The protocols** | The game protocol and player protocol: implement one to add a game or a player, in any language                    |
+
+This repository is written in TypeScript; games and players can be written in any language, in their own repositories.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the parts fit together and [docs/GLOSSARY.md](docs/GLOSSARY.md) for the terms used throughout.
 
 ## Development
 
-### Getting Started - Local Development
+### Getting started
 
-#### Prerequisites
+1. Install [Git](https://git-scm.com/downloads).
+2. Install the [Vite+ command-line tool, `vp`](https://viteplus.dev/guide/global-cli). It installs the right versions of Node and pnpm for this repository itself, so you don't need to install them first. When the installer asks whether `vp` should manage your Node installs and package managers, say yes.
+3. Open a new terminal, so that `vp` is on your path, and get the code:
 
-- This repo makes use of [Node Version Manager (NVM)](https://github.com/nvm-sh/nvm) to manage the version of Node, follow the [installation instructions here](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
-- [Docker](https://www.docker.com/) for building and running containers
+   ```bash
+   git clone https://github.com/rdmeal/arcturus.git
+   cd arcturus
+   ```
 
-#### Installation
+4. Install the dependencies:
 
-- `nvm install` - Install the version of Node specified in [.nvmrc](./.nvmrc)
-- `nvm use` - Switch to the version of Node specified in [.nvmrc](./.nvmrc)
-- `corepack enable` - Enables [Corepack](https://github.com/nodejs/corepack), which is needed to use [Yarn](https://yarnpkg.com/), the package manager this project uses
-- `yarn install` - Install Node dependencies
+   ```bash
+   vp install
+   ```
 
-#### Running Locally
+5. Check that everything works:
 
-### Technologies
+   ```bash
+   vp check
+   vp test
+   ```
 
-- [Node](https://nodejs.org/en)
-- [NVM](https://github.com/nvm-sh/nvm) - Node Version Manager
-- [Yarn](https://yarnpkg.com/) - Package Manager
-- [NX](https://nx.dev/) - Build System
-- [Github Actions](https://docs.github.com/en/actions) - CI/CD
-- [NestJS](https://nestjs.com/) - Node JS Framework
-- [Prettier](https://prettier.io/) - Formatting tool
-- [PostgreSQL](https://www.postgresql.org/) - Relational Database
-- [Flyway](https://www.red-gate.com/products/flyway/community/) - Database Schema Migrator
+   Both should finish without errors.
 
-### Commands
+## Setting up Claude Code
 
-These are the commands that affect the whole repo, for commands that affect particular projects please see their individual READMEs.
+This repository is set up for working with [Claude Code](https://code.claude.com). These are the external tools it uses that you need to set up yourself. See [docs/skills/README.md](docs/skills/README.md) for the workflow commands you can run.
 
-Note: All `nx` commands should be run using `yarn`, e.g. `yarn nx run-many -t build`
+### Context7
 
-- `yarn nx run-many -t build` - Builds all packages
-- `yarn nx run-many -t lint` - Lints all packages
-- `yarn nx run-many -t test` - Tests all packages
-- `yarn nx format:check` - Checks formatting us Prettier
-- `yarn nx format:write` - Formats all files with Prettier
-- `yarn nx run arcturus:lint:actions` - Lints Github Actions files using [actionlint](https://github.com/rhysd/actionlint)
+[Context7](https://context7.com/docs) gives Claude current documentation for the libraries this repo uses, rather than relying on its training data. It's recommended, not required: without it, Claude falls back on what it already knows and web search, which is less reliable for recent releases.
+
+To set it up:
+
+1. Create a Context7 account. The [free plan](https://context7.com/plans-pricing) is enough.
+2. Run `/mcp` in Claude Code, approve the project's `context7` server and sign in.
+
+Claude's lookup queries are sent to Context7's service.
+
+Claude looks up docs automatically when a question or task involves a library's API. To force a lookup, say "use context7 to look up …" and name the library, and the version if it matters.
+
+Finding a library (`resolve-library-id`) runs without asking, but **each docs fetch (`query-docs`) asks for your approval**. Check that the library ID is the one you mean, the right project and version. If it isn't, deny the fetch and tell Claude which library to use: docs for the wrong library mislead Claude for the rest of the session.
