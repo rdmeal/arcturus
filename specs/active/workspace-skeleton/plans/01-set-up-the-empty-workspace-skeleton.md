@@ -80,7 +80,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
     - a temporary root `scratch-type-error.ts` containing `const n: number = "x";` makes `vp check` fail.
   - **Check:** `vp check && vp test && vp run -r build`, then `pnpm run check && pnpm run test && pnpm run build`, then the three deliberate failures above. Revert each and confirm `git status` is clean apart from this step's files.
 
-- [ ] **4. Set up editor settings for Vite+**
+- [x] **4. Set up editor settings for Vite+**
   - **Goal:** VS Code formats and lints with the same Oxc tools as `vp check`, and nothing points at Nx.
   - **Files:** `.vscode/settings.json` makes the Oxc extension the default formatter, with format on save. `.vscode/extensions.json` recommends the Oxc extension.
   - **Read first:** the Vite+ editor setup guide (context7 `/websites/viteplus_dev_guide`, "editor" or "VS Code"), for the extension ID and the settings it recommends.
