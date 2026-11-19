@@ -1,0 +1,12 @@
+name: Main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality-check:
+    uses: ./.github/workflows/quality-check.yml

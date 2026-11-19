@@ -87,7 +87,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
   - **Tests:** none.
   - **Check:** `vp check` still passes. It formats the JSON files too.
 
-- [ ] **5. Add the CI workflows**
+- [x] **5. Add the CI workflows**
   - **Goal:** pull requests and pushes to `main` run the same checks through one reusable workflow.
   - **Files:**
     - `.github/workflows/quality-check.yml`: `on: workflow_call`, with `permissions: contents: read`. One job runs `actions/checkout`, then `voidzero-dev/setup-vp` with `node-version-file: .nvmrc` and `cache: true`, then `vp check`, `vp test` and `vp run -r build`. A final actionlint step runs `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint@sha256:<digest> -color`. Pin every action by commit SHA, with the version in a comment.
@@ -133,3 +133,4 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - 2026-11-19: Step 3 ran `vp fmt` over the whole repo (as agreed), so Markdown and JSON are formatted and checked like code. Docs written in later steps must pass `vp check` too; run `vp fmt` after editing them.
 - 2026-11-19: Oxlint reports most rules as warnings, which don't fail `vp check`, so `vite.config.ts` sets `lint.options.denyWarnings: true`.
 - 2026-11-19: Run `vp check` outside the sandbox. Inside it, unreadable sandbox-only placeholder files (`.claude/loop.md` and others) make formatting fail. `vp test` passed despite the unmet `vite` peer warning.
+- 2026-11-19: Docker isn't installed in WSL, so actionlint hasn't run on the workflows yet. Step 5's Check allows the step 7 PR run to prove it; that run is the first real actionlint pass. The pinned digest is the 1.7.12 OCI index digest from Docker Hub's tag API.
