@@ -31,7 +31,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 
 ## Steps
 
-- [ ] **1. Remove the old stack**
+- [x] **1. Remove the old stack**
   - **Goal:** no Nx, Yarn, NestJS, Jest, Kafka or Prettier config is left in config, workflows or editor settings. There's no build or check yet, so nothing can go red.
   - **Files:**
     - `.github/workflows/build-branch.yml` and `build-main.yml`: delete.
@@ -40,7 +40,7 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
     - `.gitignore`: rewrite it. Keep `node_modules/`, `scratchpad/`, `coverage/`, `dist/`, `*.tsbuildinfo`, `*.log` and the `.env*` files, plus the `.vscode/*` allow-list so `settings.json` and `extensions.json` stay tracked. Drop the Yarn, Nx and Cursor or Nx-rules entries, and the boilerplate for tools the repo doesn't use (Gatsby, Nuxt, Bower and so on).
   - **Read first:** none
   - **Tests:** none, since this is config removal.
-  - **Check:** `git grep -n -i -E '\bnx\b|yarn|nestjs|jest|kafka|prettier' -- ':!docs' ':!specs' ':!scratchpad'` returns nothing. Docs and specs may mention the old stack as history.
+  - **Check:** `git grep -n -i -E '\bnx\b|yarn|nestjs|jest|kafka|prettier' -- ':!docs' ':!specs' ':!scratchpad' ':!.claude/skills' ':!CLAUDE.md'` returns nothing. Docs, specs and skills may mention the old stack as history; `CLAUDE.md` is cleared by step 6.
 
 - [ ] **2. Add the pnpm workspace with pinned pnpm and Vite+**
   - **Goal:** `vp install` succeeds on a fresh clone, and installs the pinned pnpm and Vite+.
@@ -121,7 +121,9 @@ Implements [ticket 01](../tickets/01-set-up-the-empty-workspace-skeleton.md).
 - [ ] `vp check` fails on a deliberately introduced formatting error, lint error and type error (checked once, then reverted): proven by the manual check in step 3.
 - [ ] Opening a pull request runs the pull-request workflow, which calls the quality-check workflow and goes green: proven by the developer pushing the branch and opening a draft PR from their own terminal.
 - [ ] The pull-request workflow can be started by hand, and the main workflow is triggered by pushes to `main` and calls the same quality-check workflow: proven by a manual `workflow_dispatch` run on the branch, and by inspecting `main.yml`, whose `on.push.branches` is `[main]` and whose job calls `./.github/workflows/quality-check.yml`.
-- [ ] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings: proven by the `git grep` in step 1's Check.
+- [ ] No Nx, Yarn, NestJS, Jest or Kafka config or references remain in the repository's config, workflows or editor settings: proven by the `git grep` in step 1's Check, run after step 6 without the `':!CLAUDE.md'` exclusion.
 - [ ] `CLAUDE.md` lists the commands and no longer says tooling is unset or warns about leftover config. The README has a *Development* section: proven by inspecting both files after step 6.
 
 ## Notes
+
+- 2026-11-19: Step 1's `git grep` excludes `.claude/skills` (their Yarn mentions are worked examples, not config) and, until step 6 rewrites it, `CLAUDE.md`. The step 7 criterion runs it without the `CLAUDE.md` exclusion.
