@@ -16,9 +16,9 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ## Rules
 
 1. A service's top-level files are `src/main.ts`, `src/config.ts`, `src/app.ts` and, if it has jobs, `src/tasks.ts`. Everything else is in areas and slices (see [Vertical slices](./vertical-slice.md)).
-2. `src/config.ts` holds one zod schema for the service's configuration. `main.ts` parses it once at startup from environment variables (and, for the tournament runner, the operator's YAML config file), failing fast with readable messages. The result is a typed, frozen config object.
+2. `src/config.ts` holds one zod schema for the service's configuration. `main.ts` parses it once at startup from environment variables (and, for the tournament runner, the operator config file), failing fast with readable messages. The result is a typed, frozen config object.
 3. Nothing outside `main.ts` reads `process.env`. Code that needs a setting gets it through `deps.config`.
-4. Secrets come from environment variables or mounted files, never from a YAML config file.
+4. Secrets come from environment variables or mounted files, never from a config file.
 5. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`.
 6. `src/app.ts` defines the `Deps` type, a plain object type listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. It exports `AppType` for the RPC client.
 7. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies.
