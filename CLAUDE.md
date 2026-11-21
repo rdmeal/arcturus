@@ -13,6 +13,7 @@ Use the terms defined in `docs/GLOSSARY.md` in code, docs and conversation. When
 This repository is TypeScript only, running on Node (version in `.nvmrc`). Games and agents in other languages belong in their own repositories, not here. The main choices, each with an ADR linked from `docs/ARCHITECTURE.md`:
 
 - **Services:** Hono for every service, dependencies wired by hand in a composition root, no DI container.
+- **Inside a service:** vertical slices (`src/<area>/<slice>/`, one per command, query or job) behind a task-based API (`POST` commands, `GET` queries, at `/<area>/<slice>`); handlers open transactions explicitly; expected failures are thrown domain errors, returned as problem details.
 - **Validation:** zod at every boundary (HTTP, callbacks, job payloads, database rows); types are inferred from schemas.
 - **Data:** PostgreSQL, one database per service; Slonik with plain SQL; graphile-worker for background jobs, queued in the same transaction as the data; Graphile Migrate for forward-only SQL migrations.
 - **Frontend:** React SPA on Vite, Mantine, TanStack Router, TanStack Query with Hono's RPC client, react-i18next.
@@ -36,6 +37,10 @@ Run these from the repository root:
 ## Architecture and decisions
 
 Before design work, read `docs/ARCHITECTURE.md` and the frontmatter `summary` of the ADRs in `docs/adr/` (and in the `docs/adr/` of any scope the work touches). Read an ADR in full when the work touches it.
+
+## Patterns
+
+`docs/patterns/` (and the `docs/patterns/` of a scope) records how each kind of code is written: slices, jobs, the composition root, transactions, errors and idempotent receivers so far. Before writing a kind of code, grep the patterns' `summary` lines (`grep -H '^summary:' docs/patterns/*.md`), and follow every one that applies.
 
 ## Scratchpad
 

@@ -80,6 +80,10 @@ All communication is HTTP with JSON. Work that may take a while is accepted with
 
 When a player fails, the tournament runner decides what happens to the match. That policy is not yet decided.
 
+## Inside a service
+
+Every service in this repository has the same internal shape. It is made of vertical slices, one folder per command, query or job, grouped by capability, behind a task-based API: commands are `POST`s and queries are `GET`s, at `/<area>/<slice>`. Each service wires its dependencies by hand in `main.ts`, and lifecycle and health checks come from a shared `service-runtime` package. Handlers open their own database transactions, any outbound call is made by a job queued in the same transaction, and expected failures are thrown domain errors that reach clients as RFC 9457 problem details. The rules for writing each part are in [`patterns/`](./patterns/).
+
 ## Extending Arcturus
 
 Games and players are added by implementing the **game protocol** or the **player protocol**. Core games and agents use only these protocols, never platform internals.
