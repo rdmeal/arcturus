@@ -33,6 +33,7 @@ There is no limit on questions or rounds. Some plans need three questions, some 
 - Number questions continuously across the session, so the user can answer by number ("Q3 yes, Q4 the second option").
 - Give every question a recommendation, and word the question so that **"yes" accepts the recommendation**. If your recommendation disagrees with the question as you first phrased it, rephrase the question.
 - Give enough context in the body for the question to be answered on its own: what the options are, and what each one costs.
+- For each option, say whether it is the documented or idiomatic approach of the library or framework involved, a widely used convention, or our own invention, and give its pros and cons. When your recommendation departs from idiom, say so and why.
 - Ask in plain chat text, so the user answers in their own words.
 
 ## Facts are yours; decisions are the user's
@@ -40,6 +41,7 @@ There is no limit on questions or rounds. Some plans need three questions, some 
 **Never ask the user for a fact you could look up.** When a frontier question needs a fact from the environment (the code, the docs, the ADRs, a command's output), find it yourself:
 
 - Look it up directly when it is a quick, targeted read: open the file, run the command.
+- Whether an option is a library's documented approach is a fact too: check the library's current docs, not memory, and cite them in the question.
 - For a broad search across many files that would flood the conversation, dispatch the `Explore` agent with `model: haiku`, and ask it for findings with the file paths they came from. When a finding will decide a question, read the cited file yourself before relying on it: the search agent is good at finding things, less so at judging them.
 
 Don't hold up the round while you look: only the questions that depend on the lookup wait. Ask the rest of the frontier now.
