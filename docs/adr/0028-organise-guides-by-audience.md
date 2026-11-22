@@ -29,9 +29,11 @@ We will organise task-oriented guides by audience, in these folders:
 
 Shared reference stays at the root of `docs/` and is linked from every audience: `GLOSSARY.md`, `CONTEXT-MAP.md`, `ARCHITECTURE.md`, `adr/`, `patterns/` and `skills/`.
 
+`ARCHITECTURE.md` is shared because it is the system overview only: the running parts, what each owns, how they talk, and the trust boundaries, which contributors, authors and operators all need. Material only contributors need moves out of it into `docs/develop/`: the technologies in use (`tech-stack.md`, each technology linked to its own docs) and where code lives and how a service is structured (`codebase.md`).
+
 A scope uses the same layout inside its own `docs/`. For example, a core game's rules and action format for player authors go in `games/<game>/docs/extend/`. The root audience folders hold Arcturus-wide material and link down to scope docs. Every package also has a short `README.md` saying what it is and how to run and test it, with a link to its scope's docs.
 
-The README becomes the front door: the pitch, the status, a table sending each audience to its folder, and the licence. A folder is created when its first doc is written. Guides carry `type: guide` frontmatter, and the README and audience landing pages `type: index`; package READMEs have no frontmatter. The docs are plain Markdown rendered by GitHub, with no docs site for now.
+The README becomes the front door: the pitch, the status, a table sending each audience to its folder, and the licence. A folder is created when its first doc is written. Guides carry `type: guide` frontmatter, and audience landing pages `type: index`; the root README and package READMEs have no frontmatter, because GitHub and npm show it as a table at the top of the page. The docs are plain Markdown rendered by GitHub, with no docs site for now.
 
 ## Consequences
 

@@ -19,7 +19,9 @@ Every fact lives in exactly one doc. Anywhere else, link to it, or give at most 
 | A guide for **authors** (games and players elsewhere) | `docs/extend/`                                         |
 | A guide for **users**                                 | `docs/use/`                                            |
 | A term                                                | `GLOSSARY.md` of the narrowest scope that uses it      |
-| How the parts fit together now                        | `docs/ARCHITECTURE.md`                                 |
+| The running parts and how they talk                   | `docs/ARCHITECTURE.md`                                 |
+| A technology in use, with its docs and ADR            | `docs/develop/tech-stack.md`                           |
+| Where code lives and what may import what             | `docs/develop/codebase.md`                             |
 | A decision and its reasons                            | an ADR in the owning scope's `docs/adr/`               |
 | How a kind of code is written                         | a pattern in `docs/patterns/` (or a scope's, rarely)   |
 | How to use a Claude skill                             | `docs/skills/`                                         |
@@ -31,7 +33,7 @@ The roles are defined in the [glossary](../GLOSSARY.md), and the scopes in the [
 ## What the top-level files hold
 
 - **`README.md`:** the pitch, the status, a "where to go next" table with one row per audience, and the licence. When you add an audience's first doc, link it from that table.
-- **`docs/ARCHITECTURE.md`:** the current picture: components, interactions, the technology table with a link to each ADR, and a short note on the shape of a service that links the patterns. No list of ADRs and no rules.
+- **`docs/ARCHITECTURE.md`:** the system overview, read by contributors, authors and operators. It holds the platform's components and what each owns, how they communicate (including callbacks and delivery guarantees), the trust boundaries, and the extension points. Before adding something, ask: does it say what the running parts are, or how they talk? If not, it belongs elsewhere. Technology goes in [tech-stack.md](./tech-stack.md), code layout and service structure in [codebase.md](./codebase.md), rules in patterns, and decisions in ADRs. It stays one file until a section outgrows it.
 - **`CLAUDE.md`:** only what every Claude session needs: a map of the docs saying when to read each, the commands (imported from [commands.md](./commands.md)), and a few rules that apply everywhere. It changes only when a new kind of doc appears.
 - **`.claude/rules/`:** guidance for particular files, loaded when Claude touches them. A rule states a short constraint and links the ADR or pattern that owns it.
 
@@ -40,10 +42,10 @@ The roles are defined in the [glossary](../GLOSSARY.md), and the scopes in the [
 Docs start with a `type`:
 
 - `guide`: a doc in an audience folder;
-- `index`: the README, and any landing page for an audience or folder;
+- `index`: any landing page for an audience or folder;
 - `adr`, `pattern`, `glossary`, `context-map`, `skill-guide`: as their own conventions describe.
 
-Package READMEs have no frontmatter, because npm and GitHub show it as clutter.
+The root `README.md` and package READMEs have no frontmatter, because GitHub and npm show it as a table at the top of the page.
 
 ## Style
 
@@ -56,4 +58,4 @@ Package READMEs have no frontmatter, because npm and GitHub show it as clutter.
 
 ## Keeping docs current
 
-When a change alters a documented fact, update that fact's home in the same pull request: the technology table in `docs/ARCHITECTURE.md`, a guide in `docs/develop/`, a scope's docs, or a package README. Don't add a copy anywhere else.
+When a change alters a documented fact, update that fact's home in the same pull request: `docs/ARCHITECTURE.md`, a guide in `docs/develop/` such as the tech stack, a scope's docs, or a package README. Don't add a copy anywhere else.

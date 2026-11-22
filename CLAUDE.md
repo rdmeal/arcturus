@@ -11,10 +11,12 @@ This repository is TypeScript only. Games and agents in other languages belong i
 Read each when the trigger applies, not up front:
 
 - `docs/GLOSSARY.md`: the terms to use in code, docs and conversation, always. Inside a service, game or game's agents, also that scope's glossary, found through `docs/CONTEXT-MAP.md`.
-- `docs/ARCHITECTURE.md`: the components, how they interact and the technology choices. Read it before design work.
+- `docs/ARCHITECTURE.md`: the components and how they interact. Read it before design work.
+- `docs/develop/tech-stack.md`: the technologies in use, each with its docs and ADR. Read it before choosing a library, and before design work.
+- `docs/develop/codebase.md`: where code lives and what may import what. Read it before adding a package, or a file in a new place.
 - `docs/adr/` (and a scope's `docs/adr/`): one ADR per decision. Before design work, read the frontmatter `summary` of each (`grep -H '^summary:' docs/adr/*.md`), and read an ADR in full when the work touches it.
 - `docs/patterns/` (and a scope's `docs/patterns/`): how each kind of code is written. Before writing a kind of code, grep the `summary` lines (`grep -H '^summary:' docs/patterns/*.md`) and follow every pattern that applies.
-- `docs/develop/`: contributor guides. Read `docs/develop/pull-requests.md` before committing for a pull request or writing one; PR titles are Conventional Commits.
+- `docs/develop/`: the other contributor guides. Read `docs/develop/pull-requests.md` before committing for a pull request or writing one; PR titles are Conventional Commits.
 - `.claude/rules/`: guidance for particular kinds of file, loaded automatically when you touch a matching file.
 
 Every fact has one home: when something documented changes, update its home rather than adding a copy, here or anywhere else. Load the `writing-docs` skill before writing or editing any doc.

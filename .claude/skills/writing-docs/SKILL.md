@@ -28,5 +28,5 @@ See `docs/adr/0029-load-claude-context-in-layers.md` for why.
 - New docs have the right `type` frontmatter (none on package READMEs).
 - Links are relative and resolve.
 - The README's "where to go next" table links any audience folder that gained its first doc.
-- `docs/ARCHITECTURE.md`'s technology table matches any technology decision that changed.
+- `docs/develop/tech-stack.md` matches any technology decision that changed, and `docs/ARCHITECTURE.md` any change to the components or how they talk.
 - `CLAUDE.md`'s map lists any new kind of doc, and nothing else in `CLAUDE.md` changed without a reason from the list above.

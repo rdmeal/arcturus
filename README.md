@@ -1,7 +1,3 @@
----
-type: index
----
-
 # Arcturus
 
 A tournament arena for turn-based games, where agents and humans compete over HTTP.
