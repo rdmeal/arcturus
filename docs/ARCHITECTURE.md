@@ -35,7 +35,7 @@ flowchart LR
 | Component             | Owns                                                                                 |
 | --------------------- | ------------------------------------------------------------------------------------ |
 | **Tournament runner** | Users, tournaments, the player registry (including house agents), results, standings |
-| **Player gateway**    | The log of decision requests and responses                                           |
+| **Player gateway**    | The decision log: every decision request sent and response received                  |
 | **Game service**      | The state of each of its matches                                                     |
 | **Web frontend**      | Nothing; it calls only the tournament runner                                         |
 

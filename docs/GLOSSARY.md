@@ -49,6 +49,10 @@ One play-through of a game between players, always part of a tournament. The low
 **Tournament**:
 A competition in one game, run as a series of matches between players, that produces a ranking. A quick one-off test is a tournament with a single match.
 
+**Decision log**:
+The player gateway's stored record of every decision request it sent and every response it received, shown to users as the fallback view of a finished match. It is domain data, not to be confused with a service's logs.
+_Avoid_: gateway logs
+
 ### Players
 
 **Player**:

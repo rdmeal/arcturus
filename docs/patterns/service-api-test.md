@@ -33,7 +33,8 @@ A service's behaviour is tested through its own API, in-process, against the rea
    - `client`: the app from `createApp(deps)`, wrapped in Hono's `testClient`;
    - `network`: the MSW server, reset after the test;
    - `runJobs`: runs the service's queued jobs;
-   - `clock`: fixed at a constant instant by default, which a test can `set()` or `advance()`.
+   - `clock`: fixed at a constant instant by default, which a test can `set()` or `advance()`;
+   - `captureLogs`: the log records written during the test, for the rare test that asserts a log line (rule 19).
 
    Ask only for the fixtures the test uses. They are set up lazily.
 
@@ -66,6 +67,12 @@ A service's behaviour is tested through its own API, in-process, against the rea
 16. Name each test after the behaviour a client sees ("rejects a tournament with fewer than two entrants"), not the implementation ("calls insertTournament").
 17. Test files run in parallel. Tests within a file run in order: don't use `test.concurrent`, because the MSW server is shared within a worker.
 
+### Logs
+
+18. `packages/service-testing` sends the service's logs, pretty-printed, through `console`, so Vitest links each line to its test and shows logs only for failing tests. Never change the logger's destination or level in a test.
+19. Assert a log line, with `captureLogs`, only when the log line is the behaviour being tested, such as a domain error in a job being logged as a warning. Otherwise assert through the API (rule 10).
+20. Service tests run without the OpenTelemetry SDK, so spans are never recorded. Don't assert on traces. Trace propagation is tested only in `service-runtime`'s own tests.
+
 ## Exemplar
 
 None yet: established by the first ticket that uses it.
@@ -80,3 +87,4 @@ None yet: established by the first ticket that uses it.
 - [Vertical slices](./vertical-slice.md): the folders tests sit in.
 - [Service composition root](./service-composition-root.md): `createApp(deps)`, `parseConfig` and the clock.
 - [Background jobs](./background-job.md)
+- [Observability](./observability.md): how services log.

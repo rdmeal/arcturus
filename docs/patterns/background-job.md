@@ -31,6 +31,12 @@ A job is a slice whose entry point is a graphile-worker task instead of a route.
 9. Handlers are idempotent. A job can run more than once (a retry after a crash, a timeout after the work was done), so it checks state before acting and its writes tolerate repeats (see [Idempotent receivers](./idempotent-receiver.md)).
 10. A `DomainError` thrown by the handler means the input can never succeed: `defineTask` logs it as a warning with its code, and the job completes without retrying. Any other error is rethrown, and graphile-worker retries it with backoff.
 
+### Tracing
+
+11. `addJob` stores the active trace context in a reserved `_trace` payload key, and `defineTask` removes it and runs the handler in a span that continues the trace. No payload schema may define `_trace`, and no handler reads it.
+12. Where queuing a job starts a new unit of work, pass `{ newTrace: true }` to `addJob`, so the job starts a new trace linked to the current one. A new unit of work is a match's start, queued by the tournament runner, or a decision request, queued by a game service. Every other job continues its trace. If a new flow seems to need `newTrace` elsewhere, ask whether it would otherwise join one trace across a whole match or tournament.
+13. `defineTask` adds `jobId`, `taskName` and `attempt` to the observability context. The handler annotates the domain IDs from its payload (see [Observability](./observability.md)).
+
 ## Exemplar
 
 None yet: established by the first ticket that uses it.
@@ -39,6 +45,8 @@ None yet: established by the first ticket that uses it.
 
 - [Run background jobs with graphile-worker](../adr/0012-run-background-jobs-with-graphile-worker.md)
 - [Signal expected failures with thrown domain errors](../adr/0024-signal-expected-failures-with-thrown-domain-errors.md)
+- [Trace each decision through jobs as its own trace](../adr/0043-trace-each-decision-through-jobs-as-its-own-trace.md)
+- [Observability](./observability.md)
 - [Vertical slices](./vertical-slice.md)
 - [Database transactions](./database-transaction.md)
 - [Idempotent receivers](./idempotent-receiver.md)

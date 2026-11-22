@@ -41,14 +41,16 @@ Each service reads its settings from its own folder: a committed `.env.developme
 
 Each service has a fixed port. This table is where ports are allocated: a new service takes the next free port in its range, and its `.env.development` links here.
 
-| What                | Port         |
-| ------------------- | ------------ |
-| Web frontend (Vite) | 5173         |
-| Tournament runner   | 3000         |
-| Player gateway      | 3001         |
-| Game services       | 3100 upwards |
-| Agent services      | 3200 upwards |
-| Postgres            | 5432         |
+| What                | Port                     |
+| ------------------- | ------------------------ |
+| Web frontend (Vite) | 5173                     |
+| Tournament runner   | 3000                     |
+| Player gateway      | 3001                     |
+| Game services       | 3100 upwards             |
+| Agent services      | 3200 upwards             |
+| Postgres            | 5432                     |
+| Grafana (otel-lgtm) | 3300                     |
+| OTLP (otel-lgtm)    | 4317 (gRPC), 4318 (HTTP) |
 
 If one of these is already taken on your machine, override the port in that service's `.env`. For Postgres, set it in a `.env` at the repository root, which Compose reads.
 
