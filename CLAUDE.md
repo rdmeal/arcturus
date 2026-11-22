@@ -34,6 +34,17 @@ Run these from the repository root:
 
 `pnpm run check`, `pnpm run test` and `pnpm run build` do the same as `vp check`, `vp test` and `vp run -r build`.
 
+## Commits and pull requests
+
+- Pull requests are squash-merged into `main`, so the **PR title becomes the commit on `main`**. Write it as a [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): subject`, lower case, no full stop. CI checks it with commitlint.
+- Types are commitlint's `config-conventional` defaults: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`. A scope is optional and free-form.
+- Mark a breaking change with `!` in the title (`feat(game-protocol)!: …`).
+- Branch commit messages and branch names aren't checked, but keep commits readable.
+- The pre-commit hook runs `vp staged` (`vp check --fix` on the staged files). Opt out in a clone with `vp hooks disable`.
+- A Claude Code hook formats every file Claude writes or edits, so there's no need to run `vp fmt` after an edit.
+
+See [Squash-merge pull requests into a protected main](docs/adr/0025-squash-merge-pull-requests-into-a-protected-main.md) and [Write pull request titles as Conventional Commits](docs/adr/0026-write-pull-request-titles-as-conventional-commits.md).
+
 ## Architecture and decisions
 
 Before design work, read `docs/ARCHITECTURE.md` and the frontmatter `summary` of the ADRs in `docs/adr/` (and in the `docs/adr/` of any scope the work touches). Read an ADR in full when the work touches it.

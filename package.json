@@ -5,10 +5,18 @@
   "scripts": {
     "build": "vp run -r build",
     "check": "vp check",
-    "test": "vp test"
+    "test": "vp test",
+    "prepare": "vp config --no-agent"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "vite-plus": "1.6.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "packageManager": "pnpm@12.19.0"
 }
