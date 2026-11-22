@@ -2,7 +2,7 @@
 type: adr
 status: accepted
 date: 2026-11-22
-summary: Pull request titles, which become the squash commits on main, follow Conventional Commits and are checked by commitlint in the pull-request workflow, so release tooling can read main's history, while branch commits stay unchecked.
+summary: Pull request titles, which become the squash commits on main, follow Conventional Commits and are checked by commitlint in CI, so release tooling can read main's history, while branch commits stay unchecked.
 tags: [tooling, ci]
 ---
 
@@ -20,8 +20,9 @@ Vite+ has commit hooks built in, but no commit message linting (as of version 1.
 
 We will write pull request titles in the [Conventional Commits 1.0](https://www.conventionalcommits.org/en/v1.0.0/) format, and check them in CI:
 
-- a step in the pull-request workflow runs commitlint, with `@commitlint/config-conventional`, on the pull request title. The title is passed in through an environment variable, never interpolated into the script. The workflow also runs when a pull request is edited, so fixing the title re-runs the check;
-- the commitlint config lives at the repository root, so it can also be run by hand;
+- a pull-request-title workflow runs commitlint, with `@commitlint/config-conventional`, on the pull request title. The title is passed in through an environment variable, never interpolated into the script. The workflow also runs when a pull request is edited, so fixing the title re-runs the check;
+- the title check is its own workflow, not a job in the pull-request workflow of [Compose CI from reusable workflows](./0019-compose-ci-from-reusable-workflows.md), because only it needs the `edited` trigger. In the pull-request workflow, every title or description edit would either re-run the quality check, or skip it, and a skipped job counts as passing, which would hide an earlier failure on the same commit;
+- the commitlint config lives in the root `package.json`, so it can also be run by hand (`printf '%s\n' "<title>" | vp exec commitlint`);
 - the types are `config-conventional`'s defaults: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore` and `revert`;
 - a scope is optional and free-form;
 - a breaking change is marked with `!` in the title (`feat(game-protocol)!: …`). A `BREAKING CHANGE:` footer in the description is an optional extra;

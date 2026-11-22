@@ -38,6 +38,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the parts fit together 
    vp install
    ```
 
+   This also installs a Git pre-commit hook that formats and lints the files you commit. To turn it off in your clone, run `vp hooks disable`.
+
 5. Check that everything works:
 
    ```bash
@@ -47,9 +49,13 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how the parts fit together 
 
    Both should finish without errors.
 
+### Pull requests
+
+Pull requests are squash-merged, so a pull request's title becomes its commit on `main`. Write it as a [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/), such as `feat(gateway): retry failed deliveries`; CI checks it. Commits on your branch can be written however you like.
+
 ## Setting up Claude Code
 
-This repository is set up for working with [Claude Code](https://code.claude.com). These are the external tools it uses that you need to set up yourself. See [docs/skills/README.md](docs/skills/README.md) for the workflow commands you can run.
+This repository is set up for working with [Claude Code](https://code.claude.com). A project hook formats every file Claude writes or edits; it needs [`jq`](https://jqlang.org/download/) on your path. These are the external tools it uses that you need to set up yourself. See [docs/skills/README.md](docs/skills/README.md) for the workflow commands you can run.
 
 ### Context7
 

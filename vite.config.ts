@@ -16,6 +16,10 @@ export default defineConfig({
       denyWarnings: true,
     },
   },
+  // Run by the pre-commit hook (`.vite-hooks/pre-commit`) on the staged files.
+  staged: {
+    "*": "vp check --fix",
+  },
   test: {
     // The workspace has no tests yet. Remove this once the first test exists.
     passWithNoTests: true,
