@@ -15,7 +15,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ## When not to
 
-- For pure domain functions, such as a game's rules (`applyAction`, `legalActions`, `visibleStateFor`), and for shared utilities in `packages/`. Unit-test them directly, with data from [test data factories](./test-data.md). Rule 14 says how game rules and game service API tests divide the work.
+- For pure domain functions, such as a game's rules (`applyAction`, `legalActions`, `visibleStateFor`), and for shared utilities in `packages/`. Unit-test them directly, with data from [service test data factories](./service-test-data.md). Rule 14 says how game rules and game service API tests divide the work.
 - For `service-runtime`'s server start-up, shutdown and health checks, which in-process tests skip. They have their own tests in that package.
 
 ## Rules
@@ -23,7 +23,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Where tests live
 
 1. An API test sits in its slice's folder, as `src/<area>/<slice>/<slice>.test.ts`. A unit test sits next to the function it tests, as `<file>.test.ts`.
-2. Test-only code lives only in `*.test.ts` files, in `src/test/`, in `*.handlers.ts` files (see [MSW endpoint mocks](./msw-endpoint-mock.md)), or in `packages/service-testing`. A service's factories go in `src/test/factories/`, and its arrange helpers in `src/test/arrange.ts`. The shared harness, with the fixtures, the test database and the MSW server set-up, is `packages/service-testing`, a dev dependency of every service.
+2. Test-only code lives only in `*.test.ts` files, in `src/test/`, in `*.handlers.ts` files (see [Service endpoint mocks](./service-endpoint-mock.md)), or in `packages/service-testing`. A service's factories go in `src/test/factories/`, and its arrange helpers in `src/test/arrange.ts`. The shared harness, with the fixtures, the test database and the MSW server set-up, is `packages/service-testing`, a dev dependency of every service.
 3. Production code never imports test-only code, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*`. A lint rule enforces this, and test libraries are only ever `devDependencies`.
 
 ### Fixtures, not hooks
@@ -75,8 +75,8 @@ None yet: established by the first ticket that uses it.
 - [Test services mostly through their API, in-process](../adr/0032-test-services-through-their-api.md)
 - [Give every test a fresh database from a migrated template](../adr/0035-give-every-test-a-fresh-database-from-a-template.md)
 - [Run test databases in Testcontainers](../adr/0034-run-test-databases-in-testcontainers.md)
-- [MSW endpoint mocks](./msw-endpoint-mock.md)
-- [Test data factories](./test-data.md)
+- [Service endpoint mocks](./service-endpoint-mock.md)
+- [Service test data factories](./service-test-data.md)
 - [Vertical slices](./vertical-slice.md): the folders tests sit in.
 - [Service composition root](./service-composition-root.md): `createApp(deps)`, `parseConfig` and the clock.
 - [Background jobs](./background-job.md)

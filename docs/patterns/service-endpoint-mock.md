@@ -4,7 +4,7 @@ summary: Use when code under test calls another service over HTTP — give each 
 tags: [backend, testing]
 ---
 
-# MSW endpoint mocks
+# Service endpoint mocks
 
 Tests fake other services at the network level with MSW, so the service's real clients run in every test. Each endpoint has one default handler and one override helper, so every test fakes a given endpoint the same way.
 
@@ -22,7 +22,7 @@ Tests fake other services at the network level with MSW, so the service's real c
 
 1. The MSW server comes from the `network` fixture in `packages/service-testing`. It runs with `onUnhandledRequest: 'error'`, so a call with no handler fails the test, and its handlers are reset after every test. Never change that option.
 2. Each client's handlers live next to it, in `src/clients/<service>/<service>.handlers.ts`. That file is test-only code: production code never imports it.
-3. For every endpoint the client calls, the module exports a default handler that answers with a valid success response built by a [factory](./test-data.md). The module also exports the list of all its defaults, and the service's `network` fixture starts with every client's defaults installed.
+3. For every endpoint the client calls, the module exports a default handler that answers with a valid success response built by a [factory](./service-test-data.md). The module also exports the list of all its defaults, and the service's `network` fixture starts with every client's defaults installed.
 4. For every endpoint, the module also exports an override helper named `mock<Endpoint>`, such as `mockStartMatch`. It takes an optional response, or a function from the request to a response, installs a handler with `network.use(...)`, and returns a recorder.
 5. The recorder's `requests` holds each request body that endpoint received, in order, parsed with the endpoint's zod request schema. A body that fails to parse fails the test.
 6. Default handlers don't record. A test that cares what was sent, or needs a different answer, overrides the endpoint in its body with the `mock<Endpoint>` helper. Never add a recorder to a default.
@@ -38,5 +38,5 @@ None yet: established by the first ticket that uses it.
 
 - [Fake outbound HTTP in tests with MSW](../adr/0033-fake-outbound-http-in-tests-with-msw.md)
 - [Service API tests](./service-api-test.md)
-- [Test data factories](./test-data.md): builds the responses.
+- [Service test data factories](./service-test-data.md): builds the responses.
 - [Service composition root](./service-composition-root.md): every outbound call goes through a client in the dependencies.

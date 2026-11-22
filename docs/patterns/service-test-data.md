@@ -4,7 +4,7 @@ summary: Use when a test needs an object (a request body, a faked response, a ga
 tags: [backend, testing]
 ---
 
-# Test data factories
+# Service test data factories
 
 Every object a test needs comes from a fishery factory that gives a valid default for every field. The test overrides only the fields it is about, so what matters to it stands out, and a change to a type is fixed once, in its factory.
 
@@ -41,4 +41,4 @@ None yet: established by the first ticket that uses it.
 - [Build test data with fishery factories](../adr/0036-build-test-data-with-fishery-factories.md)
 - [Give every test a fresh database from a migrated template](../adr/0035-give-every-test-a-fresh-database-from-a-template.md): why there is no seed data.
 - [Service API tests](./service-api-test.md)
-- [MSW endpoint mocks](./msw-endpoint-mock.md)
+- [Service endpoint mocks](./service-endpoint-mock.md)
