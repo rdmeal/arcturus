@@ -1,6 +1,6 @@
 ---
 type: pattern
-summary: Use when creating a service or adding a dependency or setting to one — config loaded and validated only in config.ts, deps built in main.ts and passed to createApp(deps), lifecycle and health from service-runtime.
+summary: Use when creating a service or adding a dependency or setting to one — config loaded and validated only in config.ts, deps built in main.ts and passed to createApp(deps), lifecycle, health and telemetry from service-runtime.
 tags: [backend]
 ---
 
@@ -23,7 +23,7 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ### Configuration
 
 2. `src/config.ts` holds one zod schema for the service's configuration and exports two functions. `loadConfig()` loads the env files, reads the environment (and, for the tournament runner, the operator config file), validates everything with the schema, failing fast with readable messages, and returns a typed, frozen config object. `parseConfig(source)` validates a plain object and touches no files or environment, so tests use it.
-3. Nothing outside `config.ts` reads `process.env`, an env file or the config file. `main.ts` calls `loadConfig()` once, and code that needs a setting gets it through `deps.config`.
+3. Nothing outside `config.ts` reads `process.env`, an env file or the config file. `main.ts` calls `loadConfig()` once, and code that needs a setting gets it through `deps.config`. The one exception is the OpenTelemetry SDK, which reads OTel's standard `OTEL_*` variables itself (rule 19). Never add other settings to it.
 4. Env files are loaded with dotenv into a plain object (`processEnv: {}`, `quiet: true`), never into `process.env`. Validate the file values with the real environment laid over them, so the precedence is: real environment variables, then `.env`, then `.env.development`.
 5. Find the env files from the service's package folder (`import.meta.dirname`), never from `process.cwd()`. A missing file is skipped. Never check `NODE_ENV` to decide whether to load them.
 6. Every service with settings commits a `.env.development` holding every value it needs to run locally, so it starts straight after a clone. Personal overrides go in a git-ignored `.env` in the same folder.
@@ -35,16 +35,20 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 
 10. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`.
 11. `src/app.ts` defines the `Deps` type, a plain object type listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. It exports `AppType` for the RPC client.
-12. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies.
+12. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies. The one exception is the logger, which code imports from `service-runtime` (see [Observability](./observability.md)).
 13. Time comes from a `clock` dependency with `now()`, so tests can fix it. Code never calls `new Date()` or `Date.now()` for a time its logic uses.
 14. Every outbound call to another service goes through a client in `deps`. Nothing below a handler builds its own `fetch` call. (What these clients look like is decided with the protocols.)
 
 ### Lifecycle and health
 
 15. The HTTP server and the job worker run in the same process, started from the same `main.ts`.
-16. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, with a hard timeout), and the health endpoints. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
+16. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, then flush and shut down telemetry, all within a hard timeout), and the health endpoints. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
 17. Every service exposes `/health/live`, which checks nothing and answers if the process is up, and `/health/ready`, which checks only the service's own database and worker. Neither checks other services, so one service going down never marks the others unready. Neither is exposed through the reverse proxy.
 18. A service without a database (most agent services) uses only the server, shutdown and health parts of `service-runtime`. Its readiness then checks nothing.
+
+### Telemetry
+
+19. A service's `dev` and `start` scripts run `node --import @arcturus/service-runtime/telemetry src/main.ts`, so OpenTelemetry starts before any application code loads. The entry point takes the service's name and version from its `package.json`, so a service adds no telemetry settings of its own. Every service uses it, with or without a database.
 
 ## Exemplar
 
@@ -54,6 +58,9 @@ None yet: established by the first ticket that uses it.
 
 - [Build every service with Hono, wired by hand](../adr/0009-build-every-service-with-hono.md)
 - [Load configuration only in each service's config module](../adr/0031-load-configuration-only-in-each-services-config-module.md)
+- [Start OpenTelemetry from service-runtime with Node's --import](../adr/0041-start-opentelemetry-from-service-runtime-with-import.md)
+- [Log with pino, to stdout and OTLP](../adr/0039-log-with-pino-to-stdout-and-otlp.md)
+- [Observability](./observability.md)
 - [Vertical slices](./vertical-slice.md)
 - [Database transactions](./database-transaction.md)
 - [Background jobs](./background-job.md)
