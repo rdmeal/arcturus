@@ -73,3 +73,11 @@ A role: a person with an account, who owns tournaments and players. The person b
 
 **Operator**:
 A role: whoever deploys and configures an Arcturus installation. On a self-hosted installation the operator is often also its only user.
+
+**Contributor**:
+A role: anyone who changes the Arcturus repository, the maintainer included. Not to be confused with **Author**, who works in their own repository.
+_Avoid_: developer (ambiguous between contributor and author)
+
+**Author**:
+A role: someone who writes a game service or a player in their own repository, against the game protocol or player protocol. Say **game author** or **player author** when it matters which.
+_Avoid_: plugin developer, third-party developer
