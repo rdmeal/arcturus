@@ -29,7 +29,7 @@ We will layer Claude's context:
 - **Root `CLAUDE.md`** holds only what every session, subagents included, needs and can't cheaply find: what Arcturus is and its status, a map of where the docs live and when to read each, the commands, and a few rules that apply everywhere (use the glossary's terms; grep the patterns' summaries before writing a kind of code; ignore `scratchpad/`). It doesn't summarise the stack or restate commit rules; it points to the docs that own them.
 - **The commands' home is `docs/develop/commands.md`**, which `CLAUDE.md` imports with `@docs/develop/commands.md`, because both contributors and every Claude session need them.
 - **Guidance for some files only** goes in path-scoped rules in `.claude/rules/`. A rule states a short constraint and links to the ADR or pattern that owns it, without paraphrasing it. We start with a TypeScript rule and a docs rule, and add others only when a need appears.
-- **Procedures** live in skills, which link to the contributor docs they follow rather than restating them. A `docs` reference skill holds the documentation conventions, whose human-facing home is `docs/develop/writing-docs.md`.
+- **Procedures** live in skills, which link to the contributor docs they follow rather than restating them. A `writing-docs` reference skill holds the documentation conventions, whose human-facing home is `docs/develop/writing-docs.md`.
 - There are no `CLAUDE.md` files in subdirectories.
 
 ## Consequences

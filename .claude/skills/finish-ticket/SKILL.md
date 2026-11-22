@@ -38,7 +38,7 @@ Read the plan. Every checkbox must be ticked, including each acceptance criterio
 
 Find the commands, in this order:
 
-1. a commands section in `CLAUDE.md`;
+1. `docs/develop/commands.md` (imported into `CLAUDE.md`);
 2. the root `package.json` scripts that clearly fit (`lint`, `typecheck`, `test`, `build`);
 3. otherwise, ask the developer.
 
@@ -79,7 +79,7 @@ Read the ticket, the plan, `git log main..HEAD --oneline` and `git diff main...H
 
 Write the body to `scratchpad/pr-bodies/<feature>-NN.md`, and show it to the developer with the title:
 
-- **Title:** a conventional-commit line, e.g. `feat: score a draw as half a point (tournament-seeding 02)`. It isn't part of the file; it's passed to `gh pr create` separately.
+- **Title:** a conventional-commit line, following `docs/develop/pull-requests.md`, e.g. `feat: score a draw as half a point (tournament-seeding 02)`. It isn't part of the file; it's passed to `gh pr create` separately.
 - **Body:**
 
 ```md

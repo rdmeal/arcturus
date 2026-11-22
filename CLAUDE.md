@@ -4,54 +4,26 @@ Arcturus is a self-hostable tournament arena for turn-based games, where agents 
 
 The repo is mid-restart: the old stack has been removed and the new one is being decided and built, so expect little or no code yet.
 
-## Domain language
+This repository is TypeScript only. Games and agents in other languages belong in their own repositories, not here.
 
-Use the terms defined in `docs/GLOSSARY.md` in code, docs and conversation. When working inside a service, game or game's agents, also use that scope's glossary, found through `docs/CONTEXT-MAP.md`.
+## Where things are documented
 
-## Tech stack
+Read each when the trigger applies, not up front:
 
-This repository is TypeScript only, running on Node (version in `.nvmrc`). Games and agents in other languages belong in their own repositories, not here. The main choices, each with an ADR linked from `docs/ARCHITECTURE.md`:
+- `docs/GLOSSARY.md`: the terms to use in code, docs and conversation, always. Inside a service, game or game's agents, also that scope's glossary, found through `docs/CONTEXT-MAP.md`.
+- `docs/ARCHITECTURE.md`: the components, how they interact and the technology choices. Read it before design work.
+- `docs/adr/` (and a scope's `docs/adr/`): one ADR per decision. Before design work, read the frontmatter `summary` of each (`grep -H '^summary:' docs/adr/*.md`), and read an ADR in full when the work touches it.
+- `docs/patterns/` (and a scope's `docs/patterns/`): how each kind of code is written. Before writing a kind of code, grep the `summary` lines (`grep -H '^summary:' docs/patterns/*.md`) and follow every pattern that applies.
+- `docs/develop/`: contributor guides. Read `docs/develop/pull-requests.md` before committing for a pull request or writing one; PR titles are Conventional Commits.
+- `.claude/rules/`: guidance for particular kinds of file, loaded automatically when you touch a matching file.
 
-- **Services:** Hono for every service, dependencies wired by hand in a composition root, no DI container.
-- **Inside a service:** vertical slices (`src/<area>/<slice>/`, one per command, query or job) behind a task-based API (`POST` commands, `GET` queries, at `/<area>/<slice>`); handlers open transactions explicitly; expected failures are thrown domain errors, returned as problem details.
-- **Validation:** zod at every boundary (HTTP, callbacks, job payloads, database rows); types are inferred from schemas.
-- **Data:** PostgreSQL, one database per service; Slonik with plain SQL; graphile-worker for background jobs, queued in the same transaction as the data; Graphile Migrate for forward-only SQL migrations.
-- **Frontend:** React SPA on Vite, Mantine, TanStack Router, TanStack Query with Hono's RPC client, react-i18next.
-- **Repository:** pnpm workspaces, a `package.json` per package: `apps/web`, `services/*`, `packages/*` (shared libraries), `games/<game>/{service,agents}`, `tools/*` (repo tooling, never imported by services or games).
-- **Tooling:** Vite+ (`vp`) as the one toolchain and task runner, with Vitest, Oxlint and Oxfmt.
-- **Running code:** services and libraries run from `.ts` source with Node's type stripping, with no build step, ESM only. Write erasable TypeScript only (no enums, namespaces or constructor parameter properties), and import with `.ts` extensions.
-- **CI:** a pull-request workflow and a main workflow, both calling a reusable quality-check workflow.
+Every fact has one home: when something documented changes, update its home rather than adding a copy, here or anywhere else. Load the `writing-docs` skill before writing or editing any doc.
 
 ## Commands
 
-Run these from the repository root:
+@docs/develop/commands.md
 
-- `vp install`: install dependencies, with the pnpm version pinned in `package.json`.
-- `vp check`: format check, lint and type check, all in one. Lint warnings fail it too.
-- `vp fmt`: fix formatting. Markdown, JSON and YAML are formatted as well as code, so run it after editing docs.
-- `vp test`: run every test. `vp test <path>` runs one test file.
-- `vp run -r build`: build every package that has a `build` script.
-
-`pnpm run check`, `pnpm run test` and `pnpm run build` do the same as `vp check`, `vp test` and `vp run -r build`.
-
-## Commits and pull requests
-
-- Pull requests are squash-merged into `main`, so the **PR title becomes the commit on `main`**. Write it as a [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): subject`, lower case, no full stop. CI checks it with commitlint.
-- Types are commitlint's `config-conventional` defaults: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`. A scope is optional and free-form.
-- Mark a breaking change with `!` in the title (`feat(game-protocol)!: …`).
-- Branch commit messages and branch names aren't checked, but keep commits readable.
-- The pre-commit hook runs `vp staged` (`vp check --fix` on the staged files). Opt out in a clone with `vp hooks disable`.
-- A Claude Code hook formats every file Claude writes or edits, so there's no need to run `vp fmt` after an edit.
-
-See [Squash-merge pull requests into a protected main](docs/adr/0025-squash-merge-pull-requests-into-a-protected-main.md) and [Write pull request titles as Conventional Commits](docs/adr/0026-write-pull-request-titles-as-conventional-commits.md).
-
-## Architecture and decisions
-
-Before design work, read `docs/ARCHITECTURE.md` and the frontmatter `summary` of the ADRs in `docs/adr/` (and in the `docs/adr/` of any scope the work touches). Read an ADR in full when the work touches it.
-
-## Patterns
-
-`docs/patterns/` (and the `docs/patterns/` of a scope) records how each kind of code is written: slices, jobs, the composition root, transactions, errors and idempotent receivers so far. Before writing a kind of code, grep the patterns' `summary` lines (`grep -H '^summary:' docs/patterns/*.md`), and follow every one that applies.
+A project hook formats every file you write or edit, so there's no need to run `vp fmt` after an edit.
 
 ## Scratchpad
 

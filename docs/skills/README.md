@@ -4,7 +4,7 @@ type: index
 
 # Claude Skills
 
-The Claude skills you can use in this repo. Type a skill's command in Claude Code to run it.
+The Claude skills you can use in this repo. Type a skill's command in Claude Code to run it. For the setup Claude Code needs first, see [Working with Claude Code](../develop/claude-code.md).
 
 | Skill                                         | Command                                       | Use it to…                                                                |
 | --------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------- |
