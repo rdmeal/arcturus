@@ -92,7 +92,7 @@ The status lives only in the frontmatter, so there is no Status section.
 
 Short is fine. A few sentences per section is often enough; more than one or two pages means the ADR is probably covering more than one decision. Use bullets where they help, but not as a reason to write fragments.
 
-Write in plain British English. Use the terms defined in `docs/GLOSSARY.md` and in the scope's own `docs/GLOSSARY.md` if it has one. Link to related ADRs by relative path.
+Write in the house style in `docs/develop/writing-docs.md`. Link to related ADRs by relative path.
 
 ## Changing an existing ADR
 

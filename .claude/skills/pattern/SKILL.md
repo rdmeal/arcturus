@@ -115,7 +115,7 @@ There is **no `status`**:
 
 **No code blocks, not even a sketch before the exemplar exists.** A rule may name a signature or file name inline, such as `` `aMember(overrides?)` `` or `` `member.mother.ts` ``. Pasted code goes stale as the real code moves on, and rules that can't be followed without a code block aren't concrete enough yet.
 
-Write in plain British English. Short is fine: a pattern that needs more than a page or two is probably two patterns.
+Write in the house style in `docs/develop/writing-docs.md`. Short is fine: a pattern that needs more than a page or two is probably two patterns.
 
 ## Exemplar
 
