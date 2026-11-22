@@ -4,7 +4,9 @@ type: guide
 
 # Local development
 
-How to run Arcturus on your own machine while working on it. Docker Compose runs the infrastructure, and every service runs on your machine in watch mode, so a change to a service restarts it straight away. The reasons are in [Run infrastructure in Compose and services on the host](../adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md).
+How to run Arcturus on your own machine while working on it, once your clone is set up. This guide holds only what you do repeatedly; one-time setup belongs in [Getting started](./getting-started.md).
+
+Docker Compose runs the infrastructure, and every service runs on your machine in watch mode, so a change to a service restarts it straight away. The reasons are in [Run infrastructure in Compose and services on the host](../adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md).
 
 > **Status:** this describes the setup being built with the first services. Until then, there is nothing to run, and the commands below don't exist yet.
 

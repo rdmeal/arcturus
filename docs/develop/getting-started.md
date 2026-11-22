@@ -4,7 +4,7 @@ type: guide
 
 # Getting started
 
-Set up a clone of Arcturus that passes its checks.
+Set up a clone of Arcturus that passes its checks. Everything you install or do once belongs here; what you do day to day is in [Local development](./local-development.md).
 
 1. Install [Git](https://git-scm.com/downloads).
 2. Install the [Vite+ command-line tool, `vp`](https://viteplus.dev/guide/global-cli). It installs the right versions of Node and pnpm for this repository itself, so you don't need to install them first. When the installer asks whether `vp` should manage your Node installs and package managers, say yes.
