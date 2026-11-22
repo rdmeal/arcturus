@@ -21,7 +21,7 @@ CI runs only on pull requests and on `main` (see [Compose CI from reusable workf
 We will merge pull requests into `main` by squashing only, and protect `main` so that this is the only way in:
 
 - the repository allows squash merging only; merge commits and rebase merging are turned off;
-- the squash commit takes the pull request's title as its subject and the pull request's description as its body;
+- the squash commit's message is the pull request's title alone, which GitHub ends with the pull request's number; the description stays on the pull request;
 - head branches are deleted automatically once merged;
 - a GitHub ruleset on `main` requires a pull request (with no approvals, as there is one maintainer), requires the quality check and the pull request title check (see [Write pull request titles as Conventional Commits](./0026-write-pull-request-titles-as-conventional-commits.md)) to pass, blocks force pushes and deletion, and allows no bypass, not even for administrators.
 
@@ -32,7 +32,7 @@ These are repository settings, applied by hand in GitHub rather than kept in the
 - `main` reads as one commit per pull request, and every commit on it has passed CI.
 - Branch commits can be as messy as the work needs. Their messages aren't checked and never reach `main`.
 - The pull request title is the only message that reaches `main`, which is what the title check builds on.
-- A large pull request's internal steps survive only on the pull request, not in `git log` on `main`.
+- `git log` on `main` stays one line per change. Everything else (the description, the review, a large pull request's internal steps) lives only on the pull request, which the number in each commit links to. Moving away from GitHub would mean exporting the pull requests to keep it.
 - A branch made from another unmerged branch has to be rebased once its base is squashed, because the base's commits no longer exist on `main`.
 - Even a one-line fix needs a pull request and a green CI run. In an emergency an administrator can still edit the ruleset.
 - Signed commits aren't required: GitHub signs the squash commits it creates, so the rule would only ever check GitHub's own signature.
@@ -42,5 +42,6 @@ These are repository settings, applied by hand in GitHub rather than kept in the
 
 - **Merge commits:** keep every branch commit on `main`, which makes the history noisy and makes every commit message matter.
 - **Rebase merging:** gives a linear history with every commit kept, which only pays off if every branch commit is clean. The one-commit-per-step workflow doesn't aim for that.
+- **The title and description as the squash message:** keeps the details in Git itself, but pull request descriptions (plan summaries, checklists, generated-by lines) would make `git log` noisy, and every commit already links to its pull request.
 - **A ruleset with administrator bypass:** allows direct pushes when convenient, which also means checks can be skipped by accident.
 - **Branch protection rules:** GitHub's older mechanism; rulesets are the one GitHub recommends.

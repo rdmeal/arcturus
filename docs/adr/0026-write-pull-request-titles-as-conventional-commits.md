@@ -25,14 +25,14 @@ We will write pull request titles in the [Conventional Commits 1.0](https://www.
 - the commitlint config lives in the root `package.json`, so it can also be run by hand (`printf '%s\n' "<title>" | vp exec commitlint`);
 - the types are `config-conventional`'s defaults: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore` and `revert`;
 - a scope is optional and free-form;
-- a breaking change is marked with `!` in the title (`feat(game-protocol)!: …`). A `BREAKING CHANGE:` footer in the description is an optional extra;
+- a breaking change is marked with `!` in the title (`feat(game-protocol)!: …`) and explained in the description;
 - branch commits are not checked, and there is no `commit-msg` hook.
 
 ## Consequences
 
 - Every commit on `main` is in a format release-please and semantic-release can read, and Changesets is still an option.
 - Committing on a branch costs nothing extra; a wrong title is caught once the pull request is opened, and fixing it on GitHub re-runs the check.
-- Only the title is checked. The description becomes the squash commit's body unchecked, so a `BREAKING CHANGE:` footer there can be malformed or missing. That is why `!` in the title is the required marker.
+- The title is the whole squash commit message (see [Squash-merge pull requests into a protected main](./0025-squash-merge-pull-requests-into-a-protected-main.md)), so `!` in the title is the only way a breaking change is marked in `main`'s history. A `BREAKING CHANGE:` footer in the description would never reach a commit.
 - Free scopes can be inconsistent (`gateway` and `player-gateway`). Monorepo release tools tell which package changed from file paths or changeset files, not scopes, so this doesn't affect releases. The release decision can tighten scopes if its tool needs them.
 - commitlint and its config are dev dependencies at the root, subject to [Guard the dependency supply chain](./0020-guard-the-dependency-supply-chain.md).
 - If a dependency update bot is adopted later, its pull request titles must be configured as Conventional Commits, or the check will fail them.
