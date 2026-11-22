@@ -24,6 +24,7 @@ Every package has its own `package.json` and declares everything it imports ([Or
 - **Services and games** import from `packages/` only, never from each other.
 - **Core games and agents** use only the game protocol and player protocol, never platform internals, just as an author's would ([Extend Arcturus only through published protocols](../adr/0004-extend-arcturus-through-published-protocols.md)).
 - **`tools/`** is never imported by services or games.
+- **Production code** never imports test-only code or test libraries. Where test-only code lives, and how lint enforces this, is in [Service API tests](../patterns/service-api-test.md).
 
 ## Inside a service
 
