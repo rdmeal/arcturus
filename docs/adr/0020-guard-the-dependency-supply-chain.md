@@ -28,6 +28,7 @@ We will follow [pnpm's supply-chain guidance](https://pnpm.io/supply-chain-secur
 
 ## Consequences
 
+- These are checks on how a dependency is added, not a reason to avoid adding one. When an established library does the job, we prefer it to writing our own, and it goes through these checks like any other dependency.
 - A malicious release that is caught within a week never reaches the repository, and one that is caught later still can't run an install script unless it was already reviewed and allowed.
 - New versions, including fixes, arrive at least a week late. A fix that is needed sooner has to be let through deliberately, as a named exception in `pnpm-workspace.yaml`.
 - `vp install` can fail when a package's publishing evidence weakens, or when a new dependency has a build script. Both need a human decision: check that the release is genuine and add a named exclusion, or review the script and add the package to `allowBuilds`.
