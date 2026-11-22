@@ -24,7 +24,7 @@ We will deliver every decision request through a player gateway: a separate plat
 - The gateway looks up the endpoint from the tournament runner, which owns the player registry, delivers the request, and calls the game service back with the action.
 - The gateway handles delivery: retries, timeouts, the general shape of responses, and discarding duplicates. It reports a player that never answers to the tournament runner.
 - The game service still judges the action itself: whether it is legal in the game and in the current state.
-- The gateway logs every request and response, which serves as the fallback view of a finished match.
+- The gateway keeps a decision log of every request and response, which serves as the fallback view of a finished match.
 
 The gateway is its own service, not a module of the tournament runner.
 

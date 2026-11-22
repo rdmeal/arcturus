@@ -39,7 +39,7 @@ We will build Arcturus as a set of independently deployable services that talk t
 
 - The tournament runner owns users, tournaments, the player registry (including house agents), match results and standings. There is no separate user service.
 - A game service owns its match state.
-- The player gateway owns the log of decision requests and responses. The web frontend reaches it only through the tournament runner, which checks ownership.
+- The player gateway owns the decision log: every decision request it sent and response it received. The web frontend reaches it only through the tournament runner, which checks ownership.
 
 **The tournament runner is the only API the web frontend calls**, apart from game replay pages (see [Show replays from the game's own page on a separate origin](./0006-show-replays-from-game-pages-on-a-separate-origin.md)) and the player gateway's endpoint for submitting an action later.
 
