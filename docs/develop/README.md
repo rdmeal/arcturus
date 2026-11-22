@@ -10,6 +10,7 @@ For contributors: anyone changing this repository.
 
 - [Getting started](./getting-started.md): set up a clone that passes its checks.
 - [Commands](./commands.md): install, check, format, test and build.
+- [Local development](./local-development.md): run the stack on your own machine.
 - [Tech stack](./tech-stack.md): the technologies in use, with their docs and ADRs.
 - [Codebase](./codebase.md): where code lives and what may import what.
 - [Pull requests](./pull-requests.md): how changes reach `main`.
