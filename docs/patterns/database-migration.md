@@ -30,18 +30,27 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
 3. `DATABASE_URL`, `SHADOW_DATABASE_URL` and `ROOT_DATABASE_URL` are in the service's `.env.development`. The service connects as its own role. The root URL is the local superuser, which Graphile Migrate uses only to recreate the shadow database and on `db:reset`.
 4. `.gmrc`'s `afterAllMigrations` writes `schema.sql` at the package root with `pg_dump --schema-only`, run inside the Postgres container (`docker compose exec -T postgres pg_dump …`), so the host needs no Postgres tools.
 
+### Naming
+
+5. Names are `snake_case`, and table names are plural (`tournaments`, `match_players`).
+6. Every table has an `id uuid primary key` with no default: the ID is generated in code (see [Vertical slices](./vertical-slice.md)).
+7. A table that records when a row was written has `created_at timestamptz not null default now()`.
+8. A foreign key column is named after the singular of the table it refers to, with `_id` (`tournament_id`).
+9. Tables go in the `public` schema. Each service has its own database, and graphile-worker and Graphile Migrate keep to their own schemas.
+10. Columns keep their `snake_case` names in the schema. Queries alias them to camelCase (see [Vertical slices](./vertical-slice.md)).
+
 ### Writing a migration
 
-5. Write the change in `current.sql` with `db:watch` running. `current.sql` runs again on every save, so it must be safe to run repeatedly: start with an undo section that drops what the migration creates (`drop … if exists … cascade`), followed by the change itself. Where a statement can be idempotent on its own (`create or replace function`), use that form.
-6. Never edit a committed migration: the hash chain detects it. Any change to the schema, including fixing a mistake in a committed migration, is a new migration.
-7. Migrations hold structure, and only the data the schema needs, such as lookup rows. Never put seed or test data in a migration.
+11. Write the change in `current.sql` with `db:watch` running. `current.sql` runs again on every save, so it must be safe to run repeatedly: start with an undo section that drops what the migration creates (`drop … if exists … cascade`), followed by the change itself. Where a statement can be idempotent on its own (`create or replace function`), use that form.
+12. Never edit a committed migration: the hash chain detects it. Any change to the schema, including fixing a mistake in a committed migration, is a new migration.
+13. Migrations hold structure, and only the data the schema needs, such as lookup rows. Never put seed or test data in a migration.
 
 ### Committing
 
-8. Commit the migration with `graphile-migrate commit -m "<what it does>"` as the last step before the pull request is ready, so it takes the next number in the chain as late as possible.
-9. If `main` gains a migration before the pull request merges, run `graphile-migrate uncommit`, rebase onto `main`, and commit again, so the chain stays a single line.
-10. Commit the regenerated `schema.sql` with the migration, so reviewers see the schema change as a diff.
-11. `current.sql` must hold only comments when the pull request merges. CI fails if any service's `migrations/current.sql` contains anything else.
+14. Commit the migration with `graphile-migrate commit -m "<what it does>"` as the last step before the pull request is ready, so it takes the next number in the chain as late as possible.
+15. If `main` gains a migration before the pull request merges, run `graphile-migrate uncommit`, rebase onto `main`, and commit again, so the chain stays a single line.
+16. Commit the regenerated `schema.sql` with the migration, so reviewers see the schema change as a diff.
+17. `current.sql` must hold only comments when the pull request merges. CI fails if any service's `migrations/current.sql` contains anything else.
 
 ## Exemplar
 

@@ -32,8 +32,8 @@ A service's behaviour is tested through its own API, in-process, against the rea
    - `db`: a fresh, empty database for this test, cloned from the service's migrated template and dropped afterwards;
    - `client`: the app from `createApp(deps)`, wrapped in Hono's `testClient`;
    - `network`: the MSW server, reset after the test;
-   - `runJobs`: runs the service's queued jobs;
-   - `clock`: fixed at a constant instant by default, which a test can `set()` or `advance()`;
+   - `runJobs`: runs the service's queued jobs (rule 11);
+   - `clock`: fixed at `2030-01-01T00:00:00Z` by default, far enough from real time that any accidental use of the system clock shows. It has `now()`, `set(instant)` and `advance(milliseconds)`, and works with `Date` until the choice between `Date` and `Temporal` is made;
    - `captureLogs`: the log records written during the test, for the rare test that asserts a log line (rule 19).
 
    Ask only for the fixtures the test uses. They are set up lazily.
@@ -50,7 +50,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Asserting
 
 10. Assert only through what the service exposes: the response, its problem details, a query's result, and requests recorded by an MSW override. Never query a table to check a result.
-11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Test a job slice by queuing its job and calling `runJobs()`.
+11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
 12. Use explicit matchers: `toEqual`, or `toMatchObject` when only some fields matter. Never use snapshots.
 
 ### The direct database escape hatch
