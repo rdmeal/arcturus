@@ -9,7 +9,7 @@ How lint works in this repository, and how to silence it when you must. Lint is 
 ## Where it's configured
 
 - **`vite.config.ts`**, in its `lint` block: the plugins, the rules, and `overrides` for test-only files. Test-only files are the ones [Service API tests](../patterns/service-api-test.md) rule 2 lists: `*.test.ts`, anything under a `test/` folder, `*.handlers.ts` and `packages/service-testing`.
-- **`tools/lint-rules`** (`@arcturus/lint-rules`): the repository's own rules, as an Oxlint JS plugin named `arcturus`. Each rule has unit tests next to it.
+- **`tools/lint-rules`** (`@arcturus/lint-rules`): the repository's own rules, as an Oxlint JS plugin named `arcturus`. Each rule has unit tests next to it. Look for an established plugin before writing a rule here: see [Prefer established lint plugins, and write a local rule only when none fits](../adr/0046-prefer-established-lint-plugins-over-local-rules.md).
 
 ## Disable comments
 
