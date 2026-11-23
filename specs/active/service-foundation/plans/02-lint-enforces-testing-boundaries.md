@@ -56,7 +56,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - **Tests:** none committed. Before committing, temporarily add a `beforeEach`, an `expect(x).toMatchSnapshot()` and an `import … from "./test/direct-db.ts"` to `services/example/src/health.test.ts`, see each fail, then revert.
   - **Check:** `vp check`
 
-- [ ] **3. Fail on disable comments that no longer suppress anything**
+- [x] **3. Fail on disable comments that no longer suppress anything**
   - **Goal:** an unused `oxlint-disable…` or `eslint-disable…` directive fails `vp check`.
   - **Files:** `vite.config.ts`: `lint.options.reportUnusedDisableDirectives: "error"`.
   - **Read first:** none

@@ -14,7 +14,7 @@ const consoleDestination = new Writable({
 
 export function createServiceTest<
   TConfig,
-  // oxlint-disable-next-line typescript/no-explicit-any -- any app's env and schema must fit.
+  // `any`, so that every app's env and schema fit.
   TApp extends Hono<any, any, any>,
 >(options: {
   parseConfig: (source: Record<string, string | undefined>) => TConfig;

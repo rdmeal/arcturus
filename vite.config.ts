@@ -85,6 +85,7 @@ export default defineConfig({
       typeCheck: true,
       // Oxlint reports most rules as warnings; fail `vp check` on them too.
       denyWarnings: true,
+      reportUnusedDisableDirectives: "error",
     },
     // A later override replaces an earlier one's options for the files it matches.
     overrides: [
