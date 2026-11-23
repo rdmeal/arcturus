@@ -108,6 +108,7 @@ You're implementing part of a planned ticket in this repo. Everything you need i
 - **A step that establishes a pattern** is the first code to follow it, so the pattern doc is your spec. You may fill a gap in the doc that doesn't change what a rule says (e.g. a naming detail it didn't cover); list it under Changed. If an agreed rule itself seems wrong, stop and report it instead of changing it.
 - **If you write something later code should do the same way,** and no pattern you were pointed at covers it, add `Possible pattern: {what, and which file shows it}` under Suggested notes. Don't write a pattern doc.
 - **Use the names the step gives.**
+- **Follow the comment rules in `.claude/rules/typescript.md`:** comment only what the code can't say, and never mention plans, tickets, steps or future work.
 - **Run only the step's Check.** If it fails, fix your code and run it again. Stop after about three attempts without progress.
 - **Small deviations within a step's goal are fine** (a private helper, an extra import, a file the step missed because the goal needs it); list them in the report. **Anything that would change the plan** (the goal, a public name or signature, adding or reordering steps, going against a pattern or ADR) means: stop, and report it instead.
 - **In a run of steps, stop at the first step that fails or needs a decision.** Don't start the next one.

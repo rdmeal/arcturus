@@ -1,5 +1,15 @@
 import { defineConfig } from "vite-plus";
 
+// Same globs as `pnpm-workspace.yaml`.
+const workspaceGlobs = [
+  "apps/*",
+  "services/*",
+  "packages/*",
+  "games/*/service",
+  "games/*/agents",
+  "tools/*",
+];
+
 const ignorePatterns = ["scratchpad/**"];
 
 export default defineConfig({
@@ -21,7 +31,7 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   test: {
-    // The workspace has no tests yet. Remove this once the first test exists.
-    passWithNoTests: true,
+    // Every workspace package is a Vitest project, named by its package name.
+    projects: workspaceGlobs,
   },
 });

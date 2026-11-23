@@ -29,3 +29,10 @@ Every package has its own `package.json` and declares everything it imports ([Or
 ## Inside a service
 
 Every service has the same shape: vertical slices in `src/<area>/<slice>/`, one per command, query or job, behind a task-based API (`POST` commands, `GET` queries, at `/<area>/<slice>`); dependencies wired by hand in `main.ts`; lifecycle and health checks from a shared `service-runtime` package. How to write each part is in [`patterns/`](../patterns/), and the reasons in [Structure services as vertical slices with a task-based API](../adr/0021-structure-services-as-vertical-slices.md) and the ADRs that follow it.
+
+Two packages are shared by every service:
+
+- **`packages/service-runtime`** (`@arcturus/service-runtime`): server start-up, graceful shutdown, health checks, the logger, settings parsing and the telemetry entry point.
+- **`packages/service-testing`** (`@arcturus/service-testing`): the test harness that API tests are built on. It is only ever a dev dependency.
+
+`services/example` is a temporary example service. It sets the patterns' exemplars until real services replace it.

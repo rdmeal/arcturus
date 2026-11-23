@@ -1,0 +1,19 @@
+{
+  "name": "@arcturus/example-service",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --import @arcturus/service-runtime/telemetry src/main.ts",
+    "start": "node --import @arcturus/service-runtime/telemetry src/main.ts"
+  },
+  "dependencies": {
+    "@arcturus/service-runtime": "workspace:*",
+    "dotenv": "^18.0.10",
+    "hono": "^4.13.18",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@arcturus/service-testing": "workspace:*",
+    "@types/node": "^26.6.6"
+  }
+}
