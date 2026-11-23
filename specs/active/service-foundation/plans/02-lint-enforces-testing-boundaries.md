@@ -30,7 +30,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
 
 ## Steps
 
-- [ ] **1. Ban test code and test libraries from production code**
+- [x] **1. Ban test code and test libraries from production code**
   - **Goal:** a non-test `.ts` file that imports test-only code or a test library fails `vp check`, with a message pointing to service-api-test rule 3. The repo stays green, since no production file imports any of them today.
   - **Files:** `vite.config.ts`: in `lint`, add `overrides`:
     - one override for `**/*.ts` with `no-restricted-imports` → `patterns`:
@@ -129,3 +129,5 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
 - [ ] The repo-wide rule that every disable comment states its reason has a home in the contributor docs, and the TypeScript rule for Claude points to it in one line: `docs/develop/linting.md` and `.claude/rules/typescript.md` (step 5)
 
 ## Notes
+
+- 2026-11-23: Inside Claude's sandbox, a bare `vp check` fails on the sandbox-only placeholder files at the repo root (`.claude/loop.md` and others). Run `vp check vite.config.ts services packages tools docs specs` there instead. Outside the sandbox, `vp check` works as written.
