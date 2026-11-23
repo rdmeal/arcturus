@@ -136,7 +136,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
     - The manual smoke check: in one command, start `dev` in the background, wait for the `listening` line, `curl -sf localhost:3900/health/live` and `/health/ready`, then send SIGTERM and see the process exit. Run it without `.env.development` too, and see it fail with a readable message about `PORT`.
     - Also run it with `LOG_FORMAT=nope` and see the readable error.
 
-- [ ] **4. service-testing package: the `client` fixture and the example service's first API test**
+- [x] **4. service-testing package: the `client` fixture and the example service's first API test**
   - **Goal:** `@arcturus/service-testing` exports `createServiceTest`. The example service's API test calls `/health/live` through the `client` fixture, with config built by `parseConfig` from test values, and test logs go pretty through `console`. Rule 4 of the API test pattern matches the factory. The build stays green.
   - **Files:**
     - `packages/service-testing/package.json`: name `@arcturus/service-testing`, `exports` → `./src/index.ts`. Dependencies: `@arcturus/service-runtime` (`workspace:*`), `hono`, and `vite-plus` as a peer dependency.
@@ -186,3 +186,4 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 - 2026-11-23: Step 3's smoke check is `scratchpad/smoke-example-service.sh` (git-ignored), which the maintainer runs with `!`, because Claude's sandbox can't read `.env.development`. It proves the invalid-config path with `PORT=abc` and `LOG_FORMAT=nope` rather than by removing `.env.development`. It passed on 2026-11-23.
 - 2026-11-23: `PORT` is a digits-only string converted to a number (`z.string().regex(...).transform(Number).pipe(...)`), because zod 4's `z.coerce.number()` can't follow `z.string().pipe()`, and coercion would turn an empty `PORT` into 0.
 - 2026-11-23: A config error is logged before `configureLog` runs, so it comes out as a JSON `fatal` line even locally. It's readable, but includes the stack.
+- 2026-11-23: In the installed Vitest (5.1), a test overrides the `config` fixture with `test.override('config', parseConfig({ ... }))`, because `test.scoped` is deprecated. Rule 5 of the service API test pattern says only "fixture option", and could name this once a test first overrides config.
