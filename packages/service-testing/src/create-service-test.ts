@@ -5,19 +5,19 @@ import type { Hono } from "hono";
 import { testClient } from "hono/testing";
 import { test as baseTest } from "vite-plus/test";
 
-// Vitest attaches each `console.log` line to the running test and shows it only if the test fails.
+// oxlint-disable-next-line typescript/no-explicit-any -- `any`, so that every app's env and schema fit.
+type AnyHono = Hono<any, any, any>;
+
 const consoleDestination = new Writable({
   write(chunk, _encoding, done) {
+    // oxlint-disable-next-line eslint/no-console -- Vitest attaches each `console.log` line to the running test and shows it only if the test fails.
     console.log(String(chunk).trimEnd());
     done();
   },
 });
 
-export function createServiceTest<
-  TConfig,
-  // `any`, so that every app's env and schema fit.
-  TApp extends Hono<any, any, any>,
->(options: {
+// oxlint-disable-next-line typescript/explicit-module-boundary-types -- Vitest's `extend` returns a type built from helpers it doesn't export
+export function createServiceTest<TConfig, TApp extends AnyHono>(options: {
   parseConfig: (source: Record<string, string | undefined>) => TConfig;
   testConfig: Record<string, string>;
   createApp: (fixtures: { config: TConfig }) => TApp;

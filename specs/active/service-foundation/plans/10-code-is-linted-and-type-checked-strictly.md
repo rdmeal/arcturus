@@ -83,7 +83,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - **Read first:** [ADR 0047](../../../../docs/adr/0047-lint-with-strict-categories-and-named-picks.md), [child-process test](../../../../docs/patterns/child-process-test.md)
   - **Tests:** the existing server tests prove that the rebuilt server still listens, drains and shuts down. The example service's health test proves that the config fixture still works.
   - **Check:** `vp lint`, then `vp test`
-- [ ] **4. Turn on the restriction picks, and fix what they find**
+- [x] **4. Turn on the restriction picks, and fix what they find**
   - **Goal:** the six `restriction` picks are on, each with a one-line reason, and their exceptions are in place. Only the hard-timeout exit stays a `process.exit`. The `any` disable comment is back.
   - **Files:**
     - `vite.config.ts`, in `rules`, each pick with the reason from the ticket's Notes:
@@ -156,7 +156,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
       - the four categories as errors, and the categories that stay off;
       - the plugins;
       - that every rule turned on or off by name has its reason in `vite.config.ts`, the one home for the rule list, so the guide doesn't copy it;
-      - the exceptions: `no-magic-numbers` off in test-only files, `no-console` off in `tools/`, and default exports allowed in `vite.config.ts` and the lint plugin's entry point. Any other exception is a disable comment.
+      - the common disable comments: Hono route builders (`health`, `createApp`, each `<slice>Route` and area router) disable `typescript/explicit-module-boundary-types`, because a Hono app's type is its routes, inferred for the RPC client. Then the exceptions: `no-magic-numbers` off in test-only files, `no-console` off in `tools/`, and default exports allowed in `vite.config.ts` and the lint plugin's entry point. Any other exception is a disable comment.
       - a link to ADR 0047;
       - a mention that Oxfmt sorts imports, if it fits there; otherwise the formatter's home.
     - `docs/develop/tech-stack.md`: link ADRs 0047 and 0048 from the right rows. That's the Toolchain row for lint, and the Language row or a new type-checking row for the compiler options.
@@ -192,3 +192,12 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - `startFixture` rejects from `child.once("exit")` instead of `exited.then`, so step 5 has one `.then` fewer to rewrite.
   - `telemetry.ts` keeps `export {}`, with a disable comment for `unicorn/require-module-specifiers`, because an empty file fails `unicorn/no-empty-file`. It's the `--import` entry point for the example service's scripts.
   - `createServer`'s request listener wraps hono's listener in `void`, because `no-misused-promises` flags an async request listener. Hono's listener catches a failed request itself.
+- 2026-11-23: Step 4: the developer chose a disable comment on each function whose return type can't sensibly be written by hand, rather than a config override or a derived type alias.
+  - Hono route builders get the reason "a Hono app's type is its routes, inferred so the RPC client follows them". That covers `health`, `createApp`, and every later `<slice>Route` and area router.
+  - `createServiceTest` gets the reason that Vitest's `extend` type is built from helpers it doesn't export. Both a named `TestAPI<…>` return type and the object form of `extend` failed to type-check.
+  - Step 6's linting guide entry now mentions the Hono case.
+- 2026-11-23: Step 4 left the code in this shape:
+  - The `any` disable comment in `create-service-test.ts` now sits on a private `type AnyHono = Hono<any, any, any>`.
+  - `services/example/src/config.ts` declares `interface Config` and `parseConfig(): Config`, instead of `type Config = ReturnType<typeof parseConfig>`.
+  - Shutdown no longer calls `process.exit(0)` after a clean close. All five server tests pass with the process exiting by itself.
+- 2026-11-23: Possible pattern update: [vertical slice](../../../../docs/patterns/vertical-slice.md) rules 8 and 9 could say that `<slice>Route` and area routers carry the `explicit-module-boundary-types` disable comment. Raise it at `/finish-ticket`.

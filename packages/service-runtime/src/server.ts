@@ -6,7 +6,8 @@ import { log } from "./log.ts";
 
 /**
  * Serves `app`, resolving once it is listening. On SIGTERM or SIGINT it shuts
- * down gracefully and exits 0, or exits 1 if that outlasts `shutdownTimeoutMs`.
+ * down gracefully, so the process exits 0 once nothing is left running, or it
+ * exits 1 if that outlasts `shutdownTimeoutMs`.
  */
 export function startServer(options: {
   app: { fetch: (req: Request) => Response | Promise<Response> };
@@ -44,9 +45,13 @@ export function startServer(options: {
   };
 
   const shutdown = () => {
-    const timer = setTimeout(() => process.exit(1), shutdownTimeoutMs);
+    const timer = setTimeout(() => {
+      // oxlint-disable-next-line unicorn/no-process-exit -- something outlasted the timeout and holds the event loop, so the process can't drain and exit by itself
+      process.exit(1);
+    }, shutdownTimeoutMs);
     timer.unref();
-    void close().then(() => process.exit(0));
+    // No exit after a clean close: the process exits once its output and telemetry have flushed.
+    void close();
   };
 
   return new Promise((resolve, reject) => {

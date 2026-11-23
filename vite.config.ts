@@ -91,6 +91,19 @@ export default defineConfig({
       "typescript/prefer-readonly-parameter-types": "off",
       // Test `describe` blocks grow long by design; function size is judged in review.
       "eslint/max-lines-per-function": "off",
+      // Picked from `restriction`:
+      // `any` switches off type checking for everything it touches.
+      "typescript/no-explicit-any": "error",
+      // `!` asserts a value is there without checking; handle the missing case instead.
+      "typescript/no-non-null-assertion": "error",
+      // An exported function's inferred type can change by accident, and with it the package's API.
+      "typescript/explicit-module-boundary-types": "error",
+      // Services log through service-runtime's logger, so output is structured and traced.
+      "eslint/no-console": "error",
+      // Exits go through service-runtime's lifecycle, which lets output and telemetry flush.
+      "unicorn/no-process-exit": "error",
+      // Named exports keep one name per thing across imports, and refactor safely.
+      "import/no-default-export": "error",
     },
     options: {
       typeAware: true,
@@ -114,6 +127,16 @@ export default defineConfig({
           "vitest/no-hooks": "error",
           "vitest/no-restricted-matchers": ["error", snapshotMatcherBans],
         },
+      },
+      {
+        files: ["tools/**"],
+        // Repository tools are command-line scripts that write to the terminal.
+        rules: { "eslint/no-console": "off" },
+      },
+      {
+        files: ["vite.config.ts", "tools/lint-rules/src/index.ts"],
+        // Vite+ and Oxlint's JS plugin loader read these files' default export.
+        rules: { "import/no-default-export": "off" },
       },
     ],
   },

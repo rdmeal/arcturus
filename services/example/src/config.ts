@@ -9,15 +9,20 @@ const schema = z.object({
   ...logSettings,
 });
 
-export function parseConfig(source: Record<string, string | undefined>) {
+type Settings = z.output<typeof schema>;
+
+export interface Config {
+  readonly port: number;
+  readonly log: Readonly<{ level: Settings["LOG_LEVEL"]; format: Settings["LOG_FORMAT"] }>;
+}
+
+export function parseConfig(source: Record<string, string | undefined>): Config {
   const settings = parseSettings(schema, source);
   return Object.freeze({
     port: settings.PORT,
     log: Object.freeze({ level: settings.LOG_LEVEL, format: settings.LOG_FORMAT }),
   });
 }
-
-export type Config = ReturnType<typeof parseConfig>;
 
 export function loadConfig(): Config {
   const packageFolder = join(import.meta.dirname, "..");
