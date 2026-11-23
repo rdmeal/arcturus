@@ -1,6 +1,6 @@
 ---
 type: spec
-status: ready
+status: in-progress
 scopes: [arcturus]
 created: 2026-11-23
 ---
