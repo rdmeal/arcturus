@@ -8,8 +8,28 @@ How lint works in this repository, and how to silence it when you must. Lint is 
 
 ## Where it's configured
 
-- **`vite.config.ts`**, in its `lint` block: the plugins, the rules, and `overrides` for test-only files. Test-only files are the ones [Service API tests](../patterns/service-api-test.md) rule 2 lists: `*.test.ts`, anything under a `test/` folder, `*.handlers.ts` and `packages/service-testing`.
+- **`vite.config.ts`**, in its `lint` block: the categories, the plugins, the rules, and `overrides` for test-only files and the [exceptions](#the-rule-set). Test-only files are the ones [Service API tests](../patterns/service-api-test.md) rule 2 lists: `*.test.ts`, anything under a `test/` folder, `*.handlers.ts` and `packages/service-testing`.
 - **`tools/lint-rules`** (`@arcturus/lint-rules`): the repository's own rules, as an Oxlint JS plugin named `arcturus`. Each rule has unit tests next to it. Look for an established plugin before writing a rule here: see [Prefer established lint plugins, and write a local rule only when none fits](../adr/0046-prefer-established-lint-plugins-over-local-rules.md).
+
+## The rule set
+
+Lint is strict, in code and tests alike: see [Lint with Oxlint's strict categories, plus named picks](../adr/0047-lint-with-strict-categories-and-named-picks.md).
+
+- **Categories:** Oxlint's `correctness`, `suspicious`, `pedantic` and `perf` are on, as errors. `style`, `restriction` and `nursery` are off as categories, because their rules contradict each other or aren't stable.
+- **Plugins:** `unicorn`, `typescript`, `oxc`, `vitest`, `import`, `node` and `promise`.
+- **Named picks:** rules from `style` and `restriction` that we want, such as `no-explicit-any`, `no-console`, `no-magic-numbers` and `func-style`, are turned on one by one.
+- **Rules turned off:** a rule inside a chosen category that fights our code is turned off by name.
+
+`vite.config.ts` is the list: every pick and every rule turned off has its one-line reason next to it there. To change one, edit its line and its reason.
+
+Exceptions are few:
+
+- **Test-only files** turn off `no-magic-numbers`, because a test's numbers are its data.
+- **`tools/`** turns off `no-console`, because its scripts write to the terminal.
+- **`vite.config.ts` and the lint plugin's entry point** may use a default export, because their tools read it.
+- **Everything else is a disable comment** with its reason (see below). The common one: a Hono route builder (`health`, `createApp`, each `<slice>Route` and area router) disables `typescript/explicit-module-boundary-types`, because a Hono app's type is its routes, inferred so the RPC client follows them.
+
+Imports are sorted by the formatter, not by lint, so `vp fmt` fixes their order. The TypeScript compiler options are strict too: see [Turn on the strictest TypeScript compiler options](../adr/0048-turn-on-the-strictest-typescript-compiler-options.md).
 
 ## Disable comments
 

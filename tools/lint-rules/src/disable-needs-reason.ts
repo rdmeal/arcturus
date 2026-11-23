@@ -1,12 +1,12 @@
 import { defineRule } from "vite-plus/lint/plugins";
 
 // Anchored at the start, after any block-comment `*`, so prose that mentions a directive isn't one.
-const directive = /^[\s*]*(?:oxlint|eslint)-(?:disable|enable)(?:-line|-next-line)?(?:\s|$)/;
-const reason = /\s--\s*\S/;
+const directive = /^[\s*]*(?:oxlint|eslint)-(?:disable|enable)(?:-line|-next-line)?(?:\s|$)/u;
+const reason = /\s--\s*\S/u;
 
-export function isDirectiveWithoutReason(commentText: string): boolean {
+export const isDirectiveWithoutReason = (commentText: string): boolean => {
   return directive.test(commentText) && !reason.test(commentText);
-}
+};
 
 export const disableNeedsReason = defineRule({
   meta: {

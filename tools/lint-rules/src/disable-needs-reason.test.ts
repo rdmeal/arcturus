@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
+
 import { isDirectiveWithoutReason } from "./disable-needs-reason.ts";
 
 // Comment text as the parser gives it: without the `//` or `/* */` delimiters.
@@ -32,10 +33,12 @@ describe("isDirectiveWithoutReason", () => {
       "eslint-disable-next-line",
     ];
 
-    expect(forms.filter((form) => !isDirectiveWithoutReason(` ${form} no-debugger`))).toEqual([]);
+    expect(forms.filter((form) => !isDirectiveWithoutReason(` ${form} no-debugger`))).toStrictEqual(
+      [],
+    );
     expect(
       forms.filter((form) => isDirectiveWithoutReason(` ${form} no-debugger -- wanted`)),
-    ).toEqual([]);
+    ).toStrictEqual([]);
     expect(isDirectiveWithoutReason("\n * oxlint-disable no-debugger\n ")).toBe(true);
   });
 

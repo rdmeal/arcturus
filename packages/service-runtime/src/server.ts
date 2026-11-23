@@ -1,48 +1,75 @@
-import type { Server } from "node:http";
-import { serve } from "@hono/node-server";
+import { createServer } from "node:http";
+
+import { getRequestListener } from "@hono/node-server";
+
 import { log } from "./log.ts";
+
+const idleSweepIntervalMs = 20;
 
 /**
  * Serves `app`, resolving once it is listening. On SIGTERM or SIGINT it shuts
- * down gracefully and exits 0, or exits 1 if that outlasts `shutdownTimeoutMs`.
+ * down gracefully, so the process exits 0 once nothing is left running, or it
+ * exits 1 if that outlasts `shutdownTimeoutMs`.
  */
-export function startServer(options: {
+export const startServer = (options: {
   app: { fetch: (req: Request) => Response | Promise<Response> };
   port: number;
   shutdownTimeoutMs?: number;
-}): Promise<{ port: number; close: () => Promise<void> }> {
+}): Promise<{ port: number; close: () => Promise<void> }> => {
   const { app, port, shutdownTimeoutMs = 10_000 } = options;
+  // Built here rather than by `serve`, whose return type includes HTTP/2
+  // servers, which have no `closeIdleConnections`.
+  const listener = getRequestListener(app.fetch);
+  const server = createServer((incoming, outgoing) => {
+    // The listener catches a failed request and answers it itself, as it does under `serve`.
+    void listener(incoming, outgoing);
+  });
 
-  return new Promise((resolve) => {
-    // Without `createServer` options, `serve` makes a plain HTTP/1 server.
-    const server = serve({ fetch: app.fetch, port }, (info) => {
-      let closing: Promise<void> | undefined;
-      const close = () => {
-        closing ??= (async () => {
-          log.info("shutting down");
-          const stopped = new Promise<void>((done) => server.close(() => done()));
-          // A connection that finishes its request stays open (keep-alive), so
-          // keep closing connections as they go idle until none are left.
-          const sweep = setInterval(() => server.closeIdleConnections(), 20);
-          server.closeIdleConnections();
-          await stopped;
-          clearInterval(sweep);
-        })();
-        return closing;
-      };
+  let closing: Promise<void> | undefined;
+  const close = () => {
+    closing ??= (async () => {
+      log.info("shutting down");
+      const stopped = new Promise<void>((resolve) => {
+        server.close(() => {
+          resolve();
+        });
+      });
+      // A connection that finishes its request stays open (keep-alive), so
+      // keep closing connections as they go idle until none are left.
+      const sweep = setInterval(() => {
+        server.closeIdleConnections();
+      }, idleSweepIntervalMs);
+      server.closeIdleConnections();
+      await stopped;
+      clearInterval(sweep);
+    })();
+    return closing;
+  };
 
-      const shutdown = () => {
-        const timer = setTimeout(() => process.exit(1), shutdownTimeoutMs);
-        timer.unref();
-        void close().then(() => process.exit(0));
-      };
+  const shutdown = () => {
+    const timer = setTimeout(() => {
+      // oxlint-disable-next-line unicorn/no-process-exit -- something outlasted the timeout and holds the event loop, so the process can't drain and exit by itself
+      process.exit(1);
+    }, shutdownTimeoutMs);
+    timer.unref();
+    // No exit after a clean close: the process exits once its output and telemetry have flushed.
+    void close();
+  };
+
+  return new Promise((resolve, reject) => {
+    server.listen(port, () => {
+      const address = server.address();
+      if (address === null || typeof address === "string") {
+        reject(new Error(`Expected a TCP address, got ${String(address)}`));
+        return;
+      }
       // Registered before `listening` is logged, so a signal sent as soon as a
       // caller sees that line is already handled.
       process.once("SIGTERM", shutdown);
       process.once("SIGINT", shutdown);
 
-      log.info({ port: info.port }, "listening");
-      resolve({ port: info.port, close });
-    }) as Server;
+      log.info({ port: address.port }, "listening");
+      resolve({ port: address.port, close });
+    });
   });
-}
+};
