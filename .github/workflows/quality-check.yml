@@ -97,6 +97,9 @@ jobs:
 
       - run: vp run -r build
 
+      - name: Fail on purpose (temporary, to prove the quality gate fails)
+        run: exit 1
+
   workflow-lint:
     name: Workflow lint
     runs-on: ubuntu-latest
