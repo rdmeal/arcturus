@@ -56,7 +56,11 @@ Services log with pino and trace with OpenTelemetry, both set up by `service-run
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+No service annotates yet, so the exemplar is the runtime itself, and one test of a log line:
+
+- `packages/service-runtime/src/context.ts`, `annotate` and `withContextFields`: the fields kept in the active OpenTelemetry context, which pino's `mixin` reads (in `log.ts`).
+- `packages/service-runtime/src/service-app.ts`, `createServiceApp` and its request logging: one line per request, at `debug` for health requests, with a context scope opened for each request.
+- `services/example/src/request-log.test.ts`: a test whose subject is the logging, asserting its line with `captureLogs`.
 
 ## Related
 

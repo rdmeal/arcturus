@@ -56,7 +56,7 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 The example service, which is temporary and has no database or clients yet:
 
 - `services/example/src/config.ts`, `parseConfig` and `loadConfig`: the schema with `logSettings`, the frozen camelCase config, and the env files loaded from the package folder into a plain object.
-- `services/example/src/app.ts`, `Deps` and `createApp`: the health endpoints mounted from `service-runtime`, and `AppType`.
+- `services/example/src/app.ts`, `Deps` and `createApp`: the app started from `createServiceApp()`, and `AppType`.
 - `services/example/src/main.ts`: `loadConfig()`, `configureLog`, `startServer`, and a `ConfigError` logged as fatal.
 - `services/example/package.json`: the `dev` and `start` scripts with the telemetry `--import`.
 

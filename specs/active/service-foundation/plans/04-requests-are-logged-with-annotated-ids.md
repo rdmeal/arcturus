@@ -99,14 +99,14 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
     - "captureLogs returns only the records written during its own test" (sends a request, then asserts its line is there and the earlier marker isn't).
   - **Check:** `vp test packages/service-testing/src/capture-logs.test.ts`, then `vp check`
 
-- [ ] **4. The example service's request-log test**
+- [x] **4. The example service's request-log test**
   - **Goal:** the example service shows its request line end to end, through the harness and `captureLogs`.
   - **Files:** `services/example/src/request-log.test.ts` (new).
   - **Read first:** [service-api-test](../../../../docs/patterns/service-api-test.md) rule 19.
   - **Tests:** "a health check is logged once, at debug, with method, matched route, status and duration". It sends `client.health.live.$get()` and asserts exactly one `"request completed"` record, with `level` debug, `method: "GET"`, `route: "/health/live"`, `status: 200` and a numeric `durationMs`.
   - **Check:** `vp test services/example/src/request-log.test.ts`, then `vp check`
 
-- [ ] **5. Package READMEs**
+- [x] **5. Package READMEs**
   - **Goal:** contributors can find what each package exports and how to call it, without reading its source. The build stays green.
   - **Files:**
     - `packages/service-runtime/README.md` (new, no frontmatter): what the package is, then its exports with their signatures:
@@ -126,7 +126,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
   - **Tests:** none.
   - **Check:** `vp check`
 
-- [ ] **6. Pattern exemplars**
+- [x] **6. Pattern exemplars**
   - **Goal:** the patterns' exemplars name the code this ticket wrote. Their rules were already updated during planning (see Notes).
   - **Files:**
     - `docs/patterns/observability.md`: Exemplar: `packages/service-runtime/src/context.ts` (`annotate`), `packages/service-runtime/src/service-app.ts` (`createServiceApp`, its request logging), and `services/example/src/request-log.test.ts`.
@@ -137,11 +137,11 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 
 **7. Acceptance criteria**, checked at the test boundary:
 
-- [ ] A request to the example service produces exactly one `info` line with method, matched route, status and duration: proven by "a request produces exactly one info line with method, matched route, status and duration" in `packages/service-runtime/src/service-app.test.ts`. End to end, it's proven by "a health check is logged once, at debug, with method, matched route, status and duration" in `services/example/src/request-log.test.ts`. Health is logged at `debug` by a planning decision, and it's the example service's only endpoint until ticket 06.
-- [ ] A field annotated during a request appears on every later log line of that request, and on no line of a concurrent request: proven by "an annotated field appears on every later log line in the scope" and "a field annotated in one scope never appears on a concurrent scope's lines" in `packages/service-runtime/src/context.test.ts`, and by "concurrent requests each carry only their own annotated fields" in `packages/service-runtime/src/service-app.test.ts`.
-- [ ] Annotated fields reach log lines with no OTel SDK running, as in tests: proven by the `context.test.ts` and `service-app.test.ts` tests above, which run without the SDK.
-- [ ] `captureLogs` returns only the records written during the test that asked for it, even when other tests run in the same worker: proven by "captureLogs returns only the records written during its own test" in `packages/service-testing/src/capture-logs.test.ts`.
-- [ ] The observability pattern's exemplar names the example service's use of annotation, or the runtime's middleware if the service has no annotating handler yet: proven by step 6's exemplar in `docs/patterns/observability.md`.
+- [x] A request to the example service produces exactly one `info` line with method, matched route, status and duration: proven by "a request produces exactly one info line with method, matched route, status and duration" in `packages/service-runtime/src/service-app.test.ts`. End to end, it's proven by "a health check is logged once, at debug, with method, matched route, status and duration" in `services/example/src/request-log.test.ts`. Health is logged at `debug` by a planning decision, and it's the example service's only endpoint until ticket 06.
+- [x] A field annotated during a request appears on every later log line of that request, and on no line of a concurrent request: proven by "an annotated field appears on every later log line in the scope" and "a field annotated in one scope never appears on a concurrent scope's lines" in `packages/service-runtime/src/context.test.ts`, and by "concurrent requests each carry only their own annotated fields" in `packages/service-runtime/src/service-app.test.ts`.
+- [x] Annotated fields reach log lines with no OTel SDK running, as in tests: proven by the `context.test.ts` and `service-app.test.ts` tests above, which run without the SDK.
+- [x] `captureLogs` returns only the records written during the test that asked for it, even when other tests run in the same worker: proven by "captureLogs returns only the records written during its own test" in `packages/service-testing/src/capture-logs.test.ts`.
+- [x] The observability pattern's exemplar names the example service's use of annotation, or the runtime's middleware if the service has no annotating handler yet: proven by step 6's exemplar in `docs/patterns/observability.md`.
 
 ## Notes
 
