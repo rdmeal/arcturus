@@ -33,7 +33,7 @@ Part of [the spec](../spec.md); delivers user stories 2 (readiness: database), 4
 - [ ] The time to create a database and pool per test is measured and recorded in the pull request. If it is too slow, fall back to one database per test file, as [Give every test a fresh database from a migrated template](../../../../docs/adr/0035-give-every-test-a-fresh-database-from-a-template.md) allows.
 - [ ] Getting started and the commands guide say that `vp test` needs Docker running. The Claude Code contributor guide says database-backed tests run outside Claude's sandbox.
 - [ ] The exemplars of these patterns name the example service's code: vertical slices, database transactions, service API tests and service test data.
-- [ ] The test harness package has a README describing the container, the templates, cloning and the fixtures.
+- [ ] The test harness package's README, started in ticket 04, also describes the container, the templates, cloning and the new fixtures.
 
 ## Notes
 

@@ -12,21 +12,21 @@ Every fact lives in exactly one doc. Anywhere else, link to it, or give at most 
 
 ## Where a doc goes
 
-| What it is                                            | Where it goes                                          |
-| ----------------------------------------------------- | ------------------------------------------------------ |
-| A guide for **contributors** (working on this repo)   | `docs/develop/`                                        |
-| A guide for **operators** (deploying and configuring) | `docs/operate/`                                        |
-| A guide for **authors** (games and players elsewhere) | `docs/extend/`                                         |
-| A guide for **users**                                 | `docs/use/`                                            |
-| A term                                                | `GLOSSARY.md` of the narrowest scope that uses it      |
-| The running parts and how they talk                   | `docs/ARCHITECTURE.md`                                 |
-| A technology in use, with its docs and ADR            | `docs/develop/tech-stack.md`                           |
-| Where code lives and what may import what             | `docs/develop/codebase.md`                             |
-| A decision and its reasons                            | an ADR in the owning scope's `docs/adr/`               |
-| How a kind of code is written                         | a pattern in `docs/patterns/` (or a scope's, rarely)   |
-| How to use a Claude skill                             | `docs/skills/`                                         |
-| Something only one scope needs (a game's rules, say)  | that scope's own `docs/`, in the same audience folders |
-| What a package is and how to run and test it          | the package's `README.md`                              |
+| What it is                                                          | Where it goes                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| A guide for **contributors** (working on this repo)                 | `docs/develop/`                                                     |
+| A guide for **operators** (deploying and configuring)               | `docs/operate/`                                                     |
+| A guide for **authors** (games and players elsewhere)               | `docs/extend/`                                                      |
+| A guide for **users**                                               | `docs/use/`                                                         |
+| A term                                                              | `GLOSSARY.md` of the narrowest scope that uses it                   |
+| The running parts and how they talk                                 | `docs/ARCHITECTURE.md`                                              |
+| A technology in use, with its docs and ADR                          | `docs/develop/tech-stack.md`                                        |
+| Where code lives and what may import what                           | `docs/develop/codebase.md`                                          |
+| A decision and its reasons                                          | an ADR in the owning scope's `docs/adr/`                            |
+| How a kind of code is written                                       | a pattern in `docs/patterns/` (or a scope's, rarely)                |
+| How to use a Claude skill                                           | `docs/skills/`                                                      |
+| Something only one scope needs (a game's rules, say)                | that scope's own `docs/`, in the same audience folders              |
+| What a package is, what it exports, and how to use, run and test it | the package's `README.md` (see [Package READMEs](#package-readmes)) |
 
 The roles are defined in the [glossary](../GLOSSARY.md), and the scopes in the [context map](../CONTEXT-MAP.md). Create an audience folder when its first doc is written. Arcturus-wide guides link down to scope docs rather than repeating them.
 
@@ -36,6 +36,16 @@ The roles are defined in the [glossary](../GLOSSARY.md), and the scopes in the [
 - **`docs/ARCHITECTURE.md`:** the system overview, read by contributors, authors and operators. It holds the platform's components and what each owns, how they communicate (including callbacks and delivery guarantees), the trust boundaries, and the extension points. Before adding something, ask: does it say what the running parts are, or how they talk? If not, it belongs elsewhere. Technology goes in [tech-stack.md](./tech-stack.md), code layout and service structure in [codebase.md](./codebase.md), rules in patterns, and decisions in ADRs. It stays one file until a section outgrows it.
 - **`CLAUDE.md`:** only what every Claude session needs: a map of the docs saying when to read each, the commands (imported from [commands.md](./commands.md)), and a few rules that apply everywhere. It changes only when a new kind of doc appears.
 - **`.claude/rules/`:** guidance for particular files, loaded when Claude touches them. A rule states a short constraint and links the ADR or pattern that owns it.
+
+## Package READMEs
+
+Every workspace package, in `packages/`, `services/`, `tools/` and `apps/`, has a `README.md`, written for contributors who use or change the package. It says:
+
+- what the package is and what it's for;
+- what it exports, and how to call each export: its signature and what it does;
+- how to run the package, if it runs, and how to test it.
+
+It says _what_ the package offers. _When_ and _why_ to use it belong to the patterns and ADRs, which the README links rather than restates. A package whose guide lives in `docs/develop/` keeps a short README that links that guide.
 
 ## Frontmatter
 

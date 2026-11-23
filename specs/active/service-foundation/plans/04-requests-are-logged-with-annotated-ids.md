@@ -106,7 +106,27 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
   - **Tests:** "a health check is logged once, at debug, with method, matched route, status and duration". It sends `client.health.live.$get()` and asserts exactly one `"request completed"` record, with `level` debug, `method: "GET"`, `route: "/health/live"`, `status: 200` and a numeric `durationMs`.
   - **Check:** `vp test services/example/src/request-log.test.ts`, then `vp check`
 
-- [ ] **5. Documentation**
+- [ ] **5. Package READMEs**
+  - **Goal:** contributors can find what each package exports and how to call it, without reading its source. The build stays green.
+  - **Files:**
+    - `packages/service-runtime/README.md` (new, no frontmatter): what the package is, then its exports with their signatures:
+      - `createServiceApp()` and what it installs (request logging, the health endpoints and, from ticket 07, the error handler);
+      - `annotate`;
+      - `log` and `configureLog`;
+      - `startServer`;
+      - `parseSettings`, `logSettings` and `ConfigError`;
+      - the `@arcturus/service-runtime/telemetry` entry point.
+
+      It ends with how to test the package. For when and how to use each export, it links the patterns (service-composition-root rule 12, observability) rather than restating their rules.
+
+    - `packages/service-testing/README.md` (new, no frontmatter): what the package is, that it is only ever a dev dependency, `createServiceTest` and its options, and the `config`, `client` and `captureLogs` fixtures, with `LogRecord`. It links the service-api-test pattern for how tests are written. Ticket 06 extends it with the container, templates and cloning.
+    - `tools/lint-rules/README.md` (new, no frontmatter): what the package is (the local Oxlint JS plugin, `@arcturus/lint-rules`), the rule it provides (`arcturus/disable-needs-reason`), how to test it, and a link to `docs/develop/linting.md`, which stays the home of what lint enforces.
+    - `services/example/README.md` (new, no frontmatter): a temporary example service with a message domain, which proves the runtime, the harness and the patterns in a real package and holds their exemplars until real services replace it. It says that it will be deleted, that it uses port 3900, and how to run it (`dev`) and test it. It doesn't link the spec, because the spec's folder moves to `specs/archive/` when the feature is done.
+  - **Read first:** the `writing-docs` skill, and `docs/develop/writing-docs.md#package-readmes` for what a README holds.
+  - **Tests:** none.
+  - **Check:** `vp check`
+
+- [ ] **6. Pattern exemplars**
   - **Goal:** the patterns' exemplars name the code this ticket wrote. Their rules were already updated during planning (see Notes).
   - **Files:**
     - `docs/patterns/observability.md`: Exemplar: `packages/service-runtime/src/context.ts` (`annotate`), `packages/service-runtime/src/service-app.ts` (`createServiceApp`, its request logging), and `services/example/src/request-log.test.ts`.
@@ -115,14 +135,15 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
   - **Tests:** none.
   - **Check:** `vp check`
 
-**6. Acceptance criteria**, checked at the test boundary:
+**7. Acceptance criteria**, checked at the test boundary:
 
 - [ ] A request to the example service produces exactly one `info` line with method, matched route, status and duration: proven by "a request produces exactly one info line with method, matched route, status and duration" in `packages/service-runtime/src/service-app.test.ts`. End to end, it's proven by "a health check is logged once, at debug, with method, matched route, status and duration" in `services/example/src/request-log.test.ts`. Health is logged at `debug` by a planning decision, and it's the example service's only endpoint until ticket 06.
 - [ ] A field annotated during a request appears on every later log line of that request, and on no line of a concurrent request: proven by "an annotated field appears on every later log line in the scope" and "a field annotated in one scope never appears on a concurrent scope's lines" in `packages/service-runtime/src/context.test.ts`, and by "concurrent requests each carry only their own annotated fields" in `packages/service-runtime/src/service-app.test.ts`.
 - [ ] Annotated fields reach log lines with no OTel SDK running, as in tests: proven by the `context.test.ts` and `service-app.test.ts` tests above, which run without the SDK.
 - [ ] `captureLogs` returns only the records written during the test that asked for it, even when other tests run in the same worker: proven by "captureLogs returns only the records written during its own test" in `packages/service-testing/src/capture-logs.test.ts`.
-- [ ] The observability pattern's exemplar names the example service's use of annotation, or the runtime's middleware if the service has no annotating handler yet: proven by step 5's exemplar in `docs/patterns/observability.md`.
+- [ ] The observability pattern's exemplar names the example service's use of annotation, or the runtime's middleware if the service has no annotating handler yet: proven by step 6's exemplar in `docs/patterns/observability.md`.
 
 ## Notes
 
-- 2026-11-23, during planning: [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md) was written, and the pattern rules were updated on this branch: observability rules 5 and 6 (a new rule, so later rules moved up by one), service-composition-root rules 12 and 17, error-handling rule 5, and service-api-test rule 19. Step 5 now only fills in exemplars, and the note for ticket 07 was dropped, since error-handling rule 5 already says the factory installs the error handler.
+- 2026-11-23, during planning: [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md) was written, and the pattern rules were updated on this branch: observability rules 5 and 6 (a new rule, so later rules moved up by one), service-composition-root rules 12 and 17, error-handling rule 5, and service-api-test rule 19. The documentation step (now step 6) only fills in exemplars, and the note for ticket 07 was dropped, since error-handling rule 5 already says the factory installs the error handler.
+- 2026-11-23, during planning: step 5 was added to give `service-runtime`, `service-testing`, `tools/lint-rules` and `services/example` their READMEs, following the new Package READMEs section of `docs/develop/writing-docs.md`. This is the first ticket to give `service-runtime` and `service-testing` an API that services call, and the other two had no README yet. The exemplars step became step 6, and acceptance criteria step 7. Ticket 06's README criterion now extends the harness README rather than creating it.
