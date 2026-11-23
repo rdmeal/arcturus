@@ -37,6 +37,7 @@ The first committed migration creates the example service's messages table, foll
 
 - **The maintainer writes the `.env.development` additions:** `DATABASE_URL`, `SHADOW_DATABASE_URL` and `ROOT_DATABASE_URL`. List them with their values.
 - **The root `.env`** may override the Postgres port, as the local development guide says.
+- **Show the `current.sql` repo check failing:** this is the first service with Graphile Migrate, so its pull request shows the "Repo checks" job failing once on a non-blank `current.sql`, then reverted. This is ticket 03's acceptance criterion, deferred here ([plan 03](../plans/03-ci-runs-parallel-jobs-behind-a-quality-gate.md)).
 - **The messages table's columns** are whatever ticket 06's send and get slices need: at least the ID, the message body and when it was created. Ticket 08 adds a delivered time in its own migration.
 - **Decisions:**
   - [Run infrastructure in Compose and services on the host](../../../../docs/adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md)
