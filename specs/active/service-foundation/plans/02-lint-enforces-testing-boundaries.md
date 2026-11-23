@@ -87,7 +87,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
     - Import Vitest APIs from `vite-plus/test`, as plan 01 settled. Also, before committing, temporarily remove a reason from a disable comment and see `vp check` fail, then revert.
   - **Check:** `vp install && vp test tools/lint-rules/src/disable-needs-reason.test.ts && vp check`
 
-- [ ] **5. Document lint in a contributor guide**
+- [x] **5. Document lint in a contributor guide**
   - **Goal:** `docs/develop/linting.md` is the home of the repo-wide rule that every disable comment states its reason, and lists each guard rail with the pattern rule it enforces. Other docs link to it.
   - **Files:**
     - `docs/develop/linting.md` (`type: guide`), for contributors:
