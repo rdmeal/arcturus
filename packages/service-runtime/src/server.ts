@@ -17,11 +17,9 @@ export function startServer(options: {
     // Without `createServer` options, `serve` makes a plain HTTP/1 server.
     const server = serve({ fetch: app.fetch, port }, (info) => {
       let closing: Promise<void> | undefined;
-      // Each later shutdown step (worker, pool, telemetry) goes in here, in order.
       const close = () => {
         closing ??= (async () => {
           log.info("shutting down");
-          // Stop accepting, then wait for requests in flight to finish.
           const stopped = new Promise<void>((done) => server.close(() => done()));
           // A connection that finishes its request stays open (keep-alive), so
           // keep closing connections as they go idle until none are left.
