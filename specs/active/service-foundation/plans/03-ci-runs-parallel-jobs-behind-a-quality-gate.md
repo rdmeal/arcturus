@@ -30,7 +30,7 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
 
 ## Steps
 
-- [ ] **1. Repo check: every migration package's `current.sql` holds only comments**
+- [x] **1. Repo check: every migration package's `current.sql` holds only comments**
   - **Goal:** a `tools/repo-checks` package whose `main.ts` exits non-zero, naming the package, when any migration package's `graphile-migrate status --skipDatabase` fails, and passes when there are no migration packages. CI doesn't change yet, and the build stays green.
   - **Files:**
     - `tools/repo-checks/package.json` (`@arcturus/repo-checks`, private, `type: module`; `@types/node` as a dev dependency, the same version as `tools/lint-rules`).
@@ -46,7 +46,7 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
     - `finds services and game services that have a .gmrc`
     - `ignores packages without a .gmrc`
   - **Check:** `vp test tools/repo-checks && vp check && node tools/repo-checks/src/main.ts`, the last of which passes with no migration packages.
-- [ ] **2. Split quality-check into parallel jobs behind the quality gate**
+- [x] **2. Split quality-check into parallel jobs behind the quality gate**
   - **Goal:** `quality-check.yml` runs `check`, `test` (not sharded yet), `build`, `workflow-lint` and `repo-checks` as parallel jobs, each with its own checkout and `setup-vp` (`cache: true`), ending in `quality-gate`.
   - **Files:** `.github/workflows/quality-check.yml`:
     - one job per check, with the ids and names in Context;
@@ -56,7 +56,7 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
   - **Read first:** [ADR 0045](../../../../docs/adr/0045-gate-pull-requests-on-one-quality-gate-job.md), [ADR 0020](../../../../docs/adr/0020-guard-the-dependency-supply-chain.md).
   - **Tests:** none in code. The workflow is proven by actionlint and on the pull request (step 5).
   - **Check:** `docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color`. If Docker isn't reachable from the session, the maintainer runs it, or it runs when the PR is opened.
-- [ ] **3. Shard the tests and merge their reports**
+- [x] **3. Shard the tests and merge their reports**
   - **Goal:** tests run in 2 shards writing blob reports, and `test-report` merges them into one result. The shard count is set only in the matrix list.
   - **Files:**
     - `.github/workflows/quality-check.yml`:
@@ -68,7 +68,7 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
   - **Read first:** [ADR 0020](../../../../docs/adr/0020-guard-the-dependency-supply-chain.md) (pin the new actions by SHA with a version comment, from releases at least a week old), Vitest's [sharding and merging reports guide](https://vitest.dev/guide/improving-performance#sharding).
   - **Tests:** none in code. Locally, `vp test --shard=1/2 --reporter=blob` and `--shard=2/2`, then `vp test --mergeReports`, to confirm the blob folder and that merging reports every test once.
   - **Check:** the local sharding run above, then actionlint as in step 2.
-- [ ] **4. Hand the `current.sql` failure demo to ticket 05**
+- [x] **4. Hand the `current.sql` failure demo to ticket 05**
   - **Goal:** ticket 05's pull request shows the repo-checks job failing on a non-blank `current.sql`, since Graphile Migrate first arrives there.
   - **Files:** `specs/active/service-foundation/tickets/05-local-postgres-and-first-migration.md`: add one line to Notes saying that its pull request shows the repo-checks job failing once on a non-blank `current.sql` (as ticket 03's acceptance criteria describe), reverted afterwards, with a link to this plan.
   - **Read first:** none.
@@ -85,3 +85,8 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
 - [ ] The maintainer has switched the `main` ruleset to require "Quality check / Quality gate" and the pull request title check, in place of the old quality check: done by the maintainer on GitHub, once the gate has reported on the pull request, so GitHub offers it as a check.
 
 ## Notes
+
+- 2026-11-23: Step 1: `tools/repo-checks/tsconfig.json` sets `"types": ["node"]`. TypeScript no longer includes `@types/*` by default, and nothing the tool imports brings Node's types in. A tool with no dependencies needs the same.
+- 2026-11-23: In Claude's sandbox, `vp install` (read-only pnpm store) and `vp check` (sandbox placeholder dotfiles) have to run outside the sandbox.
+- 2026-11-23: Step 3: `vp test --reporter=blob` writes to `.vitest/blob/blob-<index>-<count>.json`, and `vp test --mergeReports` reads that folder by default. Merging the two local shards gave the same totals as a full run (10 files, 32 tests).
+- 2026-11-23: Step 3: actions pinned are `upload-artifact` v7.0.2 (`cf430e0`) and `download-artifact` v8.0.2 (`9000827`), both released 2026-10-07. `test-report` reads the shard count from the blob file names (`blob-<index>-<count>.json`), so the matrix list stays its only home. `upload-artifact` needs `include-hidden-files: true` for `.vitest/blob/`.

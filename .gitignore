@@ -4,6 +4,7 @@ node_modules/
 # Build output and caches
 dist/
 coverage/
+.vitest/
 *.tsbuildinfo
 
 # Logs
