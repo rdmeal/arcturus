@@ -1,7 +1,7 @@
 ---
 type: ticket
 status: ready
-blocked-by: ["01"]
+blocked-by: ["01", "10"]
 scopes: [arcturus]
 ---
 
