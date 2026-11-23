@@ -47,7 +47,7 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
 
 ## Steps
 
-- [ ] **1. Run Postgres in Compose, with a role, database and shadow database for the example service**
+- [x] **1. Run Postgres in Compose, with a role, database and shadow database for the example service**
   - **Goal:** `vp run infra:up` starts Postgres and returns once it's healthy, and on a fresh volume the example service's role and databases exist. Nothing else changes, so the build stays green.
   - **Files:**
     - `compose.yaml`: new. The `postgres` service with the pinned image, healthcheck, `postgres-data` volume, port variable and `./infra/postgres/init:/docker-entrypoint-initdb.d:ro` mount. A comment says that the test harness reads the image from here.
@@ -142,3 +142,5 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
 ## Notes
 
 - **For ticket 06:** the test harness migrates its template database with Graphile Migrate. The `pg_dump` action is shadow-only, so it doesn't run there, as long as the harness migrates as the main database, not with `shadow`.
+- 2026-11-23: Docker commands are denied to Claude even outside the sandbox, so the maintainer runs every `docker` and `vp run infra:*` check with `!`. Give them one command per line, and use double quotes (a single-quoted `'\l'` lost its closing quote when pasted). `vp check` must run outside the sandbox, because the sandbox's placeholder dotfiles break formatting.
+- 2026-11-23: Step 1 also set `name: arcturus` in `compose.yaml`, so worktrees share one Compose project and volume. The volume is mounted at `/var/lib/postgresql`, as the Postgres 18+ images expect.
