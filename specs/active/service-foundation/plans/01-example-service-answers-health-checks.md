@@ -152,7 +152,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
   - **Tests:** `services/example/src/health.test.ts`, `describe('GET /health/live')`: "answers that the service is live".
   - **Check:** `vp test --project @arcturus/example-service && vp test && vp check`
 
-- [ ] **5. Docs: ports table, codebase guide and composition root exemplar**
+- [x] **5. Docs: ports table, codebase guide and composition root exemplar**
   - **Goal:** the documented facts match the code. The build stays green.
   - **Files:**
     - `docs/develop/local-development.md`: add the example service on 3900 to the ports table, marked temporary.

@@ -48,6 +48,7 @@ Each service has a fixed port. This table is where ports are allocated: a new se
 | Player gateway      | 3001                     |
 | Game services       | 3100 upwards             |
 | Agent services      | 3200 upwards             |
+| Example service     | 3900 (temporary)         |
 | Postgres            | 5432                     |
 | Grafana (otel-lgtm) | 3300                     |
 | OTLP (otel-lgtm)    | 4317 (gRPC), 4318 (HTTP) |
