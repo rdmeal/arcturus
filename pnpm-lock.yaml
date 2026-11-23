@@ -222,9 +222,15 @@ importers:
       hono:
         specifier: ^4.13.18
         version: 4.13.18
+      pino-pretty:
+        specifier: ^13.2.0
+        version: 13.2.0
       vite-plus:
         specifier: '*'
         version: 1.6.0(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(@vitest/ui@5.1.0)(jiti@2.7.0)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/node':
         specifier: ^26.6.6

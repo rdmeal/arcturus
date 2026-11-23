@@ -83,7 +83,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 
   - **Check:** `vp test packages/service-runtime`, `vp test services/example`, then `vp check`
 
-- [ ] **3. `captureLogs` in the test harness**
+- [x] **3. `captureLogs` in the test harness**
   - **Goal:** a test can ask for the log records written during that test only, and logs are still pretty-printed through `console` (service-api-test rule 18). The build stays green.
   - **Files:**
     - `packages/service-testing/package.json`: add `pino-pretty`, at the version `service-runtime` already uses.
@@ -149,3 +149,4 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 - 2026-11-23, during planning: step 5 was added to give `service-runtime`, `service-testing`, `tools/lint-rules` and `services/example` their READMEs, following the new Package READMEs section of `docs/develop/writing-docs.md`. This is the first ticket to give `service-runtime` and `service-testing` an API that services call, and the other two had no README yet. The exemplars step became step 6, and acceptance criteria step 7. Ticket 06's README criterion now extends the harness README rather than creating it.
 - 2026-11-23: Step 1 added `@opentelemetry/api` 1.10.0 and `@opentelemetry/context-async-hooks` 3.1.1, both passing the supply-chain checks. In Claude's sandbox, `vp add` (read-only pnpm store) and `vp check` (unreadable placeholder dotfiles) only run outside the sandbox. Strict lint rejects `as` casts on parsed JSON and `expect.anything()`-style matchers (they're `any`): parse log lines with a zod record schema and compare plain values, as `context.test.ts` does.
 - 2026-11-23: Step 2 reads the route from `matchedRoutes(c).at(-1)` (from `hono/route`) rather than `routePath(c, -1)`: its `handler` is compared with the middleware itself, which is the last match only when no route matched (a 404). `durationMs` is rounded to microseconds.
+- 2026-11-23: Step 3 also added `zod` to `service-testing`, to parse log lines without a cast. `captureLogs` returns `readonly LogRecord[]`. A Vitest fixture with no dependencies must still destructure its first parameter (`({}, { onCleanup })`), so it carries a reasoned `no-empty-pattern` disable.
