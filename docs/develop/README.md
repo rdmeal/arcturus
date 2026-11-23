@@ -13,6 +13,7 @@ For contributors: anyone changing this repository.
 - [Local development](./local-development.md): run the stack on your own machine.
 - [Tech stack](./tech-stack.md): the technologies in use, with their docs and ADRs.
 - [Codebase](./codebase.md): where code lives and what may import what.
+- [Linting](./linting.md): what lint enforces, and how to write a disable comment.
 - [Pull requests](./pull-requests.md): how changes reach `main`.
 - [Writing docs](./writing-docs.md): where docs go and how they're written.
 - [Working with Claude Code](./claude-code.md): the setup Claude Code needs.

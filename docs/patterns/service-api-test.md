@@ -24,7 +24,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 1. An API test sits in its slice's folder, as `src/<area>/<slice>/<slice>.test.ts`. A unit test sits next to the function it tests, as `<file>.test.ts`.
 2. Test-only code lives only in `*.test.ts` files, in `src/test/`, in `*.handlers.ts` files (see [Service endpoint mocks](./service-endpoint-mock.md)), or in `packages/service-testing`. A service's factories go in `src/test/factories/`, and its arrange helpers in `src/test/arrange.ts`. The shared harness, with the fixtures, the test database and the MSW server set-up, is `packages/service-testing`, a dev dependency of every service.
-3. Production code never imports test-only code, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*`. A lint rule enforces this, and test libraries are only ever `devDependencies`.
+3. Production code never imports test-only code, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*`. A [lint rule](../develop/linting.md#guard-rails) enforces this, and test libraries are only ever `devDependencies`.
 
 ### Fixtures, not hooks
 
@@ -55,7 +55,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ### The direct database escape hatch
 
-13. When a state can't reasonably be reached through the API, or an effect can't be seen through it, use a helper in the service's `src/test/direct-db.ts`. That module holds every direct insert and read the service's tests use, such as `insertMatchState`, and is the only code that takes a connection from the `db` fixture. Lint forbids importing it. Each import carries a disable comment whose reason says why the API route doesn't work. Reaching for this because it's shorter is not a reason.
+13. When a state can't reasonably be reached through the API, or an effect can't be seen through it, use a helper in the service's `src/test/direct-db.ts`. That module holds every direct insert and read the service's tests use, such as `insertMatchState`, and is the only code that takes a connection from the `db` fixture. [Lint](../develop/linting.md#guard-rails) forbids importing it. Each import carries a [disable comment](../develop/linting.md#disable-comments) whose reason says why the API route doesn't work. Reaching for this because it's shorter is not a reason.
 
 ### Game services
 

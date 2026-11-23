@@ -10,6 +10,7 @@ paths:
 - ESM only. Import local files with their `.ts` extension.
 - Validate every boundary (HTTP, callbacks, job payloads, database rows) with zod, and infer types from the schemas. See `docs/adr/0010-use-zod-as-the-only-schema-library.md`.
 - Before writing a kind of code, check `docs/patterns/` as `CLAUDE.md` says.
+- Every lint disable comment states its reason: see `docs/develop/linting.md`.
 
 ## Comments
 

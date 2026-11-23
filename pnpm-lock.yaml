@@ -246,6 +246,16 @@ importers:
         specifier: ^26.6.6
         version: 26.6.6
 
+  tools/lint-rules:
+    dependencies:
+      vite-plus:
+        specifier: '*'
+        version: 1.6.0(@types/node@26.6.6)(@vitest/ui@5.1.0)(jiti@2.7.0)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
+
 packages:
 
   '@babel/code-frame@7.29.7':
