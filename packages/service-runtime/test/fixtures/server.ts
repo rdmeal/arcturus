@@ -1,14 +1,12 @@
 import { setTimeout as sleep } from "node:timers/promises";
 
-import { Hono } from "hono";
-
-import { health, startServer } from "../../src/index.ts";
+import { createServiceApp, startServer } from "../../src/index.ts";
 
 // A tiny service for the shutdown tests: `node server.ts <shutdownTimeoutMs>`.
 // It logs `listening` with the bound port, which the tests read from stdout.
 const shutdownTimeoutMs = Number(process.argv[2]);
 
-const app = new Hono().route("/health", health()).get("/slow", async (c) => {
+const app = createServiceApp().get("/slow", async (c) => {
   await sleep(Number(c.req.query("ms")));
   return c.json({ status: "done" });
 });

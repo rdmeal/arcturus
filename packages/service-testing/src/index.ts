@@ -1,1 +1,1 @@
-export { createServiceTest } from "./create-service-test.ts";
+export { createServiceTest, type LogRecord } from "./create-service-test.ts";

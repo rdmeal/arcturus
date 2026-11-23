@@ -8,7 +8,7 @@ Where code lives in this repository, and what may import what. How the running p
 
 ## Layout
 
-Every package has its own `package.json` and declares everything it imports ([Organise the repository as pnpm package-based workspaces](../adr/0016-organise-the-repository-as-pnpm-workspaces.md)).
+Every package has its own `package.json` and declares everything it imports ([Organise the repository as pnpm package-based workspaces](../adr/0016-organise-the-repository-as-pnpm-workspaces.md)). Every package also has a `README.md`; what it holds is in [Writing docs](./writing-docs.md#package-readmes).
 
 | Folder                 | What it holds                                                   |
 | ---------------------- | --------------------------------------------------------------- |

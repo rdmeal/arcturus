@@ -70,7 +70,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Logs
 
 18. `packages/service-testing` sends the service's logs, pretty-printed, through `console`, so Vitest links each line to its test and shows logs only for failing tests. Never change the logger's destination or level in a test.
-19. Assert a log line, with `captureLogs`, only when the log line is the behaviour being tested, such as a domain error in a job being logged as a warning. Otherwise assert through the API (rule 10).
+19. Don't assert on log lines in tests. Assert a log line, with `captureLogs`, only in a test whose subject is the logging itself, such as the request log line or a domain error in a job being logged as a warning. Keep such a test apart from tests of other behaviour, and assert everything else through the API (rule 10).
 20. Service tests run without the OpenTelemetry SDK, so spans are never recorded. Don't assert on traces. Trace propagation is tested only in `service-runtime`'s own tests.
 
 ## Exemplar

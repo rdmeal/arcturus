@@ -26,7 +26,7 @@ Whenever a handler meets a failure that is part of normal operation: something d
 2. Every domain error is thrown with a specific kebab-case code and a message: a code such as `tournament-already-started`, then the message. Codes are stable, because the frontend uses them as translation keys.
 3. The message is written for the client. It must not reveal anything internal: no IDs that aren't the client's own, no table or column names, no SQL, no library messages, no stack traces.
 4. Don't add new categories, or HTTP statuses, in services. The category-to-status mapping (404, 409, 422) lives in one place in `service-runtime`.
-5. Each service's `createApp` installs `service-runtime`'s error handler with `app.onError`. It turns a domain error into an `application/problem+json` body (`type`, `title`, `status`, `detail`, plus a `code` member) with the category's status.
+5. `service-runtime`'s error handler is installed by `createServiceApp()`, which every service's `createApp` starts from, so a service never calls `app.onError` itself. The handler turns a domain error into an `application/problem+json` body (`type`, `title`, `status`, `detail`, plus a `code` member) with the category's status.
 6. Any other error is a bug: the error handler logs it in full and returns a generic 500 problem-details body with nothing from the error in it.
 7. Validation failures use the same body, with the issues listed in an extension member that shows only field paths and messages.
 8. The service's `AppType` includes the problem-details shape through Hono's `ApplyGlobalResponse`, so the RPC client knows the error body.
@@ -40,6 +40,7 @@ None yet: established by the first ticket that uses it.
 ## Related
 
 - [Signal expected failures with thrown domain errors](../adr/0024-signal-expected-failures-with-thrown-domain-errors.md)
+- [Build every service's app from one runtime factory](../adr/0049-build-every-services-app-from-one-runtime-factory.md)
 - [Database transactions](./database-transaction.md)
 - [Background jobs](./background-job.md)
 - [Vertical slices](./vertical-slice.md)

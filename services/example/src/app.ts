@@ -1,5 +1,4 @@
-import { health } from "@arcturus/service-runtime";
-import { Hono } from "hono";
+import { createServiceApp } from "@arcturus/service-runtime";
 
 import type { Config } from "./config.ts";
 
@@ -9,7 +8,7 @@ export interface Deps {
 
 // oxlint-disable-next-line typescript/explicit-module-boundary-types -- a Hono app's type is its routes, inferred so the RPC client follows them
 export const createApp = (_deps: Deps) => {
-  return new Hono().route("/health", health());
+  return createServiceApp();
 };
 
 export type AppType = ReturnType<typeof createApp>;

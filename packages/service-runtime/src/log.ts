@@ -2,6 +2,8 @@ import { pino } from "pino";
 import type { Logger, LevelWithSilent } from "pino";
 import { PinoPretty } from "pino-pretty";
 
+import { currentContextFields } from "./context.ts";
+
 export type LogFormat = "json" | "pretty";
 
 /** The stream pino writes to. Its target is swapped by `configureLog`. */
@@ -15,7 +17,7 @@ const sink: { target: { write: (chunk: string) => unknown } } = {
  * `configureLog` runs it writes JSON at `info` to stdout.
  */
 export const log: Logger = pino(
-  { level: "info" },
+  { level: "info", mixin: currentContextFields },
   {
     write(chunk: string) {
       sink.target.write(chunk);

@@ -32,30 +32,35 @@ Services log with pino and trace with OpenTelemetry, both set up by `service-run
    - `info`: lifecycle, such as startup and shutdown;
    - `debug`: detail for local investigation, off by default.
 4. Don't log a domain error that is answered over HTTP above `debug`. It is a normal response, and the request's span already records its status.
-5. Don't log requests, job attempts, 500s or final job failures yourself. `service-runtime`'s request middleware, error handler and `defineTask` already log them at the levels above, and record errors on the active span.
+5. Don't log requests, job attempts, 500s or final job failures yourself. `service-runtime` already logs them at the levels above, and records errors on the active span: requests through the request logging `createServiceApp()` installs, 500s through its error handler, and jobs through `defineTask`. Request logging writes one `info` line per request, with its method, matched route, status and duration.
+6. Health check requests (`/health/live` and `/health/ready`) are logged at `debug`, not `info`, so frequent probes don't drown the request lines. They show in tests and with `LOG_LEVEL=debug`.
 
 ### Context
 
-6. As soon as a handler's input is validated, call `annotate` with the domain IDs it acts on (`tournamentId`, `matchId`, `seat`, `playerId`). In a job, take them from the payload. Every later log line and the active span then carry them.
-7. Name context fields with the glossary's terms, in camelCase (`matchId`, never `match_id` or `gameRunId`). `annotate` adds the `arcturus.` prefix and snake case on spans for you.
-8. Don't annotate the fields `service-runtime` adds itself: for jobs, `jobId`, `taskName` and `attempt`.
-9. Annotate IDs and small, bounded values only. Never annotate whole objects, states or lists.
+7. As soon as a handler's input is validated, call `annotate` with the domain IDs it acts on (`tournamentId`, `matchId`, `seat`, `playerId`). In a job, take them from the payload. Every later log line and the active span then carry them.
+8. Name context fields with the glossary's terms, in camelCase (`matchId`, never `match_id` or `gameRunId`). `annotate` adds the `arcturus.` prefix and snake case on spans for you.
+9. Don't annotate the fields `service-runtime` adds itself: for jobs, `jobId`, `taskName` and `attempt`.
+10. Annotate IDs and small, bounded values only. Never annotate whole objects, states or lists.
 
 ### What never goes in logs or spans
 
-10. Never log or annotate request or response bodies, decision requests or actions, game states, secrets, tokens or credentials. pino's `redact` removes `authorization` and cookie headers as a safety net, not as permission to log them.
-11. A player's endpoint URL may be logged, with its query string removed, since the query string may hold a key.
-12. To log an error, pass the error itself as the `err` field and let pino serialise it. Never copy its stack trace into the message.
+11. Never log or annotate request or response bodies, decision requests or actions, game states, secrets, tokens or credentials. pino's `redact` removes `authorization` and cookie headers as a safety net, not as permission to log them.
+12. A player's endpoint URL may be logged, with its query string removed, since the query string may hold a key.
+13. To log an error, pass the error itself as the `err` field and let pino serialise it. Never copy its stack trace into the message.
 
 ### Spans
 
-13. Don't create a span for a handler, a query or an outbound call: the request or job span already is the handler, and the instrumentations cover queries and calls.
-14. Create a span only around work that none of those cover and that may be slow, such as evaluating a game's rules, with `withSpan(name, fn)` from `service-runtime`.
-15. Name such a span `<area>.<slice> <step>` (`match-play.apply-action evaluate-rules`). Never put an ID in a span name. IDs belong in the context (rule 6).
+14. Don't create a span for a handler, a query or an outbound call: the request or job span already is the handler, and the instrumentations cover queries and calls.
+15. Create a span only around work that none of those cover and that may be slow, such as evaluating a game's rules, with `withSpan(name, fn)` from `service-runtime`.
+16. Name such a span `<area>.<slice> <step>` (`match-play.apply-action evaluate-rules`). Never put an ID in a span name. IDs belong in the context (rule 7).
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+No service annotates yet, so the exemplar is the runtime itself, and one test of a log line:
+
+- `packages/service-runtime/src/context.ts`, `annotate` and `withContextFields`: the fields kept in the active OpenTelemetry context, which pino's `mixin` reads (in `log.ts`).
+- `packages/service-runtime/src/service-app.ts`, `createServiceApp` and its request logging: one line per request, at `debug` for health requests, with a context scope opened for each request.
+- `services/example/src/request-log.test.ts`: a test whose subject is the logging, asserting its line with `captureLogs`.
 
 ## Related
 
@@ -63,6 +68,7 @@ None yet: established by the first ticket that uses it.
 - [Log with pino, to stdout and OTLP](../adr/0039-log-with-pino-to-stdout-and-otlp.md)
 - [Start OpenTelemetry from service-runtime with Node's --import](../adr/0041-start-opentelemetry-from-service-runtime-with-import.md)
 - [Share one observability context between logs and spans](../adr/0042-share-one-observability-context-between-logs-and-spans.md)
+- [Build every service's app from one runtime factory](../adr/0049-build-every-services-app-from-one-runtime-factory.md)
 - [Trace each decision through jobs as its own trace](../adr/0043-trace-each-decision-through-jobs-as-its-own-trace.md)
 - [Background jobs](./background-job.md): trace context and context fields in jobs.
 - [Error handling](./error-handling.md): which failures are domain errors.
