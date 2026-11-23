@@ -19,7 +19,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
   - [0009: Build every service with Hono, wired by hand](../../../../docs/adr/0009-build-every-service-with-hono.md): "by hand" is about dependencies (no DI container). A runtime factory for the app skeleton doesn't conflict, and `deps` still pass through `createApp(deps)`.
   - [0049: Build every service's app from one runtime factory](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md): `createServiceApp()` installs request logging and health first, its parts aren't exported, and it takes no options until one is needed.
 - **Patterns:**
-  - [observability](../../../../docs/patterns/observability.md): rules 5 to 9. This ticket establishes its exemplar.
+  - [observability](../../../../docs/patterns/observability.md): rules 5 to 10. This ticket establishes its exemplar.
   - [service-api-test](../../../../docs/patterns/service-api-test.md): rules 17 to 20. Rule 18: logs still go pretty-printed through `console`. Rule 19: assert log lines only where the log line is the behaviour.
   - [service-composition-root](../../../../docs/patterns/service-composition-root.md): rule 12, which `createApp` follows.
 - **Planning decisions:**
@@ -54,7 +54,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
       - `currentContextFields(): ContextFields`, used by the mixin.
     - `packages/service-runtime/src/log.ts`: pino `mixin: currentContextFields`. Fields passed explicitly to a log call still win, which is pino's default merge order.
     - `packages/service-runtime/src/index.ts`: export `annotate` only.
-  - **Read first:** [ADR 0042](../../../../docs/adr/0042-share-one-observability-context-between-logs-and-spans.md), [observability](../../../../docs/patterns/observability.md) rules 6 to 9. Check `@opentelemetry/api` context docs through context7 for `setGlobalContextManager` and `createContextKey`.
+  - **Read first:** [ADR 0042](../../../../docs/adr/0042-share-one-observability-context-between-logs-and-spans.md), [observability](../../../../docs/patterns/observability.md) rules 7 to 10. Check `@opentelemetry/api` context docs through context7 for `setGlobalContextManager` and `createContextKey`.
   - **Tests:** `packages/service-runtime/src/context.test.ts`, capturing with `configureLog({ format: "json", destination })` as `log.test.ts` does:
     - "an annotated field appears on every later log line in the scope";
     - "a field annotated in one scope never appears on a concurrent scope's lines" (two scopes interleaved across `await`s);
@@ -71,7 +71,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
     - `packages/service-runtime/src/index.ts`: export `createServiceApp`, and stop exporting `health`.
     - `packages/service-runtime/test/fixtures/server.ts`: `createServiceApp().get("/slow", …)`.
     - `services/example/src/app.ts`: `createServiceApp()` replaces `new Hono().route("/health", health())`.
-  - **Read first:** [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md), [ADR 0039](../../../../docs/adr/0039-log-with-pino-to-stdout-and-otlp.md), [observability](../../../../docs/patterns/observability.md) rules 3 and 5, [service-composition-root](../../../../docs/patterns/service-composition-root.md) rule 12. Hono's `hono/route` helper docs through context7 (`routePath(c, -1)`, `matchedRoutes`), to tell an unmatched request apart.
+  - **Read first:** [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md), [ADR 0039](../../../../docs/adr/0039-log-with-pino-to-stdout-and-otlp.md), [observability](../../../../docs/patterns/observability.md) rules 3, 5 and 6, [service-composition-root](../../../../docs/patterns/service-composition-root.md) rule 12. Hono's `hono/route` helper docs through context7 (`routePath(c, -1)`, `matchedRoutes`), to tell an unmatched request apart.
   - **Tests:** `packages/service-runtime/src/service-app.test.ts`, using `app.request()` on `createServiceApp().get("/things/:id", …)` and capturing JSON as in step 1:
     - "a request produces exactly one info line with method, matched route, status and duration";
     - "a health request is logged at debug, not info";
@@ -107,14 +107,10 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
   - **Check:** `vp test services/example/src/request-log.test.ts`, then `vp check`
 
 - [ ] **5. Documentation**
-  - **Goal:** the patterns describe the factory and health logging, and the observability pattern has its exemplar.
+  - **Goal:** the patterns' exemplars name the code this ticket wrote. Their rules were already updated during planning (see Notes).
   - **Files:**
-    - `docs/patterns/observability.md`: rule 5 says the request line is logged by `createServiceApp`, at `debug` for health requests. Exemplar: `packages/service-runtime/src/context.ts` (`annotate`), `packages/service-runtime/src/service-app.ts` (`requestLogging`), and `services/example/src/request-log.test.ts`.
-    - `docs/patterns/service-composition-root.md`:
-      - rule 12: `createApp` starts from `createServiceApp()`, which installs request logging and the health endpoints, and chains each area's router onto it;
-      - rule 17: health comes through the factory;
-      - its exemplar line for `app.ts`.
-    - `specs/active/service-foundation/tickets/07-domain-errors-reach-clients-as-problem-details.md`, under Notes: the `onError` handler goes into `createServiceApp()`, and [error-handling](../../../../docs/patterns/error-handling.md) rule 5 changes with it.
+    - `docs/patterns/observability.md`: Exemplar: `packages/service-runtime/src/context.ts` (`annotate`), `packages/service-runtime/src/service-app.ts` (`createServiceApp`, its request logging), and `services/example/src/request-log.test.ts`.
+    - `docs/patterns/service-composition-root.md`: its exemplar line for `services/example/src/app.ts`, which now starts from `createServiceApp()`.
   - **Read first:** the `writing-docs` skill and the `pattern` skill.
   - **Tests:** none.
   - **Check:** `vp check`
@@ -128,3 +124,5 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 - [ ] The observability pattern's exemplar names the example service's use of annotation, or the runtime's middleware if the service has no annotating handler yet: proven by step 5's exemplar in `docs/patterns/observability.md`.
 
 ## Notes
+
+- 2026-11-23, during planning: [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md) was written, and the pattern rules were updated on this branch: observability rules 5 and 6 (a new rule, so later rules moved up by one), service-composition-root rules 12 and 17, error-handling rule 5, and service-api-test rule 19. Step 5 now only fills in exemplars, and the note for ticket 07 was dropped, since error-handling rule 5 already says the factory installs the error handler.

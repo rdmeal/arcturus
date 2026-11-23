@@ -35,7 +35,7 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ### Dependencies
 
 11. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`. Before creating anything, it passes `config.log` to `configureLog`. If `loadConfig()` throws a `ConfigError`, `main.ts` logs it with `log.fatal` and sets `process.exitCode = 1`.
-12. `src/app.ts` defines the `Deps` interface, listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. `createApp` carries the disable comment that every Hono app builder does ([Vertical slices](./vertical-slice.md) rule 10). It exports `AppType` for the RPC client.
+12. `src/app.ts` defines the `Deps` interface, listing every dependency, and `createApp(deps)`, which starts from `service-runtime`'s `createServiceApp()`, chains each area's router onto it and returns the Hono app. `createServiceApp()` installs request logging, the health endpoints and the error handler, so `createApp` never starts from `new Hono()` and never mounts those itself. `createApp` carries the disable comment that every Hono app builder does ([Vertical slices](./vertical-slice.md) rule 10). It exports `AppType` for the RPC client.
 13. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies. The one exception is the logger, which code imports from `service-runtime` (see [Observability](./observability.md)).
 14. Time comes from a `clock` dependency with `now()`, so tests can fix it. Code never calls `new Date()` or `Date.now()` for a time its logic uses.
 15. Every outbound call to another service goes through a client in `deps`. Nothing below a handler builds its own `fetch` call. (What these clients look like is decided with the protocols.)
@@ -43,7 +43,7 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ### Lifecycle and health
 
 16. The HTTP server and the job worker run in the same process, started from the same `main.ts`.
-17. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, then flush and shut down telemetry, all within a hard timeout), and the health endpoints. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
+17. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, then flush and shut down telemetry, all within a hard timeout), and the health endpoints, mounted by `createServiceApp()`. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
 18. Every service exposes `/health/live`, which checks nothing and answers if the process is up, and `/health/ready`, which checks only the service's own database and worker. Neither checks other services, so one service going down never marks the others unready. Neither is exposed through the reverse proxy.
 19. A service without a database (most agent services) uses only the server, shutdown and health parts of `service-runtime`. Its readiness then checks nothing.
 
@@ -63,6 +63,7 @@ The example service, which is temporary and has no database or clients yet:
 ## Related
 
 - [Build every service with Hono, wired by hand](../adr/0009-build-every-service-with-hono.md)
+- [Build every service's app from one runtime factory](../adr/0049-build-every-services-app-from-one-runtime-factory.md)
 - [Load configuration only in each service's config module](../adr/0031-load-configuration-only-in-each-services-config-module.md)
 - [Start OpenTelemetry from service-runtime with Node's --import](../adr/0041-start-opentelemetry-from-service-runtime-with-import.md)
 - [Log with pino, to stdout and OTLP](../adr/0039-log-with-pino-to-stdout-and-otlp.md)
