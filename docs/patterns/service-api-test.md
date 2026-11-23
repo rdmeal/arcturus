@@ -28,7 +28,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ### Fixtures, not hooks
 
-4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, createApp })` from `packages/service-testing`. Its fixtures are:
+4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, createApp })` from `packages/service-testing`. Write every test with `test`, never `it`, and import the other test APIs (`describe`, `expect`) from `vite-plus/test`. Never rely on globals. Its fixtures are:
    - `db`: a fresh, empty database for this test, cloned from the service's migrated template and dropped afterwards;
    - `client`: the app from `createApp(deps)`, wrapped in Hono's `testClient`;
    - `network`: the MSW server, reset after the test;
@@ -51,7 +51,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 10. Assert only through what the service exposes: the response, its problem details, a query's result, and requests recorded by an MSW override. Never query a table to check a result.
 11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
-12. Use explicit matchers: `toEqual`, or `toMatchObject` when only some fields matter. Never use snapshots.
+12. Use explicit matchers: `toStrictEqual`, or `toMatchObject` when only some fields matter. Never use snapshots.
 
 ### The direct database escape hatch
 
@@ -64,7 +64,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Structure
 
 15. Each API test file has one `describe`, named after its endpoint (for example `POST /tournament-setup/create-tournament`). A unit test file has one `describe` per function. Don't nest `describe` blocks.
-16. Name each test after the behaviour a client sees ("rejects a tournament with fewer than two entrants"), not the implementation ("calls insertTournament").
+16. Name each test, in lowercase, after the behaviour a client sees ("rejects a tournament with fewer than two entrants"), not the implementation ("calls insertTournament").
 17. Test files run in parallel. Tests within a file run in order: don't use `test.concurrent`, because the MSW server is shared within a worker.
 
 ### Logs
