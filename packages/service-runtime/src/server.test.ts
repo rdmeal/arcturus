@@ -10,7 +10,7 @@ const fixture = fileURLToPath(new URL("../test/fixtures/server.ts", import.meta.
 const logLine = z.object({ msg: z.string(), port: z.number() });
 
 /** Spawns the fixture server and resolves once it logs `listening`. */
-async function startFixture({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }) {
+const startFixture = async ({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }) => {
   const child = spawn(process.execPath, [fixture, String(shutdownTimeoutMs)], {
     stdio: ["ignore", "pipe", "inherit"],
   });
@@ -45,7 +45,7 @@ async function startFixture({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }
   });
 
   return { child, port, url: `http://127.0.0.1:${port}`, exited };
-}
+};
 
 describe("startServer", () => {
   test("answers /health/live and /health/ready on a running server", async () => {
@@ -55,9 +55,9 @@ describe("startServer", () => {
     const ready = await fetch(`${url}/health/ready`);
 
     expect(live.status).toBe(200);
-    expect(await live.json()).toEqual({ status: "live" });
+    expect(await live.json()).toStrictEqual({ status: "live" });
     expect(ready.status).toBe(200);
-    expect(await ready.json()).toEqual({ status: "ready" });
+    expect(await ready.json()).toStrictEqual({ status: "ready" });
   });
 
   test("completes a request in flight when SIGTERM arrives", async () => {
@@ -69,8 +69,9 @@ describe("startServer", () => {
 
     const response = await slow;
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "done" });
-    expect((await exited).code).toBe(0);
+    expect(await response.json()).toStrictEqual({ status: "done" });
+    const { code } = await exited;
+    expect(code).toBe(0);
   });
 
   test("refuses new connections after SIGTERM", async () => {
@@ -83,20 +84,24 @@ describe("startServer", () => {
 
     await expect(fetch(`${url}/health/live`)).rejects.toThrow("fetch failed");
     await slow;
-    expect((await exited).code).toBe(0);
+    const { code } = await exited;
+    expect(code).toBe(0);
   });
 
   test("exits within the hard timeout when a request outlasts it", async () => {
     const { child, url, exited } = await startFixture({ shutdownTimeoutMs: 300 });
 
-    const slow = fetch(`${url}/slow?ms=5000`).catch(() => null);
+    // Settled from the start, so its rejection when the process exits is never unhandled.
+    const slow = Promise.allSettled([fetch(`${url}/slow?ms=5000`)]);
     await sleep(50);
     const signalledAt = Date.now();
     child.kill("SIGTERM");
 
-    expect((await exited).code).toBe(1);
+    const { code } = await exited;
+    expect(code).toBe(1);
     expect(Date.now() - signalledAt).toBeLessThan(2000);
-    await slow;
+    const [outcome] = await slow;
+    expect(outcome.status).toBe("rejected");
   });
 
   test("exits cleanly on SIGINT", async () => {
@@ -104,6 +109,7 @@ describe("startServer", () => {
 
     child.kill("SIGINT");
 
-    expect((await exited).code).toBe(0);
+    const { code } = await exited;
+    expect(code).toBe(0);
   });
 });

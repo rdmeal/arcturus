@@ -16,16 +16,16 @@ const consoleDestination = new Writable({
   },
 });
 
-// oxlint-disable-next-line typescript/explicit-module-boundary-types -- Vitest's `extend` returns a type built from helpers it doesn't export
-export function createServiceTest<TConfig, TApp extends AnyHono>(options: {
+export const createServiceTest = <TConfig, TApp extends AnyHono>(options: {
   parseConfig: (source: Record<string, string | undefined>) => TConfig;
   testConfig: Record<string, string>;
   createApp: (fixtures: { config: TConfig }) => TApp;
-}) {
+  // oxlint-disable-next-line typescript/explicit-module-boundary-types -- Vitest's `extend` returns a type built from helpers it doesn't export
+}) => {
   configureLog({ level: "debug", format: "pretty", destination: consoleDestination });
   const parsedConfig = options.parseConfig(options.testConfig);
 
   return baseTest
     .extend("config", () => parsedConfig)
     .extend("client", ({ config }) => testClient(options.createApp({ config })));
-}
+};

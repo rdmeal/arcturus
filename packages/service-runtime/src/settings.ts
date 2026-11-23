@@ -14,13 +14,13 @@ export class ConfigError extends Error {
 }
 
 /** Validates `source` against `schema`, throwing a `ConfigError` that names each bad setting. */
-export function parseSettings<S extends z.ZodType>(
+export const parseSettings = <S extends z.ZodType>(
   schema: S,
   source: Record<string, string | undefined>,
-): z.output<S> {
+): z.output<S> => {
   const result = schema.safeParse(source);
   if (!result.success) {
     throw new ConfigError(z.prettifyError(result.error));
   }
   return result.data;
-}
+};

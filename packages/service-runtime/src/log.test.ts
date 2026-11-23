@@ -4,7 +4,7 @@ import { describe, expect, test } from "vite-plus/test";
 
 import { configureLog, log } from "./log.ts";
 
-function capture() {
+const capture = () => {
   const chunks: string[] = [];
   const destination = new Writable({
     write(chunk, _encoding, callback) {
@@ -13,7 +13,7 @@ function capture() {
     },
   });
   return { destination, output: () => chunks.join("") };
-}
+};
 
 describe("configureLog", () => {
   test("writes JSON lines to the destination when the format is json", () => {

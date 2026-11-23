@@ -7,6 +7,6 @@ describe("GET /health/live", () => {
     const response = await client.health.live.$get();
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: "live" });
+    expect(await response.json()).toStrictEqual({ status: "live" });
   });
 });

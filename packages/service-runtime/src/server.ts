@@ -4,16 +4,18 @@ import { getRequestListener } from "@hono/node-server";
 
 import { log } from "./log.ts";
 
+const idleSweepIntervalMs = 20;
+
 /**
  * Serves `app`, resolving once it is listening. On SIGTERM or SIGINT it shuts
  * down gracefully, so the process exits 0 once nothing is left running, or it
  * exits 1 if that outlasts `shutdownTimeoutMs`.
  */
-export function startServer(options: {
+export const startServer = (options: {
   app: { fetch: (req: Request) => Response | Promise<Response> };
   port: number;
   shutdownTimeoutMs?: number;
-}): Promise<{ port: number; close: () => Promise<void> }> {
+}): Promise<{ port: number; close: () => Promise<void> }> => {
   const { app, port, shutdownTimeoutMs = 10_000 } = options;
   // Built here rather than by `serve`, whose return type includes HTTP/2
   // servers, which have no `closeIdleConnections`.
@@ -27,16 +29,16 @@ export function startServer(options: {
   const close = () => {
     closing ??= (async () => {
       log.info("shutting down");
-      const stopped = new Promise<void>((done) => {
+      const stopped = new Promise<void>((resolve) => {
         server.close(() => {
-          done();
+          resolve();
         });
       });
       // A connection that finishes its request stays open (keep-alive), so
       // keep closing connections as they go idle until none are left.
       const sweep = setInterval(() => {
         server.closeIdleConnections();
-      }, 20);
+      }, idleSweepIntervalMs);
       server.closeIdleConnections();
       await stopped;
       clearInterval(sweep);
@@ -70,4 +72,4 @@ export function startServer(options: {
       resolve({ port: address.port, close });
     });
   });
-}
+};

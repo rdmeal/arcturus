@@ -1,10 +1,11 @@
-import { pino, type Logger, type LevelWithSilent } from "pino";
+import { pino } from "pino";
+import type { Logger, LevelWithSilent } from "pino";
 import { PinoPretty } from "pino-pretty";
 
 export type LogFormat = "json" | "pretty";
 
 /** The stream pino writes to. Its target is swapped by `configureLog`. */
-const sink: { target: { write(chunk: string): unknown } } = {
+const sink: { target: { write: (chunk: string) => unknown } } = {
   target: process.stdout,
 };
 
@@ -22,13 +23,13 @@ export const log: Logger = pino(
   },
 );
 
-export function configureLog(options: {
+export const configureLog = (options: {
   level: LevelWithSilent;
   format: LogFormat;
   destination?: NodeJS.WritableStream;
-}): void {
+}): void => {
   const destination = options.destination ?? process.stdout;
   log.level = options.level;
   // `pretty` is an in-process stream, never a worker-thread transport.
   sink.target = options.format === "pretty" ? PinoPretty({ destination }) : destination;
-}
+};

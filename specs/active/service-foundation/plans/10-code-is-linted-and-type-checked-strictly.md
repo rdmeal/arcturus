@@ -111,7 +111,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
     - `exits cleanly on SIGINT` and the SIGTERM tests still expect exit code 0, now from a drained loop;
     - `exits within the hard timeout when a request outlasts it` still expects 1.
   - **Check:** `vp lint`, then `vp test packages/service-runtime/src/server.test.ts`, then `vp test`
-- [ ] **5. Turn on the style picks, and fix what they find**
+- [x] **5. Turn on the style picks, and fix what they find**
   - **Goal:** the 16 `style` picks are on, each with a one-line reason. `no-magic-numbers` is off in test-only files, and the existing code passes.
   - **Files:**
     - `vite.config.ts`, in `rules`, each pick with its options and its reason from the ticket's Notes:
@@ -201,3 +201,11 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - `services/example/src/config.ts` declares `interface Config` and `parseConfig(): Config`, instead of `type Config = ReturnType<typeof parseConfig>`.
   - Shutdown no longer calls `process.exit(0)` after a clean close. All five server tests pass with the process exiting by itself.
 - 2026-11-23: Possible pattern update: [vertical slice](../../../../docs/patterns/vertical-slice.md) rules 8 and 9 could say that `<slice>Route` and area routers carry the `explicit-module-boundary-types` disable comment. Raise it at `/finish-ticket`.
+- 2026-11-23: Step 5: the developer dropped `vitest/prefer-importing-vitest-globals` from the picks.
+  - It flags the `test` that service tests import from `src/test/test.ts`.
+  - TypeScript already rejects an un-imported `test` or `expect`, because no globals are enabled.
+  - `vite.config.ts` lists it as `"off"`, with that reason, so 15 style picks are on, not 16.
+- 2026-11-23: Step 5 left the code in this shape:
+  - `lint --fix` renamed `catch (err)` to `catch (error)` and, with it, the pino field `{ err }` to `{ error }`. pino only serializes errors under `err`, so `main.ts` logs `{ err: error }`. Watch for this when autofixing `catch-error-name`.
+  - With `func-style`, the `explicit-module-boundary-types` finding on a function whose parameters span several lines is reported on its `}) => {` line. So `createServiceTest`'s disable comment sits on the line just above that, inside the parameter list.
+  - The hard-timeout server test now settles the slow request with `Promise.allSettled`, and asserts that it is rejected.
