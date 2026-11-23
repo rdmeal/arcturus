@@ -149,7 +149,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - **Read first:** [ADR 0047](../../../../docs/adr/0047-lint-with-strict-categories-and-named-picks.md), [service API tests](../../../../docs/patterns/service-api-test.md) (rules 4, 12 and 16), [service composition root](../../../../docs/patterns/service-composition-root.md)
   - **Tests:** none new. The existing tests must still pass after the rewrites.
   - **Check:** `vp lint`, then `vp test`, then `vp run -r build`
-- [ ] **6. Describe the new rule set in the linting guide and tech stack**
+- [x] **6. Describe the new rule set in the linting guide and tech stack**
   - **Goal:** contributors can find out which rules are on and why, and where the exceptions are.
   - **Files:**
     - `docs/develop/linting.md`: add a section on the rule set. It covers:
@@ -166,14 +166,14 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
 
 **7. Acceptance criteria**, checked at the test boundary:
 
-- [ ] `vp check` runs the four categories as errors with the seven plugins, and `style`, `restriction` and `nursery` aren't on as categories: proven by the `lint` block of `vite.config.ts` and a passing `vp check`.
-- [ ] Every rule turned on or off beyond the categories has a one-line reason next to it: proven by a review of `vite.config.ts`.
-- [ ] Test-only files relax only `no-magic-numbers`, and `tools/` relaxes only `no-console`. Every other exception is a disable comment with a reason: proven by the overrides in `vite.config.ts` and `arcturus/disable-needs-reason`.
-- [ ] The five compiler options are on for every package: proven by `tsconfig.base.json`, which all five tsconfigs extend.
-- [ ] The formatter sorts imports, and `vp check` fails on unsorted imports: proven by a deliberate swap of two imports, which `vp check` reports and which is then reverted.
-- [ ] The test harness's disable comment for `any` is back with its reason: proven by `packages/service-testing/src/create-service-test.ts`.
-- [ ] The existing code passes `vp check`, `vp test` and `vp run -r build`.
-- [ ] Each of these fails `vp check` once on a deliberate violation, which is then reverted:
+- [x] `vp check` runs the four categories as errors with the seven plugins, and `style`, `restriction` and `nursery` aren't on as categories: proven by the `lint` block of `vite.config.ts` and a passing `vp check`.
+- [x] Every rule turned on or off beyond the categories has a one-line reason next to it: proven by a review of `vite.config.ts`.
+- [x] Test-only files relax only `no-magic-numbers`, and `tools/` relaxes only `no-console`. Every other exception is a disable comment with a reason: proven by the overrides in `vite.config.ts` and `arcturus/disable-needs-reason`.
+- [x] The five compiler options are on for every package: proven by `tsconfig.base.json`, which all five tsconfigs extend.
+- [x] The formatter sorts imports, and `vp check` fails on unsorted imports: proven by a deliberate swap of two imports, which `vp check` reports and which is then reverted.
+- [x] The test harness's disable comment for `any` is back with its reason: proven by `packages/service-testing/src/create-service-test.ts`.
+- [x] The existing code passes `vp check`, `vp test` and `vp run -r build`.
+- [x] Each of these fails `vp check` once on a deliberate violation, which is then reverted:
   - a category rule, such as a regex without the `u` flag;
   - a named pick, such as `any`;
   - a compiler option, such as an unchecked index read;
@@ -181,7 +181,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
 
   Record each result in Notes.
 
-- [ ] The linting guide describes the categories, the picks and the exceptions, and links ADR 0047. The tech stack links both ADRs: proven by `docs/develop/linting.md` and `docs/develop/tech-stack.md`.
+- [x] The linting guide describes the categories, the picks and the exceptions, and links ADR 0047. The tech stack links both ADRs: proven by `docs/develop/linting.md` and `docs/develop/tech-stack.md`.
 
 ## Notes
 
@@ -209,3 +209,11 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - `lint --fix` renamed `catch (err)` to `catch (error)` and, with it, the pino field `{ err }` to `{ error }`. pino only serializes errors under `err`, so `main.ts` logs `{ err: error }`. Watch for this when autofixing `catch-error-name`.
   - With `func-style`, the `explicit-module-boundary-types` finding on a function whose parameters span several lines is reported on its `}) => {` line. So `createServiceTest`'s disable comment sits on the line just above that, inside the parameter list.
   - The hard-timeout server test now settles the slow request with `Promise.allSettled`, and asserts that it is rejected.
+- 2026-11-23: Step 6 also updated the linting guide's "Where it's configured" bullet to mention the categories and the exceptions.
+- 2026-11-23: Step 7 deliberate violations, each in a temporary file under `packages/service-runtime/src/` that was then deleted. All were run with `vp lint`, or `vp fmt --check` for imports, which are the parts of `vp check` that can run in Claude's sandbox.
+  - Category rule: `/a+/` failed `eslint(require-unicode-regexp)`.
+  - Named pick: `const value: any` failed `typescript(no-explicit-any)`.
+  - Compiler option: `xs[0]` returned as `number` failed TS2322 (`number | undefined`), from `noUncheckedIndexedAccess`.
+  - Magic number: `250` failed `eslint(no-magic-numbers)` in production code. The same number passed in a `*.test.ts`, where a `/a/` regex in the same file still failed, which proves the test file was linted.
+  - Unsorted imports: swapping `node:http` after `@hono/node-server` in `server.ts` failed the format check.
+  - Afterwards `vp lint`, `vp test` (17 tests), `vp run -r build` and the format check all passed. The developer runs `vp check` itself.
