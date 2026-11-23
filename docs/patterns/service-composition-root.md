@@ -23,32 +23,33 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ### Configuration
 
 2. `src/config.ts` holds one zod schema for the service's configuration and exports two functions. `loadConfig()` loads the env files, reads the environment (and, for the tournament runner, the operator config file), validates everything with the schema, failing fast with readable messages, and returns a typed, frozen config object. `parseConfig(source)` validates a plain object and touches no files or environment, so tests use it.
-3. Nothing outside `config.ts` reads `process.env`, an env file or the config file. `main.ts` calls `loadConfig()` once, and code that needs a setting gets it through `deps.config`. The one exception is the OpenTelemetry SDK, which reads OTel's standard `OTEL_*` variables itself (rule 19). Never add other settings to it.
+3. Nothing outside `config.ts` reads `process.env`, an env file or the config file. `main.ts` calls `loadConfig()` once, and code that needs a setting gets it through `deps.config`. The one exception is the OpenTelemetry SDK, which reads OTel's standard `OTEL_*` variables itself (rule 20). Never add other settings to it.
 4. Env files are loaded with dotenv into a plain object (`processEnv: {}`, `quiet: true`), never into `process.env`. Validate the file values with the real environment laid over them, so the precedence is: real environment variables, then `.env`, then `.env.development`.
 5. Find the env files from the service's package folder (`import.meta.dirname`), never from `process.cwd()`. A missing file is skipped. Never check `NODE_ENV` to decide whether to load them.
 6. Every service with settings commits a `.env.development` holding every value it needs to run locally, so it starts straight after a clone. Personal overrides go in a git-ignored `.env` in the same folder.
 7. Required settings have no defaults in the schema. Local values, such as the tournament runner's path to the example operator config, go in `.env.development`, so a deployment that forgets a setting fails at startup instead of running with a local value.
-8. Secrets come from environment variables or mounted files. Never put one in a config file or in `.env.development`, whose values are committed.
-9. A service's local port is allocated in the ports table in [Local development](../develop/local-development.md). The port in `.env.development` has a comment linking to that table.
+8. An optional setting may have a default in the schema only when that value is right in every deployment, so forgetting it does no harm. `LOG_LEVEL` defaults to `info` and `LOG_FORMAT` to `json`. A service's `.env.development` sets `LOG_FORMAT=pretty`.
+9. Secrets come from environment variables or mounted files. Never put one in a config file or in `.env.development`, whose values are committed.
+10. A service's local port is allocated in the ports table in [Local development](../develop/local-development.md). The port in `.env.development` has a comment linking to that table.
 
 ### Dependencies
 
-10. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`.
-11. `src/app.ts` defines the `Deps` type, a plain object type listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. It exports `AppType` for the RPC client.
-12. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies. The one exception is the logger, which code imports from `service-runtime` (see [Observability](./observability.md)).
-13. Time comes from a `clock` dependency with `now()`, so tests can fix it. Code never calls `new Date()` or `Date.now()` for a time its logic uses.
-14. Every outbound call to another service goes through a client in `deps`. Nothing below a handler builds its own `fetch` call. (What these clients look like is decided with the protocols.)
+11. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`.
+12. `src/app.ts` defines the `Deps` type, a plain object type listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. It exports `AppType` for the RPC client.
+13. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies. The one exception is the logger, which code imports from `service-runtime` (see [Observability](./observability.md)).
+14. Time comes from a `clock` dependency with `now()`, so tests can fix it. Code never calls `new Date()` or `Date.now()` for a time its logic uses.
+15. Every outbound call to another service goes through a client in `deps`. Nothing below a handler builds its own `fetch` call. (What these clients look like is decided with the protocols.)
 
 ### Lifecycle and health
 
-15. The HTTP server and the job worker run in the same process, started from the same `main.ts`.
-16. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, then flush and shut down telemetry, all within a hard timeout), and the health endpoints. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
-17. Every service exposes `/health/live`, which checks nothing and answers if the process is up, and `/health/ready`, which checks only the service's own database and worker. Neither checks other services, so one service going down never marks the others unready. Neither is exposed through the reverse proxy.
-18. A service without a database (most agent services) uses only the server, shutdown and health parts of `service-runtime`. Its readiness then checks nothing.
+16. The HTTP server and the job worker run in the same process, started from the same `main.ts`.
+17. Lifecycle comes from `packages/service-runtime`: starting the server, graceful shutdown on SIGTERM and SIGINT (stop accepting connections, drain requests in flight, stop the worker, end the pool, then flush and shut down telemetry, all within a hard timeout), and the health endpoints. Services don't write their own. `service-runtime` doesn't load config; each service owns its schema.
+18. Every service exposes `/health/live`, which checks nothing and answers if the process is up, and `/health/ready`, which checks only the service's own database and worker. Neither checks other services, so one service going down never marks the others unready. Neither is exposed through the reverse proxy.
+19. A service without a database (most agent services) uses only the server, shutdown and health parts of `service-runtime`. Its readiness then checks nothing.
 
 ### Telemetry
 
-19. A service's `dev` and `start` scripts run `node --import @arcturus/service-runtime/telemetry src/main.ts`, so OpenTelemetry starts before any application code loads. The entry point takes the service's name and version from its `package.json`, so a service adds no telemetry settings of its own. Every service uses it, with or without a database.
+20. A service's `dev` and `start` scripts run `node --import @arcturus/service-runtime/telemetry src/main.ts`, so OpenTelemetry starts before any application code loads. The entry point takes the service's name and version from its `package.json`, so a service adds no telemetry settings of its own. Every service uses it, with or without a database.
 
 ## Exemplar
 
