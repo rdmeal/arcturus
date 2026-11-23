@@ -35,7 +35,7 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 ### Dependencies
 
 11. `main.ts` creates every dependency: the database (`service-runtime`'s wrapper, see [Database transactions](./database-transaction.md)), the clock, and a client for each service it calls. It then calls `createApp(deps)` and starts the HTTP server and the job worker through `service-runtime`. Before creating anything, it passes `config.log` to `configureLog`. If `loadConfig()` throws a `ConfigError`, `main.ts` logs it with `log.fatal` and sets `process.exitCode = 1`.
-12. `src/app.ts` defines the `Deps` interface, listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. It exports `AppType` for the RPC client.
+12. `src/app.ts` defines the `Deps` interface, listing every dependency, and `createApp(deps)`, which chains each area's router and returns the Hono app. `createApp` carries the disable comment that every Hono app builder does ([Vertical slices](./vertical-slice.md) rule 10). It exports `AppType` for the RPC client.
 13. Dependencies reach slices only through factories: route factories, task definitions and handlers take `deps` as an argument. Never use Hono context variables or module-level singletons for dependencies. The one exception is the logger, which code imports from `service-runtime` (see [Observability](./observability.md)).
 14. Time comes from a `clock` dependency with `now()`, so tests can fix it. Code never calls `new Date()` or `Date.now()` for a time its logic uses.
 15. Every outbound call to another service goes through a client in `deps`. Nothing below a handler builds its own `fetch` call. (What these clients look like is decided with the protocols.)
