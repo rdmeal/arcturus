@@ -86,10 +86,10 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
 
 **6. Acceptance criteria**, checked at the test boundary (CI and GitHub):
 
-- [ ] A pull request shows the parallel jobs and a final quality gate, and the gate passes when every job passes: proven by this ticket's pull request run, with every job and "Quality check / Quality gate" green.
-- [ ] The gate fails when any job it needs fails, is cancelled or is skipped. Failure was shown once with a deliberately failing job: proven by a temporary commit on the pull request that makes one job fail (for example `exit 1` in `build`), with the gate red, then reverted.
+- [x] A pull request shows the parallel jobs and a final quality gate, and the gate passes when every job passes: proven by this ticket's pull request run, with every job and "Quality check / Quality gate" green.
+- [x] The gate fails when any job it needs fails, is cancelled or is skipped. Failure was shown once with a deliberately failing job: proven by a temporary commit on the pull request that makes one job fail (for example `exit 1` in `build`), with the gate red, then reverted.
 - [ ] Tests run in 2 shards writing blob reports, and a merge job combines them. The shard count is set in one place: proven by the "Test (shard 1)", "Test (shard 2)" and "Test report" jobs on the pull request, with the merged output listing every test file, and by `shard: [1, 2]` being the only place the count appears.
-- [ ] A `current.sql` with anything other than comments fails the repo-checks job. A repo with no services, or with blank `current.sql` files, passes: the "no migration packages passes" half is proven by the "Repo checks" job on this pull request. The failure demo is deferred to ticket 05 (step 4), because Graphile Migrate isn't installed until then.
+- [x] A `current.sql` with anything other than comments fails the repo-checks job. A repo with no services, or with blank `current.sql` files, passes: the "no migration packages passes" half is proven by the "Repo checks" job on this pull request. The failure demo is deferred to ticket 05 (step 4), because Graphile Migrate isn't installed until then.
 - [ ] Pushes to `main` run the same jobs and gate: proven by the Main workflow run after the squash-merge.
 - [ ] The maintainer has switched the `main` ruleset to require "Quality check / Quality gate" and the pull request title check, in place of the old quality check: done by the maintainer on GitHub, once the gate has reported on the pull request, so GitHub offers it as a check.
 
