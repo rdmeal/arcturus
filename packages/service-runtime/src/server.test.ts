@@ -72,7 +72,7 @@ describe("startServer", () => {
     child.kill("SIGTERM");
     await sleep(100);
 
-    await expect(fetch(`${url}/health/live`)).rejects.toThrow();
+    await expect(fetch(`${url}/health/live`)).rejects.toThrow("fetch failed");
     await slow;
     expect((await exited).code).toBe(0);
   });

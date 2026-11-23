@@ -42,7 +42,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - **Tests:** none committed. Before committing, temporarily add `import "msw";` and `import "./test/test.ts";` to `services/example/src/app.ts`, see `vp check` fail with the rule 3 message, then revert.
   - **Check:** `vp check`
 
-- [ ] **2. Forbid test hooks, snapshot matchers and unexplained direct-db imports in test files**
+- [x] **2. Forbid test hooks, snapshot matchers and unexplained direct-db imports in test files**
   - **Goal:** in test-only files, a `beforeAll`/`beforeEach`/`afterEach`/`afterAll`, a snapshot matcher or an import of `direct-db` fails `vp check`. Messages point to rules 6, 12 and 13. The repo stays green.
   - **Files:** `vite.config.ts`:
     - `lint.plugins` becomes `["unicorn", "typescript", "oxc", "vitest"]`.
@@ -131,3 +131,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
 ## Notes
 
 - 2026-11-23: Inside Claude's sandbox, a bare `vp check` fails on the sandbox-only placeholder files at the repo root (`.claude/loop.md` and others). Run `vp check vite.config.ts services packages tools docs specs` there instead. Outside the sandbox, `vp check` works as written.
+- 2026-11-23: Adding the `vitest` plugin turned on two of its default rules that fired on existing tests:
+  - `vitest/no-standalone-expect` flagged every `expect` inside the service's own `test` (built with `test.extend` and imported from `src/test/test.ts`). It is configured with `additionalTestBlockFunctions: ["test"]` in the test-only override.
+  - `vitest/require-to-throw-message` flagged a bare `rejects.toThrow()` in `packages/service-runtime/src/server.test.ts`, which now asserts `"fetch failed"`.
+  - Step 5's guide should mention the `additionalTestBlockFunctions` setting, so nobody removes it.

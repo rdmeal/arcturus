@@ -52,6 +52,25 @@ const productionImportBans = {
   ],
 };
 
+const testImportBans = {
+  patterns: [
+    {
+      group: ["**/direct-db", "**/direct-db.ts"],
+      message:
+        "Reach this state through the API. If it can't be reached that way, add a disable comment saying why (service-api-test rule 13: docs/patterns/service-api-test.md).",
+    },
+  ],
+};
+
+const noSnapshots =
+  "Use explicit matchers, not snapshots (service-api-test rule 12: docs/patterns/service-api-test.md).";
+const snapshotMatcherBans = {
+  toMatchSnapshot: noSnapshots,
+  toMatchInlineSnapshot: noSnapshots,
+  toThrowErrorMatchingSnapshot: noSnapshots,
+  toThrowErrorMatchingInlineSnapshot: noSnapshots,
+};
+
 export default defineConfig({
   fmt: {
     ignorePatterns,
@@ -59,6 +78,8 @@ export default defineConfig({
   },
   lint: {
     ignorePatterns,
+    // Listing plugins replaces Oxlint's defaults, so they are listed too.
+    plugins: ["unicorn", "typescript", "oxc", "vitest"],
     options: {
       typeAware: true,
       typeCheck: true,
@@ -73,7 +94,13 @@ export default defineConfig({
       },
       {
         files: testOnlyFiles,
-        rules: { "no-restricted-imports": "off" },
+        rules: {
+          "no-restricted-imports": ["error", testImportBans],
+          // Service tests use the `test` their src/test/test.ts builds with `test.extend`.
+          "vitest/no-standalone-expect": ["error", { additionalTestBlockFunctions: ["test"] }],
+          "vitest/no-hooks": "error",
+          "vitest/no-restricted-matchers": ["error", snapshotMatcherBans],
+        },
       },
     ],
   },
