@@ -105,7 +105,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
     - "exits cleanly on SIGINT".
   - **Check:** `vp test --project @arcturus/service-runtime && vp check`
 
-- [ ] **3. Example service: composition root, a bare telemetry entry point and the dev script**
+- [x] **3. Example service: composition root, a bare telemetry entry point and the dev script**
   - **Goal:** `@arcturus/example-service` starts with `vp run --filter @arcturus/example-service dev`, runs from `.ts` (the runtime's included) with the runtime's telemetry entry point loaded through `--import`, logs that it is listening, and answers both health endpoints. The build stays green.
   - **Files:**
     - `packages/service-runtime/src/telemetry.ts`: a bare entry point, with a comment that the instrumentations and exporters arrive in ticket 09.
@@ -183,3 +183,6 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 - 2026-11-23: In Claude's sandbox, `vp check` fails on unreadable placeholder files under `.claude/`, and `vp install` hits a read-only pnpm store. Run both outside the sandbox.
 - 2026-11-23: Later shutdown steps (job worker, pool, telemetry flush) go inside the `closing` function in `startServer` (`packages/service-runtime/src/server.ts`), after the server drains. Shutdown calls `closeIdleConnections()` every 20 ms until `server.close` completes, because keep-alive connections that finish their request otherwise hold shutdown open until the hard timeout.
 - 2026-11-23: Possible pattern: a lifecycle test spawns a real child process from a fixture under `test/fixtures/`, reads its port from the `listening` log line, and kills it with `onTestFinished` (`packages/service-runtime/src/server.test.ts`).
+- 2026-11-23: Step 3's smoke check is `scratchpad/smoke-example-service.sh` (git-ignored), which the maintainer runs with `!`, because Claude's sandbox can't read `.env.development`. It proves the invalid-config path with `PORT=abc` and `LOG_FORMAT=nope` rather than by removing `.env.development`. It passed on 2026-11-23.
+- 2026-11-23: `PORT` is a digits-only string converted to a number (`z.string().regex(...).transform(Number).pipe(...)`), because zod 4's `z.coerce.number()` can't follow `z.string().pipe()`, and coercion would turn an empty `PORT` into 0.
+- 2026-11-23: A config error is logged before `configureLog` runs, so it comes out as a JSON `fatal` line even locally. It's readable, but includes the stack.
