@@ -1,10 +1,11 @@
 import { join } from "node:path";
+
 import { logSettings, parseSettings } from "@arcturus/service-runtime";
 import { config as loadEnvFiles } from "dotenv";
 import { z } from "zod";
 
 const schema = z.object({
-  PORT: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().max(65_535)),
+  PORT: z.string().regex(/^\d+$/u).transform(Number).pipe(z.number().max(65_535)),
   ...logSettings,
 });
 

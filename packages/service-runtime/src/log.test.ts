@@ -1,5 +1,7 @@
 import { Writable } from "node:stream";
+
 import { describe, expect, test } from "vite-plus/test";
+
 import { configureLog, log } from "./log.ts";
 
 function capture() {

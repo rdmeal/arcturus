@@ -1,4 +1,5 @@
 import { describe, expect } from "vite-plus/test";
+
 import { test } from "./test/test.ts";
 
 describe("GET /health/live", () => {

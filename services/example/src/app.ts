@@ -1,5 +1,6 @@
 import { health } from "@arcturus/service-runtime";
 import { Hono } from "hono";
+
 import type { Config } from "./config.ts";
 
 export type Deps = { config: Config };

@@ -1,4 +1,5 @@
 import { ConfigError, configureLog, log, startServer } from "@arcturus/service-runtime";
+
 import { createApp } from "./app.ts";
 import { loadConfig } from "./config.ts";
 

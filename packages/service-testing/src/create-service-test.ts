@@ -1,4 +1,5 @@
 import { Writable } from "node:stream";
+
 import { configureLog } from "@arcturus/service-runtime";
 import type { Hono } from "hono";
 import { testClient } from "hono/testing";
@@ -22,11 +23,9 @@ export function createServiceTest<
   createApp: (fixtures: { config: TConfig }) => TApp;
 }) {
   configureLog({ level: "debug", format: "pretty", destination: consoleDestination });
+  const parsedConfig = options.parseConfig(options.testConfig);
 
-  return (
-    baseTest
-      // The cast satisfies Vitest's "not a function" check on a generic value.
-      .extend<"config", TConfig>("config", options.parseConfig(options.testConfig) as never)
-      .extend("client", ({ config }) => testClient(options.createApp({ config })))
-  );
+  return baseTest
+    .extend("config", () => parsedConfig)
+    .extend("client", ({ config }) => testClient(options.createApp({ config })));
 }

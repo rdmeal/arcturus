@@ -1,5 +1,7 @@
-import type { Server } from "node:http";
-import { serve } from "@hono/node-server";
+import { createServer } from "node:http";
+
+import { getRequestListener } from "@hono/node-server";
+
 import { log } from "./log.ts";
 
 /**
@@ -12,37 +14,55 @@ export function startServer(options: {
   shutdownTimeoutMs?: number;
 }): Promise<{ port: number; close: () => Promise<void> }> {
   const { app, port, shutdownTimeoutMs = 10_000 } = options;
+  // Built here rather than by `serve`, whose return type includes HTTP/2
+  // servers, which have no `closeIdleConnections`.
+  const listener = getRequestListener(app.fetch);
+  const server = createServer((incoming, outgoing) => {
+    // The listener catches a failed request and answers it itself, as it does under `serve`.
+    void listener(incoming, outgoing);
+  });
 
-  return new Promise((resolve) => {
-    // Without `createServer` options, `serve` makes a plain HTTP/1 server.
-    const server = serve({ fetch: app.fetch, port }, (info) => {
-      let closing: Promise<void> | undefined;
-      const close = () => {
-        closing ??= (async () => {
-          log.info("shutting down");
-          const stopped = new Promise<void>((done) => server.close(() => done()));
-          // A connection that finishes its request stays open (keep-alive), so
-          // keep closing connections as they go idle until none are left.
-          const sweep = setInterval(() => server.closeIdleConnections(), 20);
-          server.closeIdleConnections();
-          await stopped;
-          clearInterval(sweep);
-        })();
-        return closing;
-      };
+  let closing: Promise<void> | undefined;
+  const close = () => {
+    closing ??= (async () => {
+      log.info("shutting down");
+      const stopped = new Promise<void>((done) => {
+        server.close(() => {
+          done();
+        });
+      });
+      // A connection that finishes its request stays open (keep-alive), so
+      // keep closing connections as they go idle until none are left.
+      const sweep = setInterval(() => {
+        server.closeIdleConnections();
+      }, 20);
+      server.closeIdleConnections();
+      await stopped;
+      clearInterval(sweep);
+    })();
+    return closing;
+  };
 
-      const shutdown = () => {
-        const timer = setTimeout(() => process.exit(1), shutdownTimeoutMs);
-        timer.unref();
-        void close().then(() => process.exit(0));
-      };
+  const shutdown = () => {
+    const timer = setTimeout(() => process.exit(1), shutdownTimeoutMs);
+    timer.unref();
+    void close().then(() => process.exit(0));
+  };
+
+  return new Promise((resolve, reject) => {
+    server.listen(port, () => {
+      const address = server.address();
+      if (address === null || typeof address === "string") {
+        reject(new Error(`Expected a TCP address, got ${String(address)}`));
+        return;
+      }
       // Registered before `listening` is logged, so a signal sent as soon as a
       // caller sees that line is already handled.
       process.once("SIGTERM", shutdown);
       process.once("SIGINT", shutdown);
 
-      log.info({ port: info.port }, "listening");
-      resolve({ port: info.port, close });
-    }) as Server;
+      log.info({ port: address.port }, "listening");
+      resolve({ port: address.port, close });
+    });
   });
 }

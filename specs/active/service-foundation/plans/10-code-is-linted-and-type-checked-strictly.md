@@ -41,14 +41,14 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
 
 ## Steps
 
-- [ ] **1. Turn on the five strict compiler options**
+- [x] **1. Turn on the five strict compiler options**
   - **Goal:** every package type-checks with `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noFallthroughCasesInSwitch` and `noImplicitReturns` on top of `strict`. Nothing else needs changing, because they give 0 findings today.
   - **Files:**
     - `tsconfig.base.json`: add the five options after `strict`.
   - **Read first:** [ADR 0048](../../../../docs/adr/0048-turn-on-the-strictest-typescript-compiler-options.md)
   - **Tests:** none new. Type checking is the test.
   - **Check:** `vp lint`
-- [ ] **2. Sort imports with the formatter**
+- [x] **2. Sort imports with the formatter**
   - **Goal:** Oxfmt sorts imports, and the format check fails on unsorted imports. The 14 files it reorders are reformatted, with no other change.
   - **Files:**
     - `vite.config.ts`: in the `fmt` block, add `sortImports`, with Oxfmt's defaults unless they fight the existing layout. Look up the option's shape in the Oxfmt docs through context7.
@@ -56,7 +56,7 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
   - **Read first:** none
   - **Tests:** none new.
   - **Check:** `vp fmt --check $(git ls-files '*.ts' '*.json' '*.md' '*.yaml')`, then `vp test`
-- [ ] **3. Turn on the four categories and three plugins, and fix what they find**
+- [x] **3. Turn on the four categories and three plugins, and fix what they find**
   - **Goal:** `correctness`, `suspicious`, `pedantic` and `perf` are on as errors, and the `import`, `node` and `promise` plugins are on. The two noisy rules are off with reasons. The existing code passes with no new disable comments, and the three casts are gone.
   - **Files:**
     - `vite.config.ts`:
@@ -184,3 +184,11 @@ Implements [ticket 10](../tickets/10-code-is-linted-and-type-checked-strictly.md
 - [ ] The linting guide describes the categories, the picks and the exceptions, and links ADR 0047. The tech stack links both ADRs: proven by `docs/develop/linting.md` and `docs/develop/tech-stack.md`.
 
 ## Notes
+
+- 2026-11-23: Step 2 kept Oxfmt's default `sortImports` groups, which put a blank line between built-in, external and local imports.
+- 2026-11-23: Step 3 changed what steps 4 and 5 will find:
+  - `startServer` now builds the server before `listen`, and `close` and `shutdown` sit outside the listen callback, which makes step 4's exit rework simpler.
+  - `server.test.ts` and the server fixture sleep with `node:timers/promises`.
+  - `startFixture` rejects from `child.once("exit")` instead of `exited.then`, so step 5 has one `.then` fewer to rewrite.
+  - `telemetry.ts` keeps `export {}`, with a disable comment for `unicorn/require-module-specifiers`, because an empty file fails `unicorn/no-empty-file`. It's the `--import` entry point for the example service's scripts.
+  - `createServer`'s request listener wraps hono's listener in `void`, because `no-misused-promises` flags an async request listener. Hono's listener catches a failed request itself.

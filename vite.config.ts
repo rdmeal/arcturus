@@ -75,13 +75,23 @@ export default defineConfig({
   fmt: {
     ignorePatterns,
     sortPackageJson: true,
+    // Replaces Oxlint's `sort-imports`, which stays off (ADR 0047).
+    sortImports: true,
   },
   lint: {
     ignorePatterns,
     // Listing plugins replaces Oxlint's defaults, so they are listed too.
-    plugins: ["unicorn", "typescript", "oxc", "vitest"],
+    plugins: ["unicorn", "typescript", "oxc", "vitest", "import", "node", "promise"],
     jsPlugins: ["./tools/lint-rules/src/index.ts"],
-    rules: { "arcturus/disable-needs-reason": "error" },
+    // `style`, `restriction` and `nursery` stay off as categories; their rules are picked by name (ADR 0047).
+    categories: { correctness: "error", suspicious: "error", pedantic: "error", perf: "error" },
+    rules: {
+      "arcturus/disable-needs-reason": "error",
+      // Library parameter types (Hono, Node) aren't readonly, so most findings can't be fixed.
+      "typescript/prefer-readonly-parameter-types": "off",
+      // Test `describe` blocks grow long by design; function size is judged in review.
+      "eslint/max-lines-per-function": "off",
+    },
     options: {
       typeAware: true,
       typeCheck: true,
