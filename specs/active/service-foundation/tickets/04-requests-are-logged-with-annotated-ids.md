@@ -1,6 +1,6 @@
 ---
 type: ticket
-status: in-progress
+status: done
 blocked-by: ["01", "10"]
 scopes: [arcturus]
 ---
