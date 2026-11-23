@@ -85,7 +85,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
       - "drops records below the configured level".
   - **Check:** `vp test --project @arcturus/service-runtime && vp check`
 
-- [ ] **2. service-runtime: health endpoints, server start-up and graceful shutdown**
+- [x] **2. service-runtime: health endpoints, server start-up and graceful shutdown**
   - **Goal:** the runtime can serve a Hono app with `/health/live` and `/health/ready`, and shuts it down gracefully within a hard timeout. The build stays green.
   - **Files:**
     - `packages/service-runtime/src/health.ts`: `export function health(): Hono`. `GET /live` returns 200 `{ status: 'live' }` and `GET /ready` returns 200 `{ status: 'ready' }`. Chain the routes so their types are inferred.
@@ -181,3 +181,5 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 - 2026-11-23: Each package that uses Node APIs or types needs `@types/node` as a devDependency (step 1 added it to `service-runtime`). Later packages (`services/example`, `service-testing`) need it too.
 - 2026-11-23: The Vitest `projects` in `vite.config.ts` repeat `pnpm-workspace.yaml`'s globs, with `apps/*` instead of `apps/web`, because Vitest rejects a literal project path that doesn't exist yet.
 - 2026-11-23: In Claude's sandbox, `vp check` fails on unreadable placeholder files under `.claude/`, and `vp install` hits a read-only pnpm store. Run both outside the sandbox.
+- 2026-11-23: Later shutdown steps (job worker, pool, telemetry flush) go inside the `closing` function in `startServer` (`packages/service-runtime/src/server.ts`), after the server drains. Shutdown calls `closeIdleConnections()` every 20 ms until `server.close` completes, because keep-alive connections that finish their request otherwise hold shutdown open until the hard timeout.
+- 2026-11-23: Possible pattern: a lifecycle test spawns a real child process from a fixture under `test/fixtures/`, reads its port from the `listening` log line, and kills it with `onTestFinished` (`packages/service-runtime/src/server.test.ts`).
