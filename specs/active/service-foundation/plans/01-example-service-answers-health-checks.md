@@ -165,16 +165,16 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 
 **6. Acceptance criteria**, checked at the test boundary:
 
-- [ ] The example service's `dev` script starts it with the runtime's telemetry entry point loaded through `--import`, and the service runs from `.ts` source, including the runtime's, with no build step: proven by the manual smoke check in step 3 and the `dev` script in `services/example/package.json`.
-- [ ] `/health/live` and `/health/ready` both answer success on a running service: proven by "answers /health/live and /health/ready on a running server" in `packages/service-runtime/src/server.test.ts`, and by the step 3 smoke check.
-- [ ] The runtime's own tests start a real server and show that a request in flight when SIGTERM arrives completes, that new connections are refused, and that the process exits within the hard timeout: proven by "completes a request in flight when SIGTERM arrives", "refuses new connections after SIGTERM" and "exits within the hard timeout when a request outlasts it" in `packages/service-runtime/src/server.test.ts`.
-- [ ] The example service's API test calls `/health/live` through the `client` fixture, with configuration built by `parseConfig` from test values, never from env files or `process.env`: proven by "answers that the service is live" in `services/example/src/health.test.ts`, through `services/example/src/test/test.ts`.
-- [ ] `LOG_LEVEL` defaults to `info` and `LOG_FORMAT` to `json` when unset. The service's `.env.development` sets `LOG_FORMAT=pretty`. An invalid value fails start-up with a readable message: proven by the `parseSettings` tests in `packages/service-runtime/src/settings.test.ts`, plus the step 3 smoke check with `LOG_FORMAT=nope`.
-- [ ] `vp test` runs the workspace packages' tests through Vitest projects in the root config, and `passWithNoTests` is gone: proven by `vp test` and `vite.config.ts`.
-- [ ] `vp check` passes.
-- [ ] The ports table in the local development guide lists the example service on 3900, marked temporary. Its `.env.development` port links to that table: proven by `docs/develop/local-development.md` and the maintainer's `services/example/.env.development`.
-- [ ] The codebase guide names `packages/service-runtime` and `packages/service-testing`: proven by `docs/develop/codebase.md`.
-- [ ] The service composition root pattern's exemplar names the example service's composition root: proven by `docs/patterns/service-composition-root.md`.
+- [x] The example service's `dev` script starts it with the runtime's telemetry entry point loaded through `--import`, and the service runs from `.ts` source, including the runtime's, with no build step: proven by the manual smoke check in step 3 and the `dev` script in `services/example/package.json`.
+- [x] `/health/live` and `/health/ready` both answer success on a running service: proven by "answers /health/live and /health/ready on a running server" in `packages/service-runtime/src/server.test.ts`, and by the step 3 smoke check.
+- [x] The runtime's own tests start a real server and show that a request in flight when SIGTERM arrives completes, that new connections are refused, and that the process exits within the hard timeout: proven by "completes a request in flight when SIGTERM arrives", "refuses new connections after SIGTERM" and "exits within the hard timeout when a request outlasts it" in `packages/service-runtime/src/server.test.ts`.
+- [x] The example service's API test calls `/health/live` through the `client` fixture, with configuration built by `parseConfig` from test values, never from env files or `process.env`: proven by "answers that the service is live" in `services/example/src/health.test.ts`, through `services/example/src/test/test.ts`.
+- [x] `LOG_LEVEL` defaults to `info` and `LOG_FORMAT` to `json` when unset. The service's `.env.development` sets `LOG_FORMAT=pretty`. An invalid value fails start-up with a readable message: proven by the `parseSettings` tests in `packages/service-runtime/src/settings.test.ts`, plus the step 3 smoke check with `LOG_FORMAT=nope`.
+- [x] `vp test` runs the workspace packages' tests through Vitest projects in the root config, and `passWithNoTests` is gone: proven by `vp test` and `vite.config.ts`.
+- [x] `vp check` passes.
+- [x] The ports table in the local development guide lists the example service on 3900, marked temporary. Its `.env.development` port links to that table: proven by `docs/develop/local-development.md` and the maintainer's `services/example/.env.development`.
+- [x] The codebase guide names `packages/service-runtime` and `packages/service-testing`: proven by `docs/develop/codebase.md`.
+- [x] The service composition root pattern's exemplar names the example service's composition root: proven by `docs/patterns/service-composition-root.md`.
 
 ## Notes
 
