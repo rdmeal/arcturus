@@ -104,7 +104,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - **Tests:** none
   - **Check:** `vp check` (formats and lints Markdown too)
 
-- [ ] **6. Show each rule failing once on a deliberate violation**
+- [x] **6. Show each rule failing once on a deliberate violation**
   - **Goal:** an on-record demonstration, for the acceptance criteria, that every guard rail fails `vp check`. The tree ends unchanged.
   - **Files:** temporary edits only, all reverted, and this plan's Notes. In `services/example`, one at a time:
     1. `app.ts` imports `./test/test` (no extension), `./test/test.ts`, a `./x.handlers` path, `@arcturus/service-testing`, `msw`, `fishery` and `@testcontainers/postgresql`;
@@ -120,13 +120,13 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
 
 **7. Acceptance criteria**, checked at the test boundary (`vp check`):
 
-- [ ] A non-test file that imports a test file, anything under a `test/` folder, a `*.handlers` module, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*` fails `vp check`. Relative imports match with or without the `.ts` extension: proven by step 6 case 1, recorded in Notes, with the config from step 1 in `vite.config.ts`
-- [ ] A test file that imports a service's `direct-db` module fails `vp check`, with a message pointing to the service API test pattern: proven by step 6 case 2
-- [ ] A test hook in a `*.test.ts` file fails `vp check`: proven by step 6 case 3
-- [ ] `toMatchSnapshot`, `toMatchInlineSnapshot` and the snapshot forms of `toThrowError…` fail `vp check`. Oxlint supports banning matchers natively (`vitest/no-restricted-matchers`), so this is enforced: proven by step 6 case 4
-- [ ] A disable comment with no `-- <reason>` fails `vp check`, and so does a disable comment that no longer suppresses anything: proven by `disable-needs-reason.test.ts` in `tools/lint-rules/src/`, and by step 6 cases 5 and 6
-- [ ] Each rule above was shown to fail once on a deliberate violation, which was then reverted: step 6's Notes entry
-- [ ] The repo-wide rule that every disable comment states its reason has a home in the contributor docs, and the TypeScript rule for Claude points to it in one line: `docs/develop/linting.md` and `.claude/rules/typescript.md` (step 5)
+- [x] A non-test file that imports a test file, anything under a `test/` folder, a `*.handlers` module, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*` fails `vp check`. Relative imports match with or without the `.ts` extension: proven by step 6 case 1, recorded in Notes, with the config from step 1 in `vite.config.ts`
+- [x] A test file that imports a service's `direct-db` module fails `vp check`, with a message pointing to the service API test pattern: proven by step 6 case 2
+- [x] A test hook in a `*.test.ts` file fails `vp check`: proven by step 6 case 3
+- [x] `toMatchSnapshot`, `toMatchInlineSnapshot` and the snapshot forms of `toThrowError…` fail `vp check`. Oxlint supports banning matchers natively (`vitest/no-restricted-matchers`), so this is enforced: proven by step 6 case 4
+- [x] A disable comment with no `-- <reason>` fails `vp check`, and so does a disable comment that no longer suppresses anything: proven by `disable-needs-reason.test.ts` in `tools/lint-rules/src/`, and by step 6 cases 5 and 6
+- [x] Each rule above was shown to fail once on a deliberate violation, which was then reverted: step 6's Notes entry
+- [x] The repo-wide rule that every disable comment states its reason has a home in the contributor docs, and the TypeScript rule for Claude points to it in one line: `docs/develop/linting.md` and `.claude/rules/typescript.md` (step 5)
 
 ## Notes
 
@@ -137,3 +137,10 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - Step 5's guide should mention the `additionalTestBlockFunctions` setting, so nobody removes it.
 - 2026-11-23: Oxlint 1.93 loads the plugin from `.ts` source through `vp check`, so `tools/lint-rules` is TypeScript. The plugin imports `definePlugin` and `defineRule` from `vite-plus/lint/plugins`, which re-exports `@oxlint/plugins`, so there's no new dependency: `vite-plus` is a peer dependency, as in `service-testing`.
 - 2026-11-23: Inside Claude's sandbox, `vp install` fails on a read-only pnpm store lock. It needs to run outside the sandbox.
+- 2026-11-23: Step 6: each guard rail failed `vp check` on a deliberate violation in `services/example`, which was then reverted (`git status --short services/` clean, check green). Trimmed output:
+  1. Production imports, in `app.ts`: `no-restricted-imports` reported `./test/test`, `./test/test.ts`, `./x.handlers`, `./foo.test`, `@arcturus/service-testing`, `msw`, `fishery` and `@testcontainers/postgresql`. Help: "Production code never imports test-only code (service-api-test rule 3: docs/patterns/service-api-test.md)." Test libraries get the same help, ending "test libraries".
+  2. `direct-db`, in `health.test.ts`: `no-restricted-imports` reported `./test/direct-db.ts`. Help: "Reach this state through the API. If it can't be reached that way, add a disable comment saying why (service-api-test rule 13: …)."
+  3. A hook, in `health.test.ts`: `vitest(no-hooks): Do not use setup or teardown hooks.`
+  4. Snapshots, in `health.test.ts`: `vitest(no-restricted-matchers)` reported `toMatchSnapshot`, `toMatchInlineSnapshot`, `toThrowErrorMatchingSnapshot` and `toThrowErrorMatchingInlineSnapshot`. Help: "Use explicit matchers, not snapshots (service-api-test rule 12: …)."
+  5. No reason, in `app.ts`: `arcturus(disable-needs-reason): Say why the rule doesn't apply, as \`-- <reason>\` (docs/develop/linting.md).`
+  6. Unused, in `app.ts`: `Unused oxlint-disable directive (no problems were reported).`
