@@ -74,8 +74,17 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
   - **Read first:** none.
   - **Tests:** none.
   - **Check:** `vp check` (formatting).
+- [x] **5. Share the Vite+ setup in a composite action**
+  - **Goal:** the `setup-vp` pin and its settings live in one place. Every job still checks out on its own, because a local action can only run once the repository is checked out.
+  - **Files:**
+    - `.github/actions/setup-vp/action.yml`: a composite action running `voidzero-dev/setup-vp` (same SHA pin) with `node-version-file: .nvmrc` and `cache: true`.
+    - `.github/workflows/quality-check.yml`: every job's `setup-vp` step becomes `uses: ./.github/actions/setup-vp`.
+    - `.github/workflows/pull-request-title.yml`: the same change.
+  - **Read first:** [ADR 0020](../../../../docs/adr/0020-guard-the-dependency-supply-chain.md) (the pin keeps its version comment).
+  - **Tests:** none in code.
+  - **Check:** actionlint, as in step 2, and `grep -rn 'voidzero-dev/setup-vp@' .github`, which should show one match.
 
-**5. Acceptance criteria**, checked at the test boundary (CI and GitHub):
+**6. Acceptance criteria**, checked at the test boundary (CI and GitHub):
 
 - [ ] A pull request shows the parallel jobs and a final quality gate, and the gate passes when every job passes: proven by this ticket's pull request run, with every job and "Quality check / Quality gate" green.
 - [ ] The gate fails when any job it needs fails, is cancelled or is skipped. Failure was shown once with a deliberately failing job: proven by a temporary commit on the pull request that makes one job fail (for example `exit 1` in `build`), with the gate red, then reverted.
@@ -90,3 +99,4 @@ Implements [ticket 03](../tickets/03-ci-runs-parallel-jobs-behind-a-quality-gate
 - 2026-11-23: In Claude's sandbox, `vp install` (read-only pnpm store) and `vp check` (sandbox placeholder dotfiles) have to run outside the sandbox.
 - 2026-11-23: Step 3: `vp test --reporter=blob` writes to `.vitest/blob/blob-<index>-<count>.json`, and `vp test --mergeReports` reads that folder by default. Merging the two local shards gave the same totals as a full run (10 files, 32 tests).
 - 2026-11-23: Step 3: actions pinned are `upload-artifact` v7.0.2 (`cf430e0`) and `download-artifact` v8.0.2 (`9000827`), both released 2026-10-07. `test-report` reads the shard count from the blob file names (`blob-<index>-<count>.json`), so the matrix list stays its only home. `upload-artifact` needs `include-hidden-files: true` for `.vitest/blob/`.
+- 2026-11-23: Added step 5, a composite action for the Vite+ setup, at the maintainer's request, so the `setup-vp` pin has one home. A matrix over the checks and YAML anchors were rejected: the matrix needs conditions for the jobs that differ, and anchors don't reach `pull-request-title.yml`. The acceptance criteria became step 6.
