@@ -57,7 +57,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 
 ## Steps
 
-- [ ] **1. service-runtime package: the logger and settings parsing**
+- [x] **1. service-runtime package: the logger and settings parsing**
   - **Goal:** `@arcturus/service-runtime` exists, exporting `log`, `configureLog`, `logSettings`, `parseSettings` and `ConfigError`. `vp test` runs its tests through root Vitest projects, and `passWithNoTests` is removed. The build stays green.
   - **Files:**
     - `packages/service-runtime/package.json`: name `@arcturus/service-runtime`, `"type": "module"`, and `exports` pointing at `.ts` source: `"."` → `./src/index.ts`. The `./telemetry` entry comes in step 3. Dependencies: `pino`, `pino-pretty`, `zod`.
@@ -177,3 +177,7 @@ Implements [ticket 01](../tickets/01-example-service-answers-health-checks.md), 
 - [ ] The service composition root pattern's exemplar names the example service's composition root: proven by `docs/patterns/service-composition-root.md`.
 
 ## Notes
+
+- 2026-11-23: Each package that uses Node APIs or types needs `@types/node` as a devDependency (step 1 added it to `service-runtime`). Later packages (`services/example`, `service-testing`) need it too.
+- 2026-11-23: The Vitest `projects` in `vite.config.ts` repeat `pnpm-workspace.yaml`'s globs, with `apps/*` instead of `apps/web`, because Vitest rejects a literal project path that doesn't exist yet.
+- 2026-11-23: In Claude's sandbox, `vp check` fails on unreadable placeholder files under `.claude/`, and `vp install` hits a read-only pnpm store. Run both outside the sandbox.
