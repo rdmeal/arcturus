@@ -62,7 +62,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
     - "a field passed to the log call overrides an annotated one".
   - **Check:** `vp test packages/service-runtime/src/context.test.ts`, then `vp check`
 
-- [ ] **2. `createServiceApp()` with request logging**
+- [x] **2. `createServiceApp()` with request logging**
   - **Goal:** every service builds its app from one runtime factory, which logs one line per request and opens the context scope. The example service and the runtime's server fixture use it. The build stays green.
   - **Files:**
     - `packages/service-runtime/src/service-app.ts` (new):
@@ -148,3 +148,4 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 - 2026-11-23, during planning: [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md) was written, and the pattern rules were updated on this branch: observability rules 5 and 6 (a new rule, so later rules moved up by one), service-composition-root rules 12 and 17, error-handling rule 5, and service-api-test rule 19. The documentation step (now step 6) only fills in exemplars, and the note for ticket 07 was dropped, since error-handling rule 5 already says the factory installs the error handler.
 - 2026-11-23, during planning: step 5 was added to give `service-runtime`, `service-testing`, `tools/lint-rules` and `services/example` their READMEs, following the new Package READMEs section of `docs/develop/writing-docs.md`. This is the first ticket to give `service-runtime` and `service-testing` an API that services call, and the other two had no README yet. The exemplars step became step 6, and acceptance criteria step 7. Ticket 06's README criterion now extends the harness README rather than creating it.
 - 2026-11-23: Step 1 added `@opentelemetry/api` 1.10.0 and `@opentelemetry/context-async-hooks` 3.1.1, both passing the supply-chain checks. In Claude's sandbox, `vp add` (read-only pnpm store) and `vp check` (unreadable placeholder dotfiles) only run outside the sandbox. Strict lint rejects `as` casts on parsed JSON and `expect.anything()`-style matchers (they're `any`): parse log lines with a zod record schema and compare plain values, as `context.test.ts` does.
+- 2026-11-23: Step 2 reads the route from `matchedRoutes(c).at(-1)` (from `hono/route`) rather than `routePath(c, -1)`: its `handler` is compared with the middleware itself, which is the last match only when no route matched (a 404). `durationMs` is rounded to microseconds.
