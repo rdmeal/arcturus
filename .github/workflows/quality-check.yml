@@ -105,8 +105,9 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Lint workflows
-        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color # 1.7.12
+      - uses: ./.github/actions/setup-vp
+
+      - run: vp run lint:workflows
 
   repo-checks:
     name: Repo checks
