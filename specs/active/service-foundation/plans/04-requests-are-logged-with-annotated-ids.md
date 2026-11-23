@@ -42,7 +42,7 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 
 ## Steps
 
-- [ ] **1. Observability context: `annotate` and the log mixin**
+- [x] **1. Observability context: `annotate` and the log mixin**
   - **Goal:** fields annotated inside a scope reach every later log line of that scope, with no OTel SDK running. The build stays green, and nothing calls it yet outside tests.
   - **Files:**
     - `packages/service-runtime/package.json`: add `@opentelemetry/api` and `@opentelemetry/context-async-hooks` with `vp install`. If the release-age or trust check refuses a version, take the newest that passes, and record it in Notes.
@@ -147,3 +147,4 @@ Implements [ticket 04](../tickets/04-requests-are-logged-with-annotated-ids.md),
 
 - 2026-11-23, during planning: [ADR 0049](../../../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md) was written, and the pattern rules were updated on this branch: observability rules 5 and 6 (a new rule, so later rules moved up by one), service-composition-root rules 12 and 17, error-handling rule 5, and service-api-test rule 19. The documentation step (now step 6) only fills in exemplars, and the note for ticket 07 was dropped, since error-handling rule 5 already says the factory installs the error handler.
 - 2026-11-23, during planning: step 5 was added to give `service-runtime`, `service-testing`, `tools/lint-rules` and `services/example` their READMEs, following the new Package READMEs section of `docs/develop/writing-docs.md`. This is the first ticket to give `service-runtime` and `service-testing` an API that services call, and the other two had no README yet. The exemplars step became step 6, and acceptance criteria step 7. Ticket 06's README criterion now extends the harness README rather than creating it.
+- 2026-11-23: Step 1 added `@opentelemetry/api` 1.10.0 and `@opentelemetry/context-async-hooks` 3.1.1, both passing the supply-chain checks. In Claude's sandbox, `vp add` (read-only pnpm store) and `vp check` (unreadable placeholder dotfiles) only run outside the sandbox. Strict lint rejects `as` casts on parsed JSON and `expect.anything()`-style matchers (they're `any`): parse log lines with a zod record schema and compare plain values, as `context.test.ts` does.
