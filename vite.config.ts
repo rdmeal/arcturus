@@ -80,6 +80,8 @@ export default defineConfig({
     ignorePatterns,
     // Listing plugins replaces Oxlint's defaults, so they are listed too.
     plugins: ["unicorn", "typescript", "oxc", "vitest"],
+    jsPlugins: ["./tools/lint-rules/src/index.ts"],
+    rules: { "arcturus/disable-needs-reason": "error" },
     options: {
       typeAware: true,
       typeCheck: true,

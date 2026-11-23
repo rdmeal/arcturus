@@ -63,7 +63,7 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - **Tests:** none committed. Temporarily add `// oxlint-disable-next-line no-debugger -- probe` above a line in `services/example/src/app.ts`, see "Unused oxlint-disable directive", then revert.
   - **Check:** `vp check`
 
-- [ ] **4. Require a reason on every disable comment, with a local lint rule**
+- [x] **4. Require a reason on every disable comment, with a local lint rule**
   - **Goal:** `@arcturus/lint-rules` provides `arcturus/disable-needs-reason`, has unit tests, and is wired into `vp check`. Any directive without `-- <reason>` fails. The repo stays green.
   - **Files:**
     - `tools/lint-rules/package.json`: `@arcturus/lint-rules`, private, `"type": "module"`, `exports` pointing at source, `@types/node` as a dev dependency like the other packages.
@@ -135,3 +135,5 @@ Implements [ticket 02](../tickets/02-lint-enforces-testing-boundaries.md), part 
   - `vitest/no-standalone-expect` flagged every `expect` inside the service's own `test` (built with `test.extend` and imported from `src/test/test.ts`). It is configured with `additionalTestBlockFunctions: ["test"]` in the test-only override.
   - `vitest/require-to-throw-message` flagged a bare `rejects.toThrow()` in `packages/service-runtime/src/server.test.ts`, which now asserts `"fetch failed"`.
   - Step 5's guide should mention the `additionalTestBlockFunctions` setting, so nobody removes it.
+- 2026-11-23: Oxlint 1.93 loads the plugin from `.ts` source through `vp check`, so `tools/lint-rules` is TypeScript. The plugin imports `definePlugin` and `defineRule` from `vite-plus/lint/plugins`, which re-exports `@oxlint/plugins`, so there's no new dependency: `vite-plus` is a peer dependency, as in `service-testing`.
+- 2026-11-23: Inside Claude's sandbox, `vp install` fails on a read-only pnpm store lock. It needs to run outside the sandbox.

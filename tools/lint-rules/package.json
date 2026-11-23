@@ -1,0 +1,14 @@
+{
+  "name": "@arcturus/lint-rules",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6"
+  },
+  "peerDependencies": {
+    "vite-plus": "*"
+  }
+}
