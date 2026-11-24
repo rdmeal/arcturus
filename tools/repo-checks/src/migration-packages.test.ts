@@ -43,6 +43,15 @@ describe("findMigrationPackages", () => {
     ]);
   });
 
+  test("finds services whose configuration is a .gmrc.js or .gmrc.cjs", async () => {
+    const root = await repoWith(["services/example/.gmrc.cjs", "games/poker/service/.gmrc.js"]);
+
+    expect(await findMigrationPackages(root)).toStrictEqual([
+      "games/poker/service",
+      "services/example",
+    ]);
+  });
+
   test("ignores packages without a .gmrc", async () => {
     const root = await repoWith([
       "services/player-gateway/.gmrc",
