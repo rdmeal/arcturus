@@ -86,7 +86,7 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
     2. `vp run --filter @arcturus/example-service db:reset` succeeds.
     3. `node tools/repo-checks/src/main.ts` passes, with no `DATABASE_URL` set in the shell, because CI has none.
     4. `vp check`.
-- [ ] **3. Write the messages migration in `current.sql` under `db:watch`, and show the repo check failing**
+- [x] **3. Write the messages migration in `current.sql` under `db:watch`, and show the repo check failing**
   - **Goal:** the messages table exists in the development database, written through the pattern's workflow. Pushing this commit makes the pull request's "Repo checks" job fail on the non-blank `current.sql`. That failure is deliberate: it is ticket 03's deferred acceptance criterion. Every other job stays green.
   - **Files:** `services/example/migrations/current.sql`:
     1. an undo section, `drop table if exists messages cascade;`;
@@ -151,3 +151,4 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
 - 2026-11-23: **Plan change (step 2):** the Graphile Migrate scripts don't use `dotenv run`. dotenv's CLI stops the command when a file named with `-f` is missing (documented in dotenv 18's README), so `-f .env,.env.development` broke for anyone without the optional `.env`. Instead, a typed `gmrc.ts` loads both files with `config()`, and `.gmrc.cjs` requires it: Graphile Migrate loads only `.gmrc`, `.gmrc.js` or `.gmrc.cjs`, and Node 26 can `require()` a `.ts` module. The maintainer chose this, and to correct ADR 0031's consequence line in place in step 5. A hand-run `vp exec graphile-migrate commit` in step 4 needs no prefix.
 - 2026-11-24: Step 3 also fixed `tools/repo-checks`: `findMigrationPackages` looked only for `.gmrc`, so after step 2's `.gmrc.cjs` the `current.sql` check silently skipped the example service. It now detects `.gmrc`, `.gmrc.js` and `.gmrc.cjs`, with a test, and the README says so.
 - 2026-11-24: `db:watch` compares `current.sql` with its comments stripped, so a comment-only edit is skipped as "unchanged". To show it re-applying, change the SQL itself.
+- 2026-11-24: Ticket 03's deferred criterion is shown: on PR #31, "Repo checks" failed on the non-blank `current.sql`, and the quality gate failed with it: https://github.com/rdmeal/arcturus/actions/runs/45294541709/job/138111484652?pr=31
