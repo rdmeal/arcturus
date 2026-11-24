@@ -22,13 +22,17 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
 
 ### Layout and scripts
 
-1. `.gmrc` sits at the service package's root. Migrations live in `migrations/`: `current.sql` holds the migration being written, and `committed/` holds finished migrations.
-2. The service's `package.json` has these scripts, each running the Graphile Migrate command-line tool through `dotenv run -q -f .env,.env.development --`, so it reads the same env files, in the same order, as the service (see [Service composition root](./service-composition-root.md)):
+1. The configuration is a typed `gmrc.ts` at the service package's root (`satisfies Settings` from `graphile-migrate`), loaded by a one-line `.gmrc.cjs` beside it, because Graphile Migrate only loads `.gmrc`, `.gmrc.js` or `.gmrc.cjs`. Migrations live in `migrations/`: `current.sql` holds the migration being written, and `committed/` holds finished migrations. A new service with a database takes its scripts and configuration from the exemplar, and adds its role, database and shadow database to `infra/postgres/init/01-service-databases.sql`. The exemplar's `gmrc.ts` is the only copy so far: the next service to get a database moves what the two would share into one helper rather than copying it.
+2. `gmrc.ts` loads `.env` and `.env.development` with dotenv, in the same order as the service's config module (see [Service composition root](./service-composition-root.md)), so the scripts run `graphile-migrate` directly. The service's `package.json` has these scripts:
    - `dev` runs `graphile-migrate migrate` before starting the service, so the database is always up to date with the committed migrations;
    - `db:watch` runs `graphile-migrate watch`, which re-applies `current.sql` on every save;
-   - `db:reset` runs `graphile-migrate reset`, which drops the development database and rebuilds it from the committed migrations.
-3. `DATABASE_URL`, `SHADOW_DATABASE_URL` and `ROOT_DATABASE_URL` are in the service's `.env.development`. The service connects as its own role. The root URL is the local superuser, which Graphile Migrate uses only to recreate the shadow database and on `db:reset`.
-4. `.gmrc`'s `afterAllMigrations` writes `schema.sql` at the package root with `pg_dump --schema-only`, run inside the Postgres container (`docker compose exec -T postgres pg_dump …`), so the host needs no Postgres tools.
+   - `db:reset` runs `graphile-migrate reset --erase`, which drops the development database and rebuilds it from the committed migrations;
+   - `db:commit` and `db:uncommit` run `graphile-migrate commit` and `graphile-migrate uncommit` (rules 14 and 15).
+
+   Only `dev` runs across services (`vp run dev`). Run the others for one service at a time, with `vp run --filter <package> <script>`: each service has its own chain, and a recursive `db:commit` would give every service the same message and fail on any service whose `current.sql` is blank.
+
+3. `DATABASE_URL`, `SHADOW_DATABASE_URL` and `ROOT_DATABASE_URL` are in the service's `.env.development`. The service connects as its own role, which owns its database and shadow database. The root URL is the local superuser, which Graphile Migrate uses only to recreate the shadow database and on `db:reset`.
+4. `afterAllMigrations` writes `schema.sql` at the package root with `pg_dump --schema-only`, run inside the Postgres container (`docker compose exec -T postgres pg_dump …`), so the host needs no Postgres tools. The action is shadow-only (`shadow: true`) and dumps `"$GM_DBNAME"`. The shadow database is rebuilt from the committed migrations alone, so the dump matches what is committed and never runs in tests, and the database name works whatever host port Postgres is on. A fixed `--restrict-key` keeps the dump the same while the schema is. To regenerate `schema.sql` without a new migration, run `graphile-migrate reset --shadow --erase`.
 
 ### Naming
 
@@ -47,14 +51,15 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
 
 ### Committing
 
-14. Commit the migration with `graphile-migrate commit -m "<what it does>"` as the last step before the pull request is ready, so it takes the next number in the chain as late as possible.
-15. If `main` gains a migration before the pull request merges, run `graphile-migrate uncommit`, rebase onto `main`, and commit again, so the chain stays a single line.
+14. Commit the migration with `vp run --filter <package> db:commit -m "<what it does>"` as the last step before the pull request is ready, so it takes the next number in the chain as late as possible. The message also names the file (`000002-create-the-tournaments-table.sql`).
+15. If `main` gains a migration for the same service before the pull request merges, run `db:uncommit`, rebase onto `main`, and commit again, so the chain stays a single line.
 16. Commit the regenerated `schema.sql` with the migration, so reviewers see the schema change as a diff.
 17. `current.sql` must hold only comments when the pull request merges. CI fails if any service's `migrations/current.sql` contains anything else.
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+- `services/example/migrations/committed/000001-create-the-messages-table.sql`: a first migration, with its undo section and the naming rules.
+- `services/example/gmrc.ts` and `.gmrc.cjs`: the env files loaded in the service's order, and the shadow-only `schema.sql` dump. The scripts are in `services/example/package.json`.
 
 ## Related
 

@@ -6,7 +6,9 @@ It's built like every service: see the [service composition root](../../docs/pat
 
 ## Running it
 
-From this folder, `pnpm run dev` starts it with file watching on port 3900, reading `.env.development`. `pnpm run start` starts it without watching.
+Start Postgres first with `vp run infra:up`. Then, from the repository root, `vp run --filter @arcturus/example-service dev` migrates its database and starts it with file watching on port 3900, reading `.env.development`. The `start` script starts it without migrating or watching.
+
+Its database scripts (`db:watch`, `db:reset`, `db:commit` and `db:uncommit`) are described in the [database migration](../../docs/patterns/database-migration.md) pattern.
 
 ## Testing
 

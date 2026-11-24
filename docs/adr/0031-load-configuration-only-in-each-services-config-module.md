@@ -31,10 +31,10 @@ We will load and validate configuration only in each service's `src/config.ts`:
 
 - A fresh clone runs with no setup step, and committed local values can't drift from a copied example file.
 - The rest of a service never knows whether a value came from a file, the environment or the operator config, so the source can change without touching it.
-- `process.env` is never changed, so no library can come to depend on a value that only exists locally.
+- A service never changes `process.env`, so no library can come to depend on a value that only exists locally.
 - Production is safe without a special case only if production images contain no env files. The image build has to exclude them. If it doesn't, real environment variables still win, but a setting the deployment forgot would be filled from a local file.
 - `.env.development` must never hold a real secret. Its values are committed and readable by anyone.
-- Tools that read the environment themselves, such as Graphile Migrate's command-line tool, don't go through `loadConfig()`. They are run through `dotenv run` with the same files in the same order, so the file names are written in two places.
+- Tools that read the environment themselves, such as Graphile Migrate's command-line tool, don't go through `loadConfig()`. They load the same files, in the same order, with dotenv from their own configuration (see the [database migration](../patterns/database-migration.md) pattern), so the file names are written in two places. `dotenv run -f` can't do this, because it stops when a named file such as the optional `.env` is missing.
 - dotenv is a runtime dependency of every service that has config.
 
 ## Alternatives considered

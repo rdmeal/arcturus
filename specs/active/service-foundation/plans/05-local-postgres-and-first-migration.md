@@ -98,7 +98,7 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
     2. `docker compose exec postgres psql -U example -d example -c '\d messages'` shows the table.
     3. `node tools/repo-checks/src/main.ts` fails for `services/example`.
     4. The maintainer pushes, opens the draft pull request and confirms that "Repo checks" fails and the quality gate fails with it. Record the run's link in Notes.
-- [ ] **4. Commit the migration and its schema dump**
+- [x] **4. Commit the migration and its schema dump**
   - **Goal:** the migration is in the hash-chained history, `current.sql` holds only comments, and `schema.sql` is regenerated from the shadow database. Pushing turns "Repo checks" green again.
   - **Files:**
     - `services/example/migrations/committed/000001-create-the-messages-table.sql`: written by `graphile-migrate commit -m "Create the messages table"`, run with `vp exec` (`gmrc.ts` loads the env files).
@@ -113,7 +113,7 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
     4. `node tools/repo-checks/src/main.ts` passes.
     5. `vp check`.
     6. After pushing, "Repo checks" and the gate are green.
-- [ ] **5. Document what now runs, and set the migration pattern's exemplar**
+- [x] **5. Document what now runs, and set the migration pattern's exemplar**
   - **Goal:** the docs match the setup. Only docs change.
   - **Files:**
     - `docs/develop/local-development.md`: rewrite the status note. Postgres, `infra:up` and `infra:down`, and the example service's `dev`, `db:watch` and `db:reset` now run. The web frontend and the other services don't exist yet.
@@ -121,8 +121,11 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
       - rule 1: the configuration is a typed `gmrc.ts` loaded through a one-line `.gmrc.cjs`, because Graphile Migrate loads only `.gmrc`, `.gmrc.js` or `.gmrc.cjs`;
       - rule 2: the scripts run `graphile-migrate` directly, because `gmrc.ts` loads the env files itself, in the same order as `config.ts`. `db:reset` runs `graphile-migrate reset --erase`;
       - rule 4: the dump is a shadow-only command action, of `"$GM_DBNAME"`, with the reason;
+      - rules 2, 14 and 15: the scripts include `db:commit` (`graphile-migrate commit`) and `db:uncommit` (`graphile-migrate uncommit`). Commit, uncommit, reset and watch run one service at a time (`vp run --filter <service> …`), and only `dev` runs across services: a recursive `db:commit` would give every service the same message and fail on any blank `current.sql`;
+      - a new service with a database copies the exemplar's scripts, `gmrc.ts` and `.gmrc.cjs`, and adds its block to the init SQL;
       - Exemplar: `services/example/migrations/committed/000001-create-the-messages-table.sql` and `services/example/gmrc.ts`.
     - `docs/adr/0031-load-configuration-only-in-each-services-config-module.md`: correct the consequence line about `dotenv run` in place. Tools such as Graphile Migrate load the same files in the same order from their own configuration (`gmrc.ts`), because `dotenv run -f` fails when the optional `.env` is missing.
+    - `services/example/package.json`: add `db:commit` and `db:uncommit`. First check that `vp run --filter @arcturus/example-service db:commit -m "…"` passes `-m` through to the script; if not, the pattern says to put `--` before it.
     - `docs/develop/codebase.md`: an `infra/` row (local infrastructure files that Compose mounts; never imported), and `compose.yaml` at the root.
     - `services/example/README.md`: its scripts and that it needs `vp run infra:up` first, if the README lists how to run it.
   - **Read first:** the `writing-docs` skill. The `pattern` skill, for the exemplar and rule edits.
@@ -131,17 +134,17 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
 
 **6. Acceptance criteria**, checked by hand on the maintainer's machine and on the pull request:
 
-- [ ] `vp run infra:up` on a clean machine starts Postgres and returns once it is healthy. `vp run infra:down` stops it: proven by step 1's check on a fresh volume.
-- [ ] Compose's Postgres image is pinned by tag and digest, at the current Postgres major: `postgres:19.0@sha256:766ddae…` in `compose.yaml`.
-- [ ] On a fresh volume, the example service's role, database and shadow database exist, and the service connects as its own role: `\l` in step 1, and `migrate` running as `example` in step 2.
-- [ ] `vp run --filter <example> dev` migrates, then starts the service. A second run finds nothing to migrate: step 4's checks 2 and 3.
-- [ ] `db:watch` re-applies `current.sql` on save, and `db:reset` rebuilds the database from the committed migrations: step 3's check 1 and step 4's check 2.
-- [ ] The committed migration creates the messages table with snake_case names, a plural table name, an `id uuid` primary key with no default, and `created_at` defaulting to `now()`: `migrations/committed/000001-create-the-messages-table.sql`.
-- [ ] `schema.sql` is regenerated by running migrations, through `pg_dump` inside the container, and is committed: step 4, through the shadow-only `afterAllMigrations` action.
-- [ ] `current.sql` holds only comments at the end of the ticket: `node tools/repo-checks/src/main.ts` passes, and "Repo checks" is green on the pull request.
-- [ ] The local development guide's status note is updated for what now runs: step 5.
-- [ ] The database migrations pattern's exemplar names the example service's first migration and `.gmrc` (now `gmrc.ts`, see Notes): step 5.
-- [ ] The `current.sql` repo check is shown failing once on the pull request (ticket 03's deferred criterion): the run linked in Notes from step 3.
+- [x] `vp run infra:up` on a clean machine starts Postgres and returns once it is healthy. `vp run infra:down` stops it: proven by step 1's check on a fresh volume.
+- [x] Compose's Postgres image is pinned by tag and digest, at the current Postgres major: `postgres:19.0@sha256:766ddae…` in `compose.yaml`.
+- [x] On a fresh volume, the example service's role, database and shadow database exist, and the service connects as its own role: `\l` in step 1, and `migrate` running as `example` in step 2.
+- [x] `vp run --filter <example> dev` migrates, then starts the service. A second run finds nothing to migrate: on an emptied `example` database, the first `dev` ran one committed migration, then started, and the second reported "Already up to date".
+- [x] `db:watch` re-applies `current.sql` on save, and `db:reset` rebuilds the database from the committed migrations: step 3's check 1 and step 4's check 2.
+- [x] The committed migration creates the messages table with snake_case names, a plural table name, an `id uuid` primary key with no default, and `created_at` defaulting to `now()`: `migrations/committed/000001-create-the-messages-table.sql`.
+- [x] `schema.sql` is regenerated by running migrations, through `pg_dump` inside the container, and is committed: step 4, through the shadow-only `afterAllMigrations` action.
+- [x] `current.sql` holds only comments at the end of the ticket: `node tools/repo-checks/src/main.ts` passes, and "Repo checks" is green on the pull request.
+- [x] The local development guide's status note is updated for what now runs: step 5.
+- [x] The database migrations pattern's exemplar names the example service's first migration and `.gmrc` (now `gmrc.ts`, see Notes): step 5.
+- [x] The `current.sql` repo check is shown failing once on the pull request (ticket 03's deferred criterion): the run linked in Notes from step 3.
 
 ## Notes
 
@@ -154,3 +157,4 @@ Implements [ticket 05](../tickets/05-local-postgres-and-first-migration.md), par
 - 2026-11-24: Ticket 03's deferred criterion is shown: on PR #31, "Repo checks" failed on the non-blank `current.sql`, and the quality gate failed with it: https://github.com/rdmeal/arcturus/actions/runs/45294541709/job/138111484652?pr=31
 - 2026-11-24: Step 4 added `--restrict-key=schemadump` to the `pg_dump` action. pg_dump 19 wraps a dump in `\restrict <key>` with a random key by default, so `schema.sql` changed on every regeneration. The fixed key is safe because `schema.sql` is never run with psql (pg_dump's docs give repeatable output as this option's purpose). `graphile-migrate commit` names the file after its message, `000001-create-the-messages-table.sql`, and the `committed/.gitkeep` is gone.
 - 2026-11-24: To regenerate `schema.sql` without a new migration, run `vp exec graphile-migrate reset --shadow --erase` in the service folder.
+- 2026-11-24: **Plan change (step 5), agreed with the maintainer:** add `db:commit` and `db:uncommit` scripts, and write the per-service rule into the pattern (see step 5). When a second service gets a database, extract `gmrc.ts` into a shared helper (e.g. `migrationSettings(serviceFolder)`), so the env loading and the dump command live in one place. Until then, a service copies the exemplar.

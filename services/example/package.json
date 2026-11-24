@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "db:commit": "graphile-migrate commit",
     "db:reset": "graphile-migrate reset --erase",
+    "db:uncommit": "graphile-migrate uncommit",
     "db:watch": "graphile-migrate watch",
     "dev": "graphile-migrate migrate && node --watch --import @arcturus/service-runtime/telemetry src/main.ts",
     "start": "node --import @arcturus/service-runtime/telemetry src/main.ts"
