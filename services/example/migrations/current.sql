@@ -1,0 +1,1 @@
+-- Write the migration here, following docs/patterns/database-migration.md.
