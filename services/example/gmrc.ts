@@ -20,13 +20,15 @@ export const settings = {
   // committed migrations alone, so the dump matches what is committed, and the
   // dump never runs in tests. pg_dump runs inside the Compose container, so the
   // host needs no Postgres tools. It takes the database name rather than
-  // GM_DBURL, whose host port may differ.
+  // GM_DBURL, whose host port may differ. A fixed --restrict-key keeps the dump
+  // the same when the schema is; it is safe because schema.sql is only read in
+  // review, never run with psql.
   afterAllMigrations: [
     {
       _: "command",
       shadow: true,
       command:
-        'docker compose exec -T postgres pg_dump --username=postgres --schema-only --no-owner --no-privileges --exclude-schema=graphile_migrate --exclude-schema=graphile_worker "$GM_DBNAME" > schema.sql',
+        'docker compose exec -T postgres pg_dump --username=postgres --schema-only --no-owner --no-privileges --exclude-schema=graphile_migrate --exclude-schema=graphile_worker --restrict-key=schemadump "$GM_DBNAME" > schema.sql',
     },
   ],
 
