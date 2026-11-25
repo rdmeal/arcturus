@@ -57,7 +57,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 
 ## Steps
 
-- [ ] **1. Move migration-package detection into `@arcturus/workspace`**
+- [x] **1. Move migration-package detection into `@arcturus/workspace`**
   - **Goal:** `findMigrationPackages` lives in a package that tools and packages can both import. No behaviour changes, and the build stays green.
   - **Files:**
     - `packages/workspace/package.json` (new, `@arcturus/workspace`, private, `exports: { ".": "./src/index.ts" }`), `tsconfig.json` (as the other packages);

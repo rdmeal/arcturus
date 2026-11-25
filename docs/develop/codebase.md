@@ -14,7 +14,7 @@ Every package has its own `package.json` and declares everything it imports ([Or
 | ---------------------- | --------------------------------------------------------------- |
 | `apps/web`             | The web frontend                                                |
 | `services/<service>`   | A platform service: the tournament runner or the player gateway |
-| `packages/<name>`      | Shared libraries that services and games import                 |
+| `packages/<name>`      | Shared libraries that services, games and tools import          |
 | `games/<game>/service` | A core game's game service                                      |
 | `games/<game>/agents`  | One service hosting all of that game's core agents              |
 | `tools/<name>`         | Repo tooling: CI helpers, repo checks, lint rules, generators   |

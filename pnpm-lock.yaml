@@ -236,6 +236,12 @@ importers:
         specifier: ^26.6.6
         version: 26.6.6
 
+  packages/workspace:
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
+
   services/example:
     dependencies:
       '@arcturus/service-runtime':
@@ -272,6 +278,10 @@ importers:
         version: 26.6.6
 
   tools/repo-checks:
+    dependencies:
+      '@arcturus/workspace':
+        specifier: workspace:*
+        version: link:../../packages/workspace
     devDependencies:
       '@types/node':
         specifier: ^26.6.6

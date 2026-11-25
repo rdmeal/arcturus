@@ -8,7 +8,7 @@ import { findMigrationPackages } from "./migration-packages.ts";
 
 // Builds a throwaway repository holding the given files, each empty.
 const repoWith = async (files: readonly string[]): Promise<string> => {
-  const root = await mkdtemp(join(tmpdir(), "repo-checks-"));
+  const root = await mkdtemp(join(tmpdir(), "workspace-"));
   onTestFinished(async () => {
     await rm(root, { recursive: true, force: true });
   });

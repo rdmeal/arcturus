@@ -2,6 +2,9 @@
   "name": "@arcturus/repo-checks",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "@arcturus/workspace": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^26.6.6"
   }

@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Nothing this package imports brings in Node's types, and TypeScript no longer includes them by default.
+    "types": ["node"]
+  },
+  "include": ["src"]
+}
