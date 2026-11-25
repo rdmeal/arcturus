@@ -108,7 +108,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 
   - **Check:** (maintainer) `vp test packages/test-database`; then `vp check`
 
-- [ ] **4. `service-runtime`: the database wrapper**
+- [x] **4. `service-runtime`: the database wrapper**
   - **Goal:** services reach Postgres only through `transaction` and `read`, with rows validated and both timeouts on every connection. Nothing uses it yet outside tests.
   - **Files:**
     - `packages/service-runtime/package.json`: add `slonik` (pinned exactly, ADR 0011) and `@slonik/pg-driver` if needed; devDependency `@arcturus/test-database`.
@@ -236,3 +236,4 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 - 2026-11-25: **Plan change (step 3), agreed with the maintainer:** step 3 adds "several databases can be cloned from the same template at once", so the concurrent-clone criterion is proven against a migrated template, not only `template0`.
 - 2026-11-25: Step 3: graphile-worker 0.18.0 brings `graphile-config`, which lists `@types/node` ^22 as a runtime dependency, and its `undici-types@6.21.0` failed the no-downgrade trust check. The maintainer chose a pnpm override in `pnpm-workspace.yaml` (`"graphile-config>@types/node": ^26.6.6`). Graphile Migrate keeps its pool for 200 ms after `migrate` returns and calls `process.exit(1)` if an idle connection is killed, so `buildTemplate` waits for `pg_stat_activity` to show no connections before marking the template. Never terminate a database's connections right after migrating it.
 - 2026-11-25: Step 3: a service's database name, which step 6's `createServiceTest({ database })` takes, is the second segment of its folder (`services/example` is `example`, `games/<game>/service` is `<game>`), with hyphens as underscores. `templateName(database)` from `@arcturus/test-database` gives `<database>_template`.
+- 2026-11-25: Step 4: Slonik 49.13.0 is pinned exactly and includes its pg driver (no `@slonik/pg-driver` needed). `statementTimeout` reaches Postgres as a startup parameter, and `lock_timeout` goes in the URL's `options` (`-c lock_timeout=…`), so both survive `DISCARD ALL`. `service-runtime` re-exports `sql` and the types `CommonQueryMethods`, `DatabasePoolConnection` and `DatabaseTransactionConnection`: services import them from `@arcturus/service-runtime` and never depend on Slonik directly. `db.read` inside `db.transaction` throws Slonik's `UnexpectedForeignConnectionError`. A `timestamp` without a time zone is read as UTC.
