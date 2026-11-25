@@ -18,6 +18,7 @@ const testOnlyFiles = [
   "**/test/**",
   "**/*.handlers.ts",
   "packages/service-testing/**",
+  "packages/test-database/**",
 ];
 
 const productionImportBans = {
@@ -41,6 +42,8 @@ const productionImportBans = {
       group: [
         "@arcturus/service-testing",
         "@arcturus/service-testing/*",
+        "@arcturus/test-database",
+        "@arcturus/test-database/*",
         "msw",
         "msw/*",
         "fishery",
@@ -192,5 +195,7 @@ export default defineConfig({
   test: {
     // Every workspace package is a Vitest project, named by its package name.
     projects: workspaceGlobs,
+    // One Postgres container for the whole run, shared by every project (ADR 0034).
+    globalSetup: ["packages/test-database/src/global-setup.ts"],
   },
 });

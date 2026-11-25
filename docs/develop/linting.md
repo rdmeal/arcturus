@@ -8,7 +8,7 @@ How lint works in this repository, and how to silence it when you must. Lint is 
 
 ## Where it's configured
 
-- **`vite.config.ts`**, in its `lint` block: the categories, the plugins, the rules, and `overrides` for test-only files and the [exceptions](#the-rule-set). Test-only files are the ones [Service API tests](../patterns/service-api-test.md) rule 2 lists: `*.test.ts`, anything under a `test/` folder, `*.handlers.ts` and `packages/service-testing`.
+- **`vite.config.ts`**, in its `lint` block: the categories, the plugins, the rules, and `overrides` for test-only files and the [exceptions](#the-rule-set). Test-only files are the ones [Service API tests](../patterns/service-api-test.md) rule 2 lists: `*.test.ts`, anything under a `test/` folder, `*.handlers.ts`, `packages/service-testing` and `packages/test-database`.
 - **`tools/lint-rules`** (`@arcturus/lint-rules`): the repository's own rules, as an Oxlint JS plugin named `arcturus`. Each rule has unit tests next to it. Look for an established plugin before writing a rule here: see [Prefer established lint plugins, and write a local rule only when none fits](../adr/0046-prefer-established-lint-plugins-over-local-rules.md).
 
 ## The rule set
@@ -48,12 +48,12 @@ import { insertMatchState } from "./test/direct-db.ts";
 
 These rules enforce the testing patterns. Their error messages name the pattern rule behind them, except `vitest/no-hooks`, whose message Oxlint fixes.
 
-| Rule                            | Files           | What it stops                                                                                  | Why                                                          |
-| ------------------------------- | --------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `no-restricted-imports`         | production code | importing test-only code, `@arcturus/service-testing`, `msw`, `fishery` or `@testcontainers/*` | [Service API tests](../patterns/service-api-test.md) rule 3  |
-| `no-restricted-imports`         | test-only files | importing a service's `direct-db` module without a disable comment and its reason              | [Service API tests](../patterns/service-api-test.md) rule 13 |
-| `vitest/no-hooks`               | test-only files | `beforeAll`, `beforeEach`, `afterEach` and `afterAll`                                          | [Service API tests](../patterns/service-api-test.md) rule 6  |
-| `vitest/no-restricted-matchers` | test-only files | snapshot matchers                                                                              | [Service API tests](../patterns/service-api-test.md) rule 12 |
-| `arcturus/disable-needs-reason` | all             | a disable comment without a reason                                                             | [Disable comments](#disable-comments)                        |
+| Rule                            | Files           | What it stops                                                                                                             | Why                                                          |
+| ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `no-restricted-imports`         | production code | importing test-only code, `@arcturus/service-testing`, `@arcturus/test-database`, `msw`, `fishery` or `@testcontainers/*` | [Service API tests](../patterns/service-api-test.md) rule 3  |
+| `no-restricted-imports`         | test-only files | importing a service's `direct-db` module without a disable comment and its reason                                         | [Service API tests](../patterns/service-api-test.md) rule 13 |
+| `vitest/no-hooks`               | test-only files | `beforeAll`, `beforeEach`, `afterEach` and `afterAll`                                                                     | [Service API tests](../patterns/service-api-test.md) rule 6  |
+| `vitest/no-restricted-matchers` | test-only files | snapshot matchers                                                                                                         | [Service API tests](../patterns/service-api-test.md) rule 12 |
+| `arcturus/disable-needs-reason` | all             | a disable comment without a reason                                                                                        | [Disable comments](#disable-comments)                        |
 
 `vitest/no-standalone-expect` is set to treat `test` as a test block, because service tests use the `test` that their `src/test/test.ts` builds with `test.extend`. Without that setting, every `expect` in a service test is reported.

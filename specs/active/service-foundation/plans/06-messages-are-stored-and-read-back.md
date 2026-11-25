@@ -70,7 +70,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
   - **Tests:** the moved `migration-packages.test.ts` passes unchanged.
   - **Check:** `vp test packages/workspace`, `vp test tools/repo-checks`, then `vp check`
 
-- [ ] **2. `@arcturus/test-database`: one container per run, and empty cloned databases**
+- [x] **2. `@arcturus/test-database`: one container per run, and empty cloned databases**
   - **Goal:** any package's tests can get an empty Postgres database of their own, on one container started per run from the image `compose.yaml` pins. `vp test` still passes everywhere with Docker running.
   - **Files:**
     - `packages/test-database/package.json` (new, `@arcturus/test-database`, private): add `@testcontainers/postgresql` and `pg` (with `@types/pg`, for the admin connection that creates and drops databases; the package doesn't need Slonik) with `vp install`; if a version fails the release-age or trust check, take the newest that passes and record it. Exports `.` (worker-side API) and `./global-setup`. `tsconfig.json`.
@@ -101,7 +101,8 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
   - **Read first:** [ADR 0035](../../../../docs/adr/0035-give-every-test-a-fresh-database-from-a-template.md), [database-migration](../../../../docs/patterns/database-migration.md), plan 05's Notes on the shadow-only `pg_dump`. Through context7: Graphile Migrate's Node API (`migrate`, settings), graphile-worker's `runMigrations`.
   - **Tests:** `packages/test-database/src/build-template.test.ts`:
     - "a database cloned from a built template has its migrated tables and the graphile_worker schema";
-    - "a built template accepts no connections".
+    - "a built template accepts no connections";
+    - "several databases can be cloned from the same template at once".
 
     Plus, in `clone-database.test.ts`: "a database cloned from the example service's template has the messages table".
 
@@ -217,7 +218,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 - [ ] Slices can only open a transaction or a read. The wrapper offers no way to run a query directly: proven by the `Database` type in `packages/service-runtime/src/database.ts` (only `transaction` and `read`), and by "a read opened inside a transaction is rejected" in `packages/service-runtime/src/database.test.ts`.
 - [ ] A self-deadlock (a second transaction waiting on the first) fails with a lock-timeout error rather than hanging. This is shown in the runtime's own tests: proven by "a transaction waiting on a lock its own handler holds fails with a lock-timeout error" in `packages/service-runtime/src/database.test.ts`.
 - [ ] `/health/ready` answers not-ready when the database is unreachable: proven by "ready answers not-ready when the database is unreachable" in `packages/service-runtime/src/service-app.test.ts`.
-- [ ] Each test gets an empty database that no other test sees, and it is dropped when the test ends. Several workers can clone the same template at once: proven by "a cloned database starts empty", "a table created in one test's database doesn't exist in another's", "the database is dropped when the test ends" and "several databases can be cloned at once" in `packages/test-database/src/clone-database.test.ts`.
+- [ ] Each test gets an empty database that no other test sees, and it is dropped when the test ends. Several workers can clone the same template at once: proven by "a cloned database starts empty", "a table created in one test's database doesn't exist in another's", "the database is dropped when the test ends" and "several databases can be cloned at once" in `packages/test-database/src/clone-database.test.ts`, and "several databases can be cloned from the same template at once" in `packages/test-database/src/build-template.test.ts`.
 - [ ] The test harness reads the Postgres image from `compose.yaml`, so the digest has one home: proven by "reads the digest-pinned postgres image from compose.yaml" in `packages/test-database/src/postgres-image.test.ts`, and `global-setup.ts` starting the container from it.
 - [ ] The clock fixture defaults to 2030-01-01T00:00:00Z, and `set()` and `advance()` change what the service reads as now: proven by the three tests in `packages/service-testing/src/clock.test.ts`, and end to end by "returns the later creation time for a message sent after the clock advances" in `get-message.test.ts`.
 - [ ] `vp test` needs only Docker, not the Compose stack, and passes in CI on GitHub's hosted runners: proven by the maintainer running `vp test` with the Compose stack stopped (`vp run infra:down`), and by the PR's test shards passing.
@@ -229,3 +230,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 ## Notes
 
 - 2026-11-25, during planning: the ticket's paths `/messages/send-message` and `/messages/get-message` became `/messaging/…` (vertical-slice rule 1). Test-database infrastructure became its own package, and migration detection moved to `@arcturus/workspace`, both to keep dependencies one-way (see Planning decisions).
+- 2026-11-25: Step 2: every `vp test` run now starts the container through the root `globalSetup`, so **Claude can't run any `vp test`, even a package with no database tests**: the maintainer runs them all with `!`. The provided key is `testDatabaseServer` (`{ host, port, username, password }`, type `TestDatabaseServer` in `provided-context.ts`). Vitest's `ProvidedContext` is augmented as `declare module "vite-plus/test"`, because `vitest` doesn't resolve from workspace packages. `readPostgresImage` is synchronous (`execFileSync`), because lint's `strict-void-return` rejects `promisify(execFile)`. Use `pg`'s named exports (`Client`, `escapeIdentifier`): lint rejects `pg.Client` through the default import.
+- 2026-11-25: Step 2: `@testcontainers/postgresql` brings build scripts from `ssh2`, `cpu-features` and `protobufjs` (through dockerode). The maintainer denied all three in `pnpm-workspace.yaml`'s `allowBuilds`. Ryuk is `testcontainers/ryuk:0.14.0`, pinned by digest in `global-setup.ts`.
+- 2026-11-25: Step 2: lint treats `packages/test-database/**` as test-only, and bans `@arcturus/test-database` from production code. Service-api-test rules 2 and 3, `linting.md` and `codebase.md` say so.
+- 2026-11-25: **Plan change (step 3), agreed with the maintainer:** step 3 adds "several databases can be cloned from the same template at once", so the concurrent-clone criterion is proven against a migrated template, not only `template0`.
