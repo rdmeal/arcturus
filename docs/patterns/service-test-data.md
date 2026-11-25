@@ -34,7 +34,7 @@ Every object a test needs comes from a fishery factory that gives a valid defaul
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+`services/example/src/test/factories/send-message-input.factory.ts`, `sendMessageInputFactory`: a factory typed from the slice's zod-inferred input, with a readable default made unique by `sequence`.
 
 ## Related
 

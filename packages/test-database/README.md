@@ -29,4 +29,4 @@ A template is named after the service's database (its folder, or the game for a 
 
 ## Testing
 
-From the repository root, with Docker running, `vp test packages/test-database` runs the tests. They need the Docker socket, so Claude runs them outside its sandbox.
+From the repository root, with Docker running, `vp test packages/test-database` runs the tests.

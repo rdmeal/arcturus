@@ -40,7 +40,7 @@ Whenever a service gets a new command (something that changes state) or query (s
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+`services/example/src/messaging/`: `send-message` is a command (`sendMessageRoute` answering `201` with the new ID, `sendMessage`, `insertMessage`) and `get-message` a query (`getMessageRoute` validating its query string, `getMessage` mapping the row to the DTO, `selectMessage` aliasing `created_at`). `router.ts`, `messagingRouter`, chains both, and `services/example/src/app.ts` mounts it at `/messaging`.
 
 ## Related
 

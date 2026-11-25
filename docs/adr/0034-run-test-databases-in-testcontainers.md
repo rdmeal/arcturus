@@ -26,7 +26,7 @@ We will start Postgres for tests with `@testcontainers/postgresql`, from Vitest'
 - CI and local runs start Postgres the same way. CI needs Docker, which GitHub's hosted runners have.
 - Each run pays a few seconds to start the container. Watch mode starts it once. Reusing a container across runs is possible later with Testcontainers' `withReuse()`.
 - The Postgres image is pinned by digest (see [Guard the dependency supply chain](./0020-guard-the-dependency-supply-chain.md)), and Compose and the tests must use the same one, so the image reference has a single home.
-- Tests that touch the database need access to the Docker socket. Claude Code's sandbox blocks it, so those tests are run outside the sandbox.
+- Tests that touch the database need access to the Docker socket. If Claude Code runs sandboxed, its sandbox blocks the socket, so those tests run outside the sandbox.
 
 ## Alternatives considered
 

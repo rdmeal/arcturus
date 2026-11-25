@@ -75,7 +75,8 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+- `services/example/src/test/test.ts`: `createServiceTest` with the service's `parseConfig`, test settings, its database name and `createApp`.
+- `services/example/src/messaging/get-message/get-message.test.ts`: state arranged through the API with `sendMessage` from `src/test/arrange.ts`, the `clock` fixture advanced, and the result asserted through the query.
 
 ## Related
 

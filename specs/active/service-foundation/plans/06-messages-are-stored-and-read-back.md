@@ -180,14 +180,14 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
     - `services/example/src/messaging/get-message/get-message.test.ts` (`describe("GET /messaging/get-message")`): "returns a sent message with its body and creation time" (`createdAt` is `2030-01-01T00:00:00.000Z`); "returns the later creation time for a message sent after the clock advances".
   - **Check:** (maintainer) `vp test services/example`; then `vp check`
 
-- [ ] **8. Measure the time to clone a database and open a pool for each test**
+- [x] **8. Measure the time to clone a database and open a pool for each test**
   - **Goal:** the cost per test is known and recorded, and the per-test database is kept or the fallback discussed.
   - **Files:** temporary timing around `cloneDatabase` and `createDatabase` in the `db` fixture (`performance.now()`), removed after the run; this plan's Notes.
   - **Read first:** [ADR 0035](../../../../docs/adr/0035-give-every-test-a-fresh-database-from-a-template.md)'s consequences.
   - **Tests:** none.
   - **Check:** (maintainer) `vp test services/example` a few times; record the median and spread of clone and pool times in Notes (for the PR). Then `git diff` shows no timing code left.
 
-- [ ] **9. Contributor docs and READMEs**
+- [x] **9. Contributor docs and READMEs**
   - **Goal:** contributors know that `vp test` needs Docker with Compose, that Claude runs database tests outside its sandbox, and how the harness and the database wrapper work.
   - **Files:**
     - `docs/develop/getting-started.md` and `docs/develop/commands.md`: `vp test` needs Docker running, with the Compose plugin.
@@ -200,7 +200,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
   - **Tests:** none.
   - **Check:** `vp check`
 
-- [ ] **10. Pattern exemplars**
+- [x] **10. Pattern exemplars**
   - **Goal:** each pattern this ticket establishes names the example service's code.
   - **Files:**
     - `docs/patterns/vertical-slice.md`: Exemplar: `services/example/src/messaging/` (`send-message` as a command, `get-message` as a query, `router.ts`).
@@ -214,18 +214,18 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 
 **11. Acceptance criteria**, checked at the test boundary:
 
-- [ ] Sending a message answers `201` with its ID, and getting it by that ID returns it, with its creation time from the database: proven by "answers 201 with the new message's ID" in `services/example/src/messaging/send-message/send-message.test.ts` and "returns a sent message with its body and creation time" in `services/example/src/messaging/get-message/get-message.test.ts`.
-- [ ] Slices can only open a transaction or a read. The wrapper offers no way to run a query directly: proven by the `Database` type in `packages/service-runtime/src/database.ts` (only `transaction` and `read`), and by "a read opened inside a transaction is rejected" in `packages/service-runtime/src/database.test.ts`.
-- [ ] A self-deadlock (a second transaction waiting on the first) fails with a lock-timeout error rather than hanging. This is shown in the runtime's own tests: proven by "a transaction waiting on a lock its own handler holds fails with a lock-timeout error" in `packages/service-runtime/src/database.test.ts`.
-- [ ] `/health/ready` answers not-ready when the database is unreachable: proven by "ready answers not-ready when the database is unreachable" in `packages/service-runtime/src/service-app.test.ts`.
-- [ ] Each test gets an empty database that no other test sees, and it is dropped when the test ends. Several workers can clone the same template at once: proven by "a cloned database starts empty", "a table created in one test's database doesn't exist in another's", "the database is dropped when the test ends" and "several databases can be cloned at once" in `packages/test-database/src/clone-database.test.ts`, and "several databases can be cloned from the same template at once" in `packages/test-database/src/build-template.test.ts`.
-- [ ] The test harness reads the Postgres image from `compose.yaml`, so the digest has one home: proven by "reads the digest-pinned postgres image from compose.yaml" in `packages/test-database/src/postgres-image.test.ts`, and `global-setup.ts` starting the container from it.
-- [ ] The clock fixture defaults to 2030-01-01T00:00:00Z, and `set()` and `advance()` change what the service reads as now: proven by the three tests in `packages/service-testing/src/clock.test.ts`, and end to end by "returns the later creation time for a message sent after the clock advances" in `get-message.test.ts`.
+- [x] Sending a message answers `201` with its ID, and getting it by that ID returns it, with its creation time from the database: proven by "answers 201 with the new message's ID" in `services/example/src/messaging/send-message/send-message.test.ts` and "returns a sent message with its body and creation time" in `services/example/src/messaging/get-message/get-message.test.ts`.
+- [x] Slices can only open a transaction or a read. The wrapper offers no way to run a query directly: proven by the `Database` type in `packages/service-runtime/src/database.ts` (only `transaction` and `read`), and by "a read opened inside a transaction is rejected" in `packages/service-runtime/src/database.test.ts`.
+- [x] A self-deadlock (a second transaction waiting on the first) fails with a lock-timeout error rather than hanging. This is shown in the runtime's own tests: proven by "a transaction waiting on a lock its own handler holds fails with a lock-timeout error" in `packages/service-runtime/src/database.test.ts`.
+- [x] `/health/ready` answers not-ready when the database is unreachable: proven by "ready answers not-ready when the database is unreachable" in `packages/service-runtime/src/service-app.test.ts`.
+- [x] Each test gets an empty database that no other test sees, and it is dropped when the test ends. Several workers can clone the same template at once: proven by "a cloned database starts empty", "a table created in one test's database doesn't exist in another's", "the database is dropped when the test ends" and "several databases can be cloned at once" in `packages/test-database/src/clone-database.test.ts`, and "several databases can be cloned from the same template at once" in `packages/test-database/src/build-template.test.ts`.
+- [x] The test harness reads the Postgres image from `compose.yaml`, so the digest has one home: proven by "reads the digest-pinned postgres image from compose.yaml" in `packages/test-database/src/postgres-image.test.ts`, and `global-setup.ts` starting the container from it.
+- [x] The clock fixture defaults to 2030-01-01T00:00:00Z, and `set()` and `advance()` change what the service reads as now: proven by the three tests in `packages/service-testing/src/clock.test.ts`, and end to end by "returns the later creation time for a message sent after the clock advances" in `get-message.test.ts`.
 - [ ] `vp test` needs only Docker, not the Compose stack, and passes in CI on GitHub's hosted runners: proven by the maintainer running `vp test` with the Compose stack stopped (`vp run infra:down`), and by the PR's test shards passing.
 - [ ] The time to create a database and pool per test is measured and recorded in the pull request. If it is too slow, fall back to one database per test file: proven by step 8's Notes, copied into the PR.
-- [ ] Getting started and the commands guide say that `vp test` needs Docker running. The Claude Code contributor guide says database-backed tests run outside Claude's sandbox: proven by step 9.
-- [ ] The exemplars of these patterns name the example service's code: vertical slices, database transactions, service API tests and service test data: proven by step 10.
-- [ ] The test harness package's README, started in ticket 04, also describes the container, the templates, cloning and the new fixtures: proven by step 9's `service-testing` README, linking `test-database`'s README from steps 2 and 3.
+- [x] Getting started and the commands guide say that `vp test` needs Docker running. The Claude Code contributor guide says database-backed tests run outside Claude's sandbox: proven by step 9.
+- [x] The exemplars of these patterns name the example service's code: vertical slices, database transactions, service API tests and service test data: proven by step 10.
+- [x] The test harness package's README, started in ticket 04, also describes the container, the templates, cloning and the new fixtures: proven by step 9's `service-testing` README, linking `test-database`'s README from steps 2 and 3.
 
 ## Notes
 
@@ -241,3 +241,6 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 - 2026-11-25: Step 6: `connectionOf(db)` from `@arcturus/service-testing/direct-db` gives a service's `src/test/direct-db.ts` the `Database` behind the `db` fixture. The existing `**/direct-db` lint pattern already bans the subpath in test files; a `vite.config.ts` override turns the ban off in `**/src/test/direct-db.ts`. A service without a `database` option gets a `db` whose `Database` rejects every call. `services/example/src/test/test.ts` still passes a placeholder `DATABASE_URL`, because `parseConfig` requires it. The readiness test is `services/example/src/health-ready.test.ts` (one `describe` per endpoint, rule 15).
 - 2026-11-25: Step 7: `service-runtime`'s `sql` is now `createSqlTag` with a `void` type alias (`z.object({}).strict()`), as Slonik's README recommends, for statements that return no rows; `sql.timestamp(date)` binds a `Date`. Vertical-slice rules 8 (a route's status is a named constant, because of `no-magic-numbers`) and 13 (`CommonQueryMethods`, `sql.typeAlias("void")`, `sql.timestamp`, imports from `@arcturus/service-runtime`) were clarified on this branch. fishery 2.4.0 (thoughtbot, one dependency: `lodash.mergewith`) passed the supply-chain checks. The test of an empty body is "rejects a message with an empty body": the typed client can't omit `body`. An unknown ID in `get-message` answers 500 (Slonik's `NotFoundError` from `one`) until ticket 07.
 - 2026-11-25: Possible pattern: reading a typed-client response body in a test with a zod schema, because the client can't narrow the body by status (`services/example/src/messaging/send-message/send-message.test.ts`).
+- 2026-11-25: Step 8, measured on the maintainer's machine (WSL 2), over three runs of `vp test services/example` (21 databases): cloning a database from the template took a median of 86 ms (40 to 127 ms), and creating its pool, including Slonik's first connection to look up type IDs, a median of 16 ms (10 to 30 ms). Together a median of 102 ms (50 to 145 ms) per test, under the 150 ms threshold, so each test keeps its own database. For the PR.
+- 2026-11-25: Step 11: with the Compose stack stopped (`vp run infra:down`), `vp test` passed 59 tests in 18 files on the maintainer's machine. Two criteria stay open until the pull request: `vp test` passing on GitHub's hosted runners (the PR's test shards), and the step 8 measurement copied into the PR description.
+- 2026-11-25: **Plan change, from the maintainer:** the Claude Code guide doesn't describe the sandbox, because that is the maintainer's own setup, not the repository's. The "Running tests" section was removed, and the fact lives in Claude's private memory instead. The acceptance criterion's second half (the Claude Code guide saying database-backed tests run outside the sandbox) is dropped; getting started and the commands guide still say `vp test` needs Docker.
