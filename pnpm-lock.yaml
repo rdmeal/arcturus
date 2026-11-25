@@ -228,6 +228,9 @@ importers:
       '@arcturus/service-runtime':
         specifier: workspace:*
         version: link:../service-runtime
+      '@arcturus/test-database':
+        specifier: workspace:*
+        version: link:../test-database
       hono:
         specifier: ^4.13.18
         version: 4.13.18

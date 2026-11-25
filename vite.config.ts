@@ -177,6 +177,12 @@ export default defineConfig({
         },
       },
       {
+        // A service's direct-db module is the one place that reaches the `db`
+        // fixture's database (service-api-test rule 13).
+        files: ["**/src/test/direct-db.ts"],
+        rules: { "no-restricted-imports": "off" },
+      },
+      {
         files: ["tools/**"],
         // Repository tools are command-line scripts that write to the terminal.
         rules: { "eslint/no-console": "off" },
