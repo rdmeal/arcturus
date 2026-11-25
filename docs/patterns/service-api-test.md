@@ -73,6 +73,10 @@ A service's behaviour is tested through its own API, in-process, against the rea
 19. Don't assert on log lines in tests. Assert a log line, with `captureLogs`, only in a test whose subject is the logging itself, such as the request log line or a domain error in a job being logged as a warning. Keep such a test apart from tests of other behaviour, and assert everything else through the API (rule 10).
 20. Service tests run without the OpenTelemetry SDK, so spans are never recorded. Don't assert on traces. Trace propagation is tested only in `service-runtime`'s own tests.
 
+### Reading responses
+
+21. The typed client gives a response body the type of every answer the route can give, such as a validation error alongside the success shape, and asserting the status with `expect` doesn't narrow it. When a test needs a field from the body, such as a new ID it can't know in advance, assert the status first, then parse the body with a zod schema of just the fields it reads (`z.object({ id: z.string() }).parse(await response.json())`), never a cast. When the whole body is known, compare it with `toStrictEqual` as rule 12 says, with no parsing.
+
 ## Exemplar
 
 - `services/example/src/test/test.ts`: `createServiceTest` with the service's `parseConfig`, test settings, its database name and `createApp`.
