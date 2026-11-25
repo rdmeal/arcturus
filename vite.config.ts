@@ -203,5 +203,7 @@ export default defineConfig({
     projects: workspaceGlobs,
     // One Postgres container for the whole run, shared by every project (ADR 0034).
     globalSetup: ["packages/test-database/src/global-setup.ts"],
+    // Logs show only for failing tests, locally and in CI (service-api-test rule 18).
+    silent: "passed-only",
   },
 });
