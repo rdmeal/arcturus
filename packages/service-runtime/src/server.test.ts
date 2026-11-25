@@ -7,7 +7,7 @@ import { z } from "zod";
 
 const fixture = fileURLToPath(new URL("../test/fixtures/server.ts", import.meta.url));
 
-const logLine = z.object({ msg: z.string(), port: z.number() });
+const logLine = z.object({ msg: z.string(), port: z.number().optional() });
 
 /** Spawns the fixture server and resolves once it logs `listening`. */
 const startFixture = async ({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }) => {
@@ -24,18 +24,20 @@ const startFixture = async ({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }
     });
   });
 
+  // Every log message the fixture writes, in order.
+  const messages: string[] = [];
   const port = await new Promise<number>((resolve, reject) => {
-    let buffered = "";
+    let partial = "";
     child.stdout.on("data", (chunk) => {
-      buffered += String(chunk);
-      for (const line of buffered.split("\n")) {
-        try {
-          const entry = logLine.safeParse(JSON.parse(line));
-          if (entry.success && entry.data.msg === "listening") {
+      const lines = (partial + String(chunk)).split("\n");
+      partial = lines.pop() ?? "";
+      for (const line of lines) {
+        const entry = logLine.safeParse(JSON.parse(line));
+        if (entry.success) {
+          messages.push(entry.data.msg);
+          if (entry.data.msg === "listening" && entry.data.port !== undefined) {
             resolve(entry.data.port);
           }
-        } catch {
-          // Not a complete JSON line yet.
         }
       }
     });
@@ -44,7 +46,7 @@ const startFixture = async ({ shutdownTimeoutMs }: { shutdownTimeoutMs: number }
     });
   });
 
-  return { child, port, url: `http://127.0.0.1:${port}`, exited };
+  return { child, port, url: `http://127.0.0.1:${port}`, exited, messages };
 };
 
 describe("startServer", () => {
@@ -111,5 +113,21 @@ describe("startServer", () => {
 
     const { code } = await exited;
     expect(code).toBe(0);
+  });
+
+  test("onClose runs after the server has closed", async () => {
+    const { child, url, exited, messages } = await startFixture({ shutdownTimeoutMs: 1000 });
+
+    const slow = fetch(`${url}/slow?ms=200`);
+    await sleep(50);
+    child.kill("SIGTERM");
+    await slow;
+
+    const { code } = await exited;
+    expect(code).toBe(0);
+    expect(messages.filter((msg) => msg !== "request completed").slice(-2)).toStrictEqual([
+      "slow request finished",
+      "onClose ran",
+    ]);
   });
 });

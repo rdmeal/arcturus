@@ -1,10 +1,12 @@
 import { Writable } from "node:stream";
 import { setTimeout as sleep } from "node:timers/promises";
 
-import { describe, expect, test } from "vite-plus/test";
+import { cloneDatabase } from "@arcturus/test-database";
+import { describe, expect, onTestFinished, test } from "vite-plus/test";
 import { z } from "zod";
 
 import { annotate } from "./context.ts";
+import { createDatabase } from "./database.ts";
 import { configureLog } from "./log.ts";
 import { createServiceApp } from "./service-app.ts";
 
@@ -86,5 +88,47 @@ describe("request logging", () => {
     await Promise.all([app.request("/things/t1?delayMs=3"), app.request("/things/t2?delayMs=1")]);
 
     expect(requestLines(records()).map((line) => line["thingId"])).toStrictEqual(["t2", "t1"]);
+  });
+});
+
+describe("readiness", () => {
+  test("ready answers not-ready when the database is unreachable", async () => {
+    const drops: (() => Promise<void>)[] = [];
+    const { connectionString } = await cloneDatabase({
+      prefix: "runtime",
+      onCleanup: (drop) => {
+        drops.push(drop);
+      },
+    });
+    // The pool needs its database to start, so it goes away after the service is up.
+    const { db, close } = await createDatabase({ connectionString });
+    onTestFinished(close);
+    await Promise.all(drops.map((drop) => drop()));
+
+    const response = await createServiceApp({ db }).request("/health/ready");
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toStrictEqual({ status: "not-ready" });
+  });
+
+  test("ready answers ready when the database answers", async () => {
+    const { connectionString } = await cloneDatabase({
+      prefix: "runtime",
+      onCleanup: onTestFinished,
+    });
+    const { db, close } = await createDatabase({ connectionString });
+    onTestFinished(close);
+
+    const response = await createServiceApp({ db }).request("/health/ready");
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ status: "ready" });
+  });
+
+  test("ready answers ready for a service without a database", async () => {
+    const response = await createServiceApp().request("/health/ready");
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toStrictEqual({ status: "ready" });
   });
 });

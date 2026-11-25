@@ -1,3 +1,4 @@
+export { type Clock, systemClock } from "./clock.ts";
 export { annotate } from "./context.ts";
 export { createDatabase, type Database } from "./database.ts";
 export { configureLog, log, type LogFormat } from "./log.ts";
