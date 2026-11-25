@@ -1,0 +1,30 @@
+# Local infrastructure only: every service runs on the host (see
+# docs/adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md).
+# Start it with `vp run infra:up` and stop it with `vp run infra:down`.
+name: arcturus
+
+services:
+  postgres:
+    # The only home of the Postgres image: the test harness reads it from here,
+    # so tests and local development run the same version. Pinned by digest
+    # (docs/adr/0020-guard-the-dependency-supply-chain.md).
+    image: postgres:19.0@sha256:766ddae4967301b9802b341bb596905f11dd5c558149690a7a4d80c2f61bbcf9
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # Override the host port with POSTGRES_PORT in a `.env` at the repository root.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      # Runs only when the volume is empty: one role, database and shadow database per service.
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # Over TCP, so the temporary server Postgres runs during initialisation,
+      # which listens only on its socket, doesn't count as ready.
+      test: ["CMD", "pg_isready", "--host=localhost", "--username=postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  postgres-data:

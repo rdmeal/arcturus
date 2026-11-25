@@ -8,7 +8,7 @@ How to run Arcturus on your own machine while working on it, once your clone is 
 
 Docker Compose runs the infrastructure, and every service runs on your machine in watch mode, so a change to a service restarts it straight away. The reasons are in [Run infrastructure in Compose and services on the host](../adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md).
 
-> **Status:** this describes the setup being built with the first services. Until then, there is nothing to run, and the commands below don't exist yet.
+> **Status:** this describes the setup being built with the first services. So far, `vp run infra:up` and `vp run infra:down` run Postgres, and the temporary example service runs with its database scripts. The web frontend and the other services don't exist yet.
 
 ## Before you start
 
@@ -57,6 +57,6 @@ If one of these is already taken on your machine, override the port in that serv
 
 ## Databases and migrations
 
-- To write a migration, run `vp run --filter <package> db:watch` and edit that service's `migrations/current.sql`. The whole workflow is in the [Database migrations](../patterns/database-migration.md) pattern.
+- To write a migration, run `vp run --filter <package> db:watch` and edit that service's `migrations/current.sql`, then commit it with `vp run --filter <package> db:commit -m "<what it does>"`. The whole workflow is in the [Database migrations](../patterns/database-migration.md) pattern.
 - To rebuild a service's database from its committed migrations, run `vp run --filter <package> db:reset`.
 - Postgres creates the roles and databases only when its volume is empty. After a new service with a database is added, either re-run the init script against the running container, or delete the volume with `docker compose down -v` (which deletes every service's local data).

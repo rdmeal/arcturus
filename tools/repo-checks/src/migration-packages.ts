@@ -38,11 +38,19 @@ const exists = async (path: string): Promise<boolean> => {
 const isMissing = (error: unknown): boolean =>
   error instanceof Error && "code" in error && error.code === "ENOENT";
 
+// Every configuration file name Graphile Migrate looks for.
+const configFiles = [".gmrc", ".gmrc.js", ".gmrc.cjs"];
+
+const hasConfig = async (folder: string): Promise<boolean> => {
+  const found = await Promise.all(configFiles.map((file) => exists(join(folder, file))));
+  return found.includes(true);
+};
+
 /** The service packages, relative to `root` and sorted, that manage a database with Graphile Migrate. */
 export const findMigrationPackages = async (root: string): Promise<string[]> => {
   const packages = await servicePackages(root);
   const withConfig = await Promise.all(
-    packages.map(async (folder) => ((await exists(join(root, folder, ".gmrc"))) ? folder : null)),
+    packages.map(async (folder) => ((await hasConfig(join(root, folder))) ? folder : null)),
   );
   return withConfig.filter((folder) => folder !== null).toSorted();
 };

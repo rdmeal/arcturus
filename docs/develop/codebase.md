@@ -18,12 +18,15 @@ Every package has its own `package.json` and declares everything it imports ([Or
 | `games/<game>/service` | A core game's game service                                      |
 | `games/<game>/agents`  | One service hosting all of that game's core agents              |
 | `tools/<name>`         | Repo tooling: CI helpers, repo checks, lint rules, generators   |
+| `infra/`               | Files local infrastructure mounts, such as Postgres init SQL    |
+
+`compose.yaml` at the root runs the local infrastructure ([Run infrastructure in Compose and services on the host](../adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md)).
 
 ## What may import what
 
 - **Services and games** import from `packages/` only, never from each other.
 - **Core games and agents** use only the game protocol and player protocol, never platform internals, just as an author's would ([Extend Arcturus only through published protocols](../adr/0004-extend-arcturus-through-published-protocols.md)).
-- **`tools/`** is never imported by services or games.
+- **`tools/`** and **`infra/`** are never imported by services or games.
 - **Production code** never imports test-only code or test libraries. Where test-only code lives is in [Service API tests](../patterns/service-api-test.md), and how lint enforces this is in [Linting](./linting.md).
 
 ## Inside a service

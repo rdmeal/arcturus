@@ -3,7 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch --import @arcturus/service-runtime/telemetry src/main.ts",
+    "db:commit": "graphile-migrate commit",
+    "db:reset": "graphile-migrate reset --erase",
+    "db:uncommit": "graphile-migrate uncommit",
+    "db:watch": "graphile-migrate watch",
+    "dev": "graphile-migrate migrate && node --watch --import @arcturus/service-runtime/telemetry src/main.ts",
     "start": "node --import @arcturus/service-runtime/telemetry src/main.ts"
   },
   "dependencies": {
@@ -14,6 +18,7 @@
   },
   "devDependencies": {
     "@arcturus/service-testing": "workspace:*",
-    "@types/node": "^26.6.6"
+    "@types/node": "^26.6.6",
+    "graphile-migrate": "^1.4.1"
   }
 }
