@@ -90,7 +90,7 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 
   - **Check:** (maintainer, with `!`) `vp test packages/test-database`, then `vp test`; then `vp check`
 
-- [ ] **3. Migrated templates, built in `globalSetup`**
+- [x] **3. Migrated templates, built in `globalSetup`**
   - **Goal:** every service with a database has a template migrated once per run, and `cloneDatabase` can clone from it. The build stays green.
   - **Files:**
     - `packages/test-database/package.json`: add `@arcturus/workspace`, `graphile-migrate` (the version the example service uses) and `graphile-worker`, after the supply-chain checks.
@@ -234,3 +234,5 @@ Implements [ticket 06](../tickets/06-messages-are-stored-and-read-back.md), part
 - 2026-11-25: Step 2: `@testcontainers/postgresql` brings build scripts from `ssh2`, `cpu-features` and `protobufjs` (through dockerode). The maintainer denied all three in `pnpm-workspace.yaml`'s `allowBuilds`. Ryuk is `testcontainers/ryuk:0.14.0`, pinned by digest in `global-setup.ts`.
 - 2026-11-25: Step 2: lint treats `packages/test-database/**` as test-only, and bans `@arcturus/test-database` from production code. Service-api-test rules 2 and 3, `linting.md` and `codebase.md` say so.
 - 2026-11-25: **Plan change (step 3), agreed with the maintainer:** step 3 adds "several databases can be cloned from the same template at once", so the concurrent-clone criterion is proven against a migrated template, not only `template0`.
+- 2026-11-25: Step 3: graphile-worker 0.18.0 brings `graphile-config`, which lists `@types/node` ^22 as a runtime dependency, and its `undici-types@6.21.0` failed the no-downgrade trust check. The maintainer chose a pnpm override in `pnpm-workspace.yaml` (`"graphile-config>@types/node": ^26.6.6`). Graphile Migrate keeps its pool for 200 ms after `migrate` returns and calls `process.exit(1)` if an idle connection is killed, so `buildTemplate` waits for `pg_stat_activity` to show no connections before marking the template. Never terminate a database's connections right after migrating it.
+- 2026-11-25: Step 3: a service's database name, which step 6's `createServiceTest({ database })` takes, is the second segment of its folder (`services/example` is `example`, `games/<game>/service` is `<game>`), with hyphens as underscores. `templateName(database)` from `@arcturus/test-database` gives `<database>_template`.

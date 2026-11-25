@@ -27,3 +27,9 @@ allowBuilds:
   cpu-features: false
   protobufjs: false
   ssh2: false
+
+overrides:
+  # graphile-config (through graphile-worker) lists @types/node ^22 as a runtime
+  # dependency, whose undici-types@6.21.0 fails the no-downgrade trust check.
+  # Type definitions only, so the repository's own @types/node serves instead.
+  "graphile-config>@types/node": ^26.6.6

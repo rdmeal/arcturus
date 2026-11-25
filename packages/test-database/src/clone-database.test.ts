@@ -1,6 +1,7 @@
 import { Client } from "pg";
 import { describe, expect, onTestFinished, test } from "vite-plus/test";
 
+import { templateName } from "./build-template.ts";
 import { cloneDatabase } from "./clone-database.ts";
 
 const connect = async (connectionString: string): Promise<Client> => {
@@ -66,5 +67,15 @@ describe("cloneDatabase", () => {
     );
 
     expect(new Set(databases.map((database) => database.name)).size).toBe(8);
+  });
+
+  test("a database cloned from the example service's template has the messages table", async () => {
+    const database = await cloneDatabase({
+      prefix: "clone",
+      template: templateName("example"),
+      onCleanup: onTestFinished,
+    });
+
+    expect(await publicTables(database.connectionString)).toStrictEqual(["messages"]);
   });
 });
