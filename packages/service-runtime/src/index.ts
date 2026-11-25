@@ -7,7 +7,7 @@ export { createServiceApp } from "./service-app.ts";
 export { ConfigError, logSettings, parseSettings } from "./settings.ts";
 // Slonik's query API, so services write SQL without depending on Slonik's
 // version themselves (docs/adr/0011-access-postgresql-with-slonik.md).
-export { sql } from "slonik";
+export { sql } from "./sql.ts";
 export type {
   CommonQueryMethods,
   DatabasePoolConnection,

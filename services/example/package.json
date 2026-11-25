@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@arcturus/service-runtime": "workspace:*",
+    "@hono/zod-validator": "^0.9.1",
     "dotenv": "^18.0.10",
     "hono": "^4.13.18",
     "zod": "^4.6.7"
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@arcturus/service-testing": "workspace:*",
     "@types/node": "^26.6.6",
+    "fishery": "^2.4.0",
     "graphile-migrate": "^1.4.1"
   }
 }
