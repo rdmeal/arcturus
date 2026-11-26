@@ -1,6 +1,6 @@
 --! Previous: sha1:836f3e49831446d03f360ed32a153e83d931c7c0
---! Hash: sha1:c187c27d908560e12d42faa660d27a2ac04ec585
---! Message: Lint demo
+--! Hash: sha1:f1bf84ab5729758c02671505ff3ad29d21137942
+--! Message: Format demo
 
 -- Write the migration here, following docs/patterns/database-migration.md.
 
@@ -9,4 +9,4 @@
 drop table if exists lint_demo cascade;
 -- pgls-ignore-end banDropTable
 
-create table lint_demo (id uuid primary key);
+CREATE TABLE IF NOT EXISTS lint_demo (id UUID PRIMARY KEY);
