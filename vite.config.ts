@@ -18,6 +18,7 @@ const testOnlyFiles = [
   "**/test/**",
   "**/*.handlers.ts",
   "packages/service-testing/**",
+  "packages/test-database/**",
 ];
 
 const productionImportBans = {
@@ -41,6 +42,8 @@ const productionImportBans = {
       group: [
         "@arcturus/service-testing",
         "@arcturus/service-testing/*",
+        "@arcturus/test-database",
+        "@arcturus/test-database/*",
         "msw",
         "msw/*",
         "fishery",
@@ -174,6 +177,12 @@ export default defineConfig({
         },
       },
       {
+        // A service's direct-db module is the one place that reaches the `db`
+        // fixture's database (service-api-test rule 13).
+        files: ["**/src/test/direct-db.ts"],
+        rules: { "no-restricted-imports": "off" },
+      },
+      {
         files: ["tools/**"],
         // Repository tools are command-line scripts that write to the terminal.
         rules: { "eslint/no-console": "off" },
@@ -192,5 +201,9 @@ export default defineConfig({
   test: {
     // Every workspace package is a Vitest project, named by its package name.
     projects: workspaceGlobs,
+    // One Postgres container for the whole run, shared by every project (ADR 0034).
+    globalSetup: ["packages/test-database/src/global-setup.ts"],
+    // Logs show only for failing tests, locally and in CI (service-api-test rule 18).
+    silent: "passed-only",
   },
 });

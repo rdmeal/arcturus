@@ -9,14 +9,16 @@ const idleSweepIntervalMs = 20;
 /**
  * Serves `app`, resolving once it is listening. On SIGTERM or SIGINT it shuts
  * down gracefully, so the process exits 0 once nothing is left running, or it
- * exits 1 if that outlasts `shutdownTimeoutMs`.
+ * exits 1 if that outlasts `shutdownTimeoutMs`. `onClose` runs once the server
+ * has closed, to release what requests used, such as the database pool.
  */
 export const startServer = (options: {
   app: { fetch: (req: Request) => Response | Promise<Response> };
   port: number;
   shutdownTimeoutMs?: number;
+  onClose?: () => Promise<void>;
 }): Promise<{ port: number; close: () => Promise<void> }> => {
-  const { app, port, shutdownTimeoutMs = 10_000 } = options;
+  const { app, port, shutdownTimeoutMs = 10_000, onClose } = options;
   // Built here rather than by `serve`, whose return type includes HTTP/2
   // servers, which have no `closeIdleConnections`.
   const listener = getRequestListener(app.fetch);
@@ -42,6 +44,7 @@ export const startServer = (options: {
       server.closeIdleConnections();
       await stopped;
       clearInterval(sweep);
+      await onClose?.();
     })();
     return closing;
   };

@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 
-import { findMigrationPackages } from "./migration-packages.ts";
+import { findMigrationPackages } from "@arcturus/workspace";
 
 // `status` validates its settings even with `--skipDatabase`, which never connects.
 // Graphile Migrate rejects a main and shadow database with the same URL.

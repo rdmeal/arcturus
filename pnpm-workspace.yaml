@@ -18,3 +18,18 @@ trustPolicy: no-downgrade
 
 # https://pnpm.io/typescript
 addMissingPeerTypes: true
+
+# Build scripts reviewed and denied. They come with @testcontainers/postgresql
+# through dockerode, and aren't needed because Testcontainers uses the local
+# Docker socket: ssh2's optional native crypto and cpu-features serve only
+# Docker over SSH, and protobufjs's postinstall only checks versions.
+allowBuilds:
+  cpu-features: false
+  protobufjs: false
+  ssh2: false
+
+overrides:
+  # graphile-config (through graphile-worker) lists @types/node ^22 as a runtime
+  # dependency, whose undici-types@6.21.0 fails the no-downgrade trust check.
+  # Type definitions only, so the repository's own @types/node serves instead.
+  "graphile-config>@types/node": ^26.6.6

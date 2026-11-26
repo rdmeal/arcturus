@@ -71,7 +71,9 @@ A contributor gets a working foundation before any domain work starts:
 23. As a contributor, I want CI to fail when any service's `current.sql` holds more than comments, so that an unfinished migration can't reach `main`.
 24. As a contributor, I want CI to run its checks as parallel jobs, with tests sharded and their reports merged, behind one quality gate that fails if any job failed, was cancelled or was skipped, so that feedback is fast and the ruleset never has to change when jobs do.
 25. As a contributor, I want every pattern to name a working exemplar in a real service, so that I can copy a working example rather than work from the rules alone.
-26. As a contributor, I want the contributor docs to say that tests need Docker, where to open Grafana, and that Claude runs database-backed tests outside its sandbox, so that I'm not surprised by any of them.
+26. As a contributor, I want the contributor docs to say that tests need Docker and where to open Grafana, so that I'm not surprised by either.
+27. As a contributor, I want git hooks only to format, so that I can always commit and push unfinished work as a backup, while checks run in the editor and CI.
+28. As a contributor, I want the migrations a pull request adds to be linted for unsafe and non-idempotent statements and checked for formatting, so that a bad migration is caught before it reaches `main`, where it can never change.
 
 ## Decisions
 
@@ -87,6 +89,7 @@ A contributor gets a working foundation before any domain work starts:
 - [Compose CI from reusable workflows](../../../docs/adr/0019-compose-ci-from-reusable-workflows.md) and [Gate pull requests on one quality-gate job after parallel checks](../../../docs/adr/0045-gate-pull-requests-on-one-quality-gate-job.md): the quality-check workflow becomes parallel jobs (check, sharded tests, merged test report, build, workflow lint, repo checks) ending in the gate. The maintainer switches the `main` ruleset to require the gate.
 - [Guard the dependency supply chain](../../../docs/adr/0020-guard-the-dependency-supply-chain.md): every new dependency (fishery, MSW, Testcontainers, the OTel packages, pino) passes the release-age and trust checks before it's added. Compose images are pinned by digest.
 - [Structure services as vertical slices with a task-based API](../../../docs/adr/0021-structure-services-as-vertical-slices.md)
+- [Lint and format migrations with Postgres Language Server](../../../docs/adr/0051-lint-and-format-migrations-with-postgres-language-server.md) and [Run only formatters in git hooks](../../../docs/adr/0052-run-only-formatters-in-git-hooks.md): the migrations a pull request adds are linted and format-checked in CI, `db:commit` formats `current.sql`, and the pre-commit hook only formats.
 - [Open database transactions explicitly in handlers](../../../docs/adr/0022-open-database-transactions-explicitly-in-handlers.md)
 - [Signal expected failures with thrown domain errors](../../../docs/adr/0024-signal-expected-failures-with-thrown-domain-errors.md)
 - [Run infrastructure in Compose and services on the host](../../../docs/adr/0030-run-infrastructure-in-compose-and-services-on-the-host.md): there is no reverse proxy and there are no development images.

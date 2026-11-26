@@ -14,7 +14,7 @@ Every package has its own `package.json` and declares everything it imports ([Or
 | ---------------------- | --------------------------------------------------------------- |
 | `apps/web`             | The web frontend                                                |
 | `services/<service>`   | A platform service: the tournament runner or the player gateway |
-| `packages/<name>`      | Shared libraries that services and games import                 |
+| `packages/<name>`      | Shared libraries that services, games and tools import          |
 | `games/<game>/service` | A core game's game service                                      |
 | `games/<game>/agents`  | One service hosting all of that game's core agents              |
 | `tools/<name>`         | Repo tooling: CI helpers, repo checks, lint rules, generators   |
@@ -33,9 +33,10 @@ Every package has its own `package.json` and declares everything it imports ([Or
 
 Every service has the same shape: vertical slices in `src/<area>/<slice>/`, one per command, query or job, behind a task-based API (`POST` commands, `GET` queries, at `/<area>/<slice>`); dependencies wired by hand in `main.ts`; lifecycle and health checks from a shared `service-runtime` package. How to write each part is in [`patterns/`](../patterns/), and the reasons in [Structure services as vertical slices with a task-based API](../adr/0021-structure-services-as-vertical-slices.md) and the ADRs that follow it.
 
-Two packages are shared by every service:
+Three packages are shared by every service:
 
 - **`packages/service-runtime`** (`@arcturus/service-runtime`): server start-up, graceful shutdown, health checks, the logger, settings parsing and the telemetry entry point.
 - **`packages/service-testing`** (`@arcturus/service-testing`): the test harness that API tests are built on. It is only ever a dev dependency.
+- **`packages/test-database`** (`@arcturus/test-database`): the tests' Postgres container and a fresh database for each test, used by `service-testing` and by `service-runtime`'s own tests. It is only ever a dev dependency.
 
 `services/example` is a temporary example service. It sets the patterns' exemplars until real services replace it.

@@ -29,7 +29,9 @@ Whenever a handler, for a command, a query or a job, touches the database.
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+- `services/example/src/messaging/send-message/handler.ts`, `sendMessage`: one transaction around the write, its connection passed to `insertMessage`, and the time taken from `deps.clock`.
+- `services/example/src/messaging/get-message/handler.ts`, `getMessage`: a query-only handler using `deps.db.read`.
+- `packages/service-runtime/src/database.ts`, `createDatabase`: the wrapper with only `transaction` and `read`, and the lock and statement timeouts on every connection.
 
 ## Related
 

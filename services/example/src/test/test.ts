@@ -5,6 +5,8 @@ import { parseConfig } from "../config.ts";
 
 export const test = createServiceTest({
   parseConfig,
-  testConfig: { PORT: "0" },
-  createApp: ({ config }) => createApp({ config }),
+  // The `db` fixture is the test's database, so DATABASE_URL is never used.
+  testConfig: { PORT: "0", DATABASE_URL: "postgres://unused@localhost/unused" },
+  database: "example",
+  createApp: ({ config, db, clock }) => createApp({ config, db, clock }),
 });
