@@ -33,7 +33,7 @@ Implements [ticket 11](../tickets/11-git-hooks-only-format.md), part of [the spe
 
 **2. Acceptance criteria**, checked at the test boundary:
 
-- [ ] A commit whose staged files have a deliberate lint error and a type error succeeds, and its files are committed formatted. Shown once, not committed: on a throwaway branch, commit an unformatted `.ts` file with a lint error (for example `eval("x")`) and a type error. Check that the commit succeeds and that `git show` has the file formatted. Then delete the branch.
+- [x] A commit whose staged files have a deliberate lint error and a type error succeeds, and its files are committed formatted. Shown once, not committed: on a throwaway branch, commit an unformatted `.ts` file with a lint error (for example `eval("x")`) and a type error. Check that the commit succeeds and that `git show` has the file formatted. Then delete the branch.
 - [x] The hook configuration has a comment linking [Run only formatters in git hooks](../../../../docs/adr/0052-run-only-formatters-in-git-hooks.md), so nobody adds a check back without seeing why: proven by the comment above `staged:` in `vite.config.ts`.
 - [x] The pull requests guide, the linting guide and getting started say the pre-commit hook only formats, and that lint and type checks run in the editor and CI: proven by `docs/develop/pull-requests.md`, `docs/develop/linting.md` and `docs/develop/getting-started.md`.
 
