@@ -4,7 +4,7 @@ type: guide
 
 # Linting
 
-How lint works in this repository, and how to silence it when you must. Lint is [Oxlint](https://oxc.rs/docs/guide/usage/linter), run by `vp check` with the format and type checks (see [Commands](./commands.md)). It runs in the pre-commit hook, in CI and in your editor. Warnings fail it, like errors.
+How lint works in this repository, and how to silence it when you must. Lint is [Oxlint](https://oxc.rs/docs/guide/usage/linter), run by `vp check` with the format and type checks (see [Commands](./commands.md)). It runs in CI and in your editor, not in the pre-commit hook, which only formats (see [Run only formatters in git hooks](../adr/0052-run-only-formatters-in-git-hooks.md)). Warnings fail it, like errors.
 
 ## Where it's configured
 

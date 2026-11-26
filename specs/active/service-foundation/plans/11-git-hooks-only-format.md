@@ -20,7 +20,7 @@ Implements [ticket 11](../tickets/11-git-hooks-only-format.md), part of [the spe
 
 ## Steps
 
-- [ ] **1. Make the pre-commit hook only format, and say so in the guides**
+- [x] **1. Make the pre-commit hook only format, and say so in the guides**
   - **Goal:** the hook formats the staged files and always exits successfully, the hook config links ADR 0052, and the contributor guides describe the new behaviour. `vp check` stays green.
   - **Files:**
     - `vite.config.ts`: the `staged` entry `"*"` becomes the `sh -c` wrapper from Planning decisions. Replace the comment above `staged:` with one that says the hook only formats and never fails, links `docs/adr/0052-run-only-formatters-in-git-hooks.md`, and says not to add lint, type or other checks here.
@@ -34,7 +34,7 @@ Implements [ticket 11](../tickets/11-git-hooks-only-format.md), part of [the spe
 **2. Acceptance criteria**, checked at the test boundary:
 
 - [ ] A commit whose staged files have a deliberate lint error and a type error succeeds, and its files are committed formatted. Shown once, not committed: on a throwaway branch, commit an unformatted `.ts` file with a lint error (for example `eval("x")`) and a type error. Check that the commit succeeds and that `git show` has the file formatted. Then delete the branch.
-- [ ] The hook configuration has a comment linking [Run only formatters in git hooks](../../../../docs/adr/0052-run-only-formatters-in-git-hooks.md), so nobody adds a check back without seeing why: proven by the comment above `staged:` in `vite.config.ts`.
-- [ ] The pull requests guide, the linting guide and getting started say the pre-commit hook only formats, and that lint and type checks run in the editor and CI: proven by `docs/develop/pull-requests.md`, `docs/develop/linting.md` and `docs/develop/getting-started.md`.
+- [x] The hook configuration has a comment linking [Run only formatters in git hooks](../../../../docs/adr/0052-run-only-formatters-in-git-hooks.md), so nobody adds a check back without seeing why: proven by the comment above `staged:` in `vite.config.ts`.
+- [x] The pull requests guide, the linting guide and getting started say the pre-commit hook only formats, and that lint and type checks run in the editor and CI: proven by `docs/develop/pull-requests.md`, `docs/develop/linting.md` and `docs/develop/getting-started.md`.
 
 ## Notes
