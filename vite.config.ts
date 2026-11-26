@@ -194,9 +194,12 @@ export default defineConfig({
       },
     ],
   },
-  // Run by the pre-commit hook (`.vite-hooks/pre-commit`) on the staged files.
+  // Run by the pre-commit hook (`.vite-hooks/pre-commit`) on the staged files. It only formats and
+  // never fails, so a contributor can always commit: don't add lint, type or other checks here
+  // (docs/adr/0052-run-only-formatters-in-git-hooks.md). lint-staged runs a command without a
+  // shell, so `sh -c` swallows oxfmt's exit code; it appends the staged paths, which arrive as "$@".
   staged: {
-    "*": "vp check --fix",
+    "*": `sh -c 'vp fmt --no-error-on-unmatched-pattern "$@" || true' sh`,
   },
   test: {
     // Every workspace package is a Vitest project, named by its package name.

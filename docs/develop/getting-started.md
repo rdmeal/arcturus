@@ -22,7 +22,7 @@ Set up a clone of Arcturus that passes its checks. Everything you install or do 
    vp install
    ```
 
-   This also installs a Git pre-commit hook that formats and lints the files you commit. To turn it off in your clone, run `vp hooks disable`.
+   This also installs a Git pre-commit hook that formats the files you commit. It never refuses a commit: lint and type checks run in your editor and in CI. To turn it off in your clone, run `vp hooks disable`.
 
 6. Check that everything works:
 
