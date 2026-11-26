@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "db:commit": "graphile-migrate commit",
+    "db:commit": "vp run -w fmt:sql && graphile-migrate commit",
     "db:reset": "graphile-migrate reset --erase",
     "db:uncommit": "graphile-migrate uncommit",
     "db:watch": "graphile-migrate watch",

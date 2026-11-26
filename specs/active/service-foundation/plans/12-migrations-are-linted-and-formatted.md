@@ -40,17 +40,17 @@ Implements [ticket 12](../tickets/12-migrations-are-linted-and-formatted.md), pa
   - **Tests:** none (tooling).
   - **Check:** `vp install`, then `vp run lint:sql` and `vp run fmt:sql` both exit 0 with nothing changed since `origin/main`. `vp run lint:sql` reports neither `000001-create-the-messages-table.sql` nor the fixture migration, nor any `schema.sql`. Temporarily put a `create table t (id int);` in `services/example/migrations/current.sql`: `lint:sql` fails on `preferRobustStmts`; uppercase a keyword and `fmt:sql` lowercases it. Restore `current.sql` to comments only. Then `vp check`.
 
-- [ ] **2. Run the SQL check in CI behind the quality gate**
+- [x] **2. Run the SQL check in CI behind the quality gate**
   - **Goal:** every pull request and push to `main` runs `vp run lint:sql` in its own job, and the gate fails when it fails.
   - **Files:** `.github/workflows/quality-check.yml`: a `sql` job named "SQL", shaped like `workflow-lint` but with `fetch-depth: 0` on the checkout and a comment saying why (the job compares against `origin/main`); `sql` added to `quality-gate`'s `needs`.
   - **Read first:** [ADR 0045](../../../../docs/adr/0045-gate-pull-requests-on-one-quality-gate-job.md).
   - **Tests:** none (proven on the pull request in step 5).
   - **Check:** `vp run lint:workflows`.
 
-- [ ] **3. Format `current.sql` on `db:commit` and in the pre-commit hook**
+- [x] **3. Format `current.sql` on `db:commit` and in the pre-commit hook**
   - **Goal:** every committed migration is formatted before Graphile Migrate hashes it, and a staged `current.sql` is formatted on commit, without the hook ever failing or touching a committed migration.
   - **Files:**
-    - `services/example/package.json`: `db:commit` becomes `postgres-language-server format --write migrations/current.sql && graphile-migrate commit` (or the fallback in Planning decisions).
+    - `services/example/package.json`: `db:commit` becomes `vp run -w fmt:sql && graphile-migrate commit` (the fallback in Planning decisions; see Notes).
     - `vite.config.ts`: a second `staged` entry, `"services/*/migrations/current.sql": "sh -c 'postgres-language-server format --write --disable-db \"$@\" || true' sh"` (drop `--disable-db` if `format` doesn't take it), and the comment above `staged` updated to say both entries only format.
   - **Read first:** [ADR 0052](../../../../docs/adr/0052-run-only-formatters-in-git-hooks.md); [database-migration](../../../../docs/patterns/database-migration.md) rules 2, 14 and 15.
   - **Tests:** none (manual, below).
@@ -59,27 +59,28 @@ Implements [ticket 12](../tickets/12-migrations-are-linted-and-formatted.md), pa
     - The maintainer runs `vp run --filter @arcturus/example-service db:commit -m "<message>"` on a robust, formatted throwaway migration (Postgres must be up), then `vp run lint:sql` passes on the new file, header included. Then `db:uncommit` and restore `current.sql`.
     - `vp check`.
 
-- [ ] **4. Document the SQL check**
-  - **Goal:** the guides, the tech stack and the migration pattern describe the SQL check, so a contributor finds it where they'd look.
+- [x] **4. Fail SQL lint on warnings, and document the SQL check**
+  - **Goal:** a lint warning fails `lint:sql` like an error, and the guides, the tech stack and the migration pattern describe the SQL check, so a contributor finds it where they'd look.
   - **Files:**
+    - `package.json`: both `check` calls in `lint:sql` gain `--error-on-warnings` (see Notes, 2026-11-26 decision).
     - `docs/develop/commands.md`: `vp run lint:sql` (checks each service's `current.sql` and the committed migrations that differ from `main`, without a database) and `vp run fmt:sql` (formats `current.sql`).
     - `docs/develop/linting.md`: the opening line no longer implies Oxlint is the only lint; a new section on SQL migrations: the tool and its config file, the rule set and its two exceptions with reasons, that only migrations a pull request adds are checked and why, the CI job, and that SQL in Slonik templates isn't linted.
     - `docs/develop/tech-stack.md`: a row for migration lint and format with Postgres Language Server, linking [0051](../../../../docs/adr/0051-lint-and-format-migrations-with-postgres-language-server.md).
-    - `docs/patterns/database-migration.md`: the additions in the ticket's Notes, without changing what existing rules mean: `db:commit` formats `current.sql` (rule 2); `preferRobustStmts` enforces rule 11's idempotency; run `vp run lint:sql` before committing a migration, and CI checks the migrations a pull request adds (Committing); a failure in an added migration is fixed with `db:uncommit`, fix, `db:commit`; optionally point the editor extension at the development database for live type errors in `current.sql`. Add ADR 0051 under Related.
+    - `docs/patterns/database-migration.md`: the additions in the ticket's Notes, without changing what existing rules mean: `db:commit` formats `current.sql` (rule 2); `preferRobustStmts` enforces rule 11's idempotency; run `vp run lint:sql` before committing a migration, and CI checks the migrations a pull request adds (Committing); a failure in an added migration is fixed with `db:uncommit`, fix, `db:commit`; optionally point the editor extension at the development database for live type errors in `current.sql`. Add ADR 0051 under Related. Also, as decided on 2026-11-26 (see Notes), and so changing rule 11: the undo section is only for what can be recreated only by dropping it (tables, types…), and is wrapped in a `pgls-ignore-start <rule>: <reason>` … `pgls-ignore-end <rule>` block naming each rule its drops trigger (`banDropTable` for a table); a statement that can be idempotent on its own (`add column if not exists`, `create index if not exists`, `create or replace function`) uses that form and has no undo. The exemplar line says `000001` predates the SQL check, so it has neither the block nor `if not exists`.
   - **Read first:** the `writing-docs` skill; [database-migration](../../../../docs/patterns/database-migration.md); the `pattern` skill (for editing a pattern doc).
   - **Tests:** none.
   - **Check:** `vp check`.
 
 **5. Acceptance criteria**, checked at the test boundary (the pull request, and the maintainer's machine):
 
-- [ ] Postgres Language Server passes the checks of ADR 0020, including install scripts: proven during planning (Planning decisions), and by `vp install` in step 1.
-- [ ] A pull request adding a committed migration that breaks a lint rule fails the SQL job and the quality gate: shown once by a commit adding a `db:commit`ted migration with a `create table` without `if not exists`, then reverted. Record the run's URL in Notes.
+- [x] Postgres Language Server passes the checks of ADR 0020, including install scripts: proven during planning (Planning decisions), and by `vp install` in step 1.
+- [ ] A pull request adding a committed migration that breaks a lint rule fails the SQL job and the quality gate: shown once by a commit adding a `db:commit`ted migration with a `create table` without `if not exists` (and its undo `drop` inside a suppression block, so only that rule fires), then reverted. Record the run's URL in Notes.
 - [ ] A pull request adding an unformatted committed migration fails the SQL job's format check: shown once by a commit, made with `--no-verify`, with an uppercase keyword in a robust committed migration, then reverted. Record the run's URL in Notes.
-- [ ] Migrations already on `main`, every `schema.sql` and the test harness's fixture migrations are never checked or formatted: proven by step 1's check and by the config's `files.include` and ignore.
-- [ ] Locally, `vp run lint:sql` checks each service's `current.sql` and the committed migrations that differ from `main`, and `vp run fmt:sql` formats `current.sql`, neither needing a database: proven by step 1's check.
-- [ ] A service's `db:commit` formats `current.sql` before committing it: proven by step 3's `db:commit` check.
-- [ ] The pre-commit hook formats a staged `current.sql`, never a committed migration, and doesn't lint: proven by step 3's hook checks.
-- [ ] The commands guide and the linting guide describe the SQL commands and the CI job, the tech stack lists the tool with its ADR, and the database-migration pattern gains the rules in the ticket's Notes: step 4.
+- [x] Migrations already on `main`, every `schema.sql` and the test harness's fixture migrations are never checked or formatted: proven by step 1's check and by the config's `files.include` and ignore.
+- [x] Locally, `vp run lint:sql` checks each service's `current.sql` and the committed migrations that differ from `main`, and `vp run fmt:sql` formats `current.sql`, neither needing a database: proven by step 1's check.
+- [x] A service's `db:commit` formats `current.sql` before committing it: proven by step 3's `db:commit` check.
+- [x] The pre-commit hook formats a staged `current.sql`, never a committed migration, and doesn't lint: proven by step 3's hook checks.
+- [x] The commands guide and the linting guide describe the SQL commands and the CI job, the tech stack lists the tool with its ADR, and the database-migration pattern gains the rules in the ticket's Notes: step 4.
 
 ## Notes
 
@@ -88,3 +89,6 @@ Implements [ticket 12](../tickets/12-migrations-are-linted-and-formatted.md), pa
 - 2026-11-26: `vp run` doesn't expand globs, so both root scripts are wrapped in `sh -c '…'`. The pre-commit entry needs the same wrapper anyway.
 - 2026-11-26: `--changed` sees only changes in Git commits since `origin/main`: an untracked or staged migration isn't checked. Proven in a scratch clone: a committed `000099` was caught, while edits to `schema.sql` and the fixture migration weren't checked. So, locally, run `lint:sql` after the Git commit that adds a migration (step 4 documents this).
 - 2026-11-26: `000001-create-the-messages-table.sql`'s content, header included, passes the format check. Run as `current.sql`, it fails `preferRobustStmts` (`create table` without `if not exists` after the undo `drop`) and warns `banDropTable` on the undo section. Warnings don't fail the tool, because `--error-on-warnings` isn't passed.
+- 2026-11-26 (plan change, agreed with the maintainer): **lint warnings fail `lint:sql`** (`--error-on-warnings`), because warnings that don't fail get ignored. Rules that misfire are suppressed where they're allowed, not turned off. The undo section's drops trigger `banDropTable` (table) or `banDropColumn` plus `multipleAlterTable` and `runningStatementWhileHoldingAccessExclusive` (column), so: the undo section is wrapped in `-- pgls-ignore-start <rule>: <reason>` … `-- pgls-ignore-end <rule>` (block suppressions work in 0.28.2; group specifiers such as `lint/safety` don't, so each rule is named); and an added column uses `add column if not exists` with no undo drop, which triggers nothing. Rule 11 of the database-migration pattern changes to match (step 4). Turning `banDropTable` off was rejected: it's exactly the check for a real drop that breaks the running service.
+- 2026-11-26: With warnings failing, these pass `lint:sql`: a new table (undo block plus `create table if not exists`) with an index on it, an added column on its own, and an index on an existing table. `runningStatementWhileHoldingAccessExclusive` fires only when a statement follows one that locks an existing table (for example adding a column and then indexing it in one migration). It stays on: the fix is two migrations.
+- 2026-11-26: `db:commit` uses the fallback, `vp run -w fmt:sql && graphile-migrate commit`. The root bin is on a service script's PATH, but run from `services/example` the tool's `files.include` (`services/*/migrations/**`) matches nothing, so formatting `migrations/current.sql` directly is a silent no-op. lint-staged passes absolute paths, which do match, so the hook entry calls the tool directly.

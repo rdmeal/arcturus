@@ -194,12 +194,16 @@ export default defineConfig({
       },
     ],
   },
-  // Run by the pre-commit hook (`.vite-hooks/pre-commit`) on the staged files. It only formats and
-  // never fails, so a contributor can always commit: don't add lint, type or other checks here
-  // (docs/adr/0052-run-only-formatters-in-git-hooks.md). lint-staged runs a command without a
-  // shell, so `sh -c` swallows oxfmt's exit code; it appends the staged paths, which arrive as "$@".
+  // Run by the pre-commit hook (`.vite-hooks/pre-commit`) on the staged files. Each entry only
+  // formats and never fails, so a contributor can always commit: don't add lint, type or other
+  // checks here (docs/adr/0052-run-only-formatters-in-git-hooks.md). lint-staged runs a command
+  // without a shell, so `sh -c` swallows the formatter's exit code; it appends the staged paths,
+  // which arrive as "$@".
   staged: {
     "*": `sh -c 'vp fmt --no-error-on-unmatched-pattern "$@" || true' sh`,
+    // Only `current.sql`: a committed migration must never be rewritten, or its hash breaks
+    // (docs/adr/0051-lint-and-format-migrations-with-postgres-language-server.md).
+    "services/*/migrations/current.sql": `sh -c 'postgres-language-server format --disable-db --write "$@" || true' sh`,
   },
   test: {
     // Every workspace package is a Vitest project, named by its package name.

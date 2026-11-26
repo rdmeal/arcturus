@@ -109,6 +109,21 @@ jobs:
 
       - run: vp run lint:workflows
 
+  sql:
+    name: SQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The full history, so `lint:sql` can check only the migrations that
+          # differ from `origin/main` (ADR 0051).
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-vp
+
+      - run: vp run lint:sql
+
   repo-checks:
     name: Repo checks
     runs-on: ubuntu-latest
@@ -125,7 +140,7 @@ jobs:
     name: Quality gate
     # Every other job in this workflow must be listed here, or it runs without
     # blocking anything (ADR 0045).
-    needs: [check, test, test-report, build, workflow-lint, repo-checks]
+    needs: [check, test, test-report, build, workflow-lint, sql, repo-checks]
     # Runs even when a needed job failed or was skipped, so that it can fail;
     # a skipped required check would otherwise count as passing.
     if: always()
