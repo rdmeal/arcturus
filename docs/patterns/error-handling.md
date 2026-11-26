@@ -41,6 +41,7 @@ Whenever a handler meets a failure that is part of normal operation: something d
 ## Related
 
 - [Signal expected failures with thrown domain errors](../adr/0024-signal-expected-failures-with-thrown-domain-errors.md)
+- [Give validation issues zod's own codes for the client to translate](../adr/0053-give-validation-issues-zods-codes-to-translate.md)
 - [Build every service's app from one runtime factory](../adr/0049-build-every-services-app-from-one-runtime-factory.md)
 - [Database transactions](./database-transaction.md)
 - [Background jobs](./background-job.md)
