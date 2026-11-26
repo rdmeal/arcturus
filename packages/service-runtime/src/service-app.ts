@@ -8,6 +8,7 @@ import { withContextFields } from "./context.ts";
 import type { Database } from "./database.ts";
 import { health } from "./health.ts";
 import { log } from "./log.ts";
+import { errorHandler } from "./problem-details.ts";
 
 const MICROSECONDS_PER_MS = 1000;
 
@@ -42,5 +43,8 @@ const requestLogging = (): MiddlewareHandler => {
  */
 // oxlint-disable-next-line typescript/explicit-module-boundary-types -- a Hono app's type is its routes, inferred so the RPC client follows them
 export const createServiceApp = (options: { db?: Database } = {}) => {
-  return new Hono().use(requestLogging()).route("/health", health(options.db));
+  return new Hono()
+    .use(requestLogging())
+    .route("/health", health(options.db))
+    .onError(errorHandler);
 };

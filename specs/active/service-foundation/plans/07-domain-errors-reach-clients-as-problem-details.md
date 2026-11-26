@@ -36,7 +36,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
 
 ## Steps
 
-- [ ] **1. Domain errors and the error handler in `createServiceApp`**
+- [x] **1. Domain errors and the error handler in `createServiceApp`**
   - **Goal:** `service-runtime` exports the domain error categories, and every app built by `createServiceApp()` answers domain errors and unexpected errors with problem details, logged at the right levels. The example service is unchanged and the build stays green.
   - **Files:**
     - `packages/service-runtime/src/domain-error.ts` (new): abstract `DomainError extends Error` with `constructor(code: string, message: string)` and a readonly `code`; `NotFoundError`, `ConflictError` and `RuleViolationError`. No constructor parameter properties (erasable TypeScript only).
