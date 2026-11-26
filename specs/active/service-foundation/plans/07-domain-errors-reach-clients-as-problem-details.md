@@ -94,7 +94,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
       - `answers 400 problem details with invalid-request for an empty body`, with `expectTypeOf` that a 400 response's `json()` is `ProblemDetails`
   - **Check:** `! vp test services/example`, then `vp check`
 
-- [ ] **5. Document error handling and `validateRequest`**
+- [x] **5. Document error handling and `validateRequest`**
   - **Goal:** the docs match the code, and the error-handling pattern names its exemplar.
   - **Files:**
     - `docs/patterns/error-handling.md`:
@@ -113,13 +113,13 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
 
 **6. Acceptance criteria**, checked at the test boundary:
 
-- [ ] Getting an unknown message ID answers `404` problem details with the not-found code: proven by `answers 404 problem details with message-not-found for an unknown message ID` in `services/example/src/messaging/get-message/get-message.test.ts`
-- [ ] A send request with an invalid body answers `400` problem details: proven by `answers 400 problem details with invalid-request for an empty body` in `services/example/src/messaging/send-message/send-message.test.ts`
-- [ ] An unexpected error answers `500` problem details with no message, stack or internal detail, and is logged at `error` with the cause: proven by `an unexpected error answers 500 problem details with nothing from the error` and `an unexpected error is logged at error with the error as err` in `packages/service-runtime/src/problem-details.test.ts`
-- [ ] A domain error over HTTP is logged at `debug` and at no higher level: proven by `logs an unknown message ID at debug and at no higher level` in `services/example/src/messaging/get-message/get-message.test.ts` and `a domain error is logged at debug and at no higher level` in `packages/service-runtime/src/problem-details.test.ts`
-- [ ] A domain error thrown inside a transaction rolls the transaction back: nothing it wrote is visible afterwards: proven by `a domain error thrown inside a transaction rolls it back and reaches the caller` in `packages/service-runtime/src/database.test.ts`
-- [ ] The typed client sees the error responses on every route: proven by the `expectTypeOf` checks in the 404 and 400 tests of `get-message.test.ts` and `send-message.test.ts`, type-checked by `vp check`
-- [ ] The error handling pattern's exemplar names the example service's not-found case and the runtime's error handler: proven by the Exemplar section of `docs/patterns/error-handling.md`
+- [x] Getting an unknown message ID answers `404` problem details with the not-found code: proven by `answers 404 problem details with message-not-found for an unknown message ID` in `services/example/src/messaging/get-message/get-message.test.ts`
+- [x] A send request with an invalid body answers `400` problem details: proven by `answers 400 problem details with invalid-request for an empty body` in `services/example/src/messaging/send-message/send-message.test.ts`
+- [x] An unexpected error answers `500` problem details with no message, stack or internal detail, and is logged at `error` with the cause: proven by `an unexpected error answers 500 problem details with nothing from the error` and `an unexpected error is logged at error with the error as err` in `packages/service-runtime/src/problem-details.test.ts`
+- [x] A domain error over HTTP is logged at `debug` and at no higher level: proven by `logs an unknown message ID at debug and at no higher level` in `services/example/src/messaging/get-message/get-message.test.ts` and `a domain error is logged at debug and at no higher level` in `packages/service-runtime/src/problem-details.test.ts`
+- [x] A domain error thrown inside a transaction rolls the transaction back: nothing it wrote is visible afterwards: proven by `a domain error thrown inside a transaction rolls it back and reaches the caller` in `packages/service-runtime/src/database.test.ts`
+- [x] The typed client sees the error responses on every route: proven by the `expectTypeOf` checks in the 404 and 400 tests of `get-message.test.ts` and `send-message.test.ts`, type-checked by `vp check`
+- [x] The error handling pattern's exemplar names the example service's not-found case and the runtime's error handler: proven by the Exemplar section of `docs/patterns/error-handling.md`
 
 ## Notes
 

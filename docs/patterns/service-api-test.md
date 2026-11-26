@@ -28,7 +28,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ### Fixtures, not hooks
 
-4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, createApp })` from `packages/service-testing`. Write every test with `test`, never `it`, and import the other test APIs (`describe`, `expect`) from `vite-plus/test`. Never rely on globals. Its fixtures are:
+4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, createApp })` from `packages/service-testing`. Its `createApp` is declared as returning the service's `AppType`, so the `client` fixture knows the problem-details responses. Write every test with `test`, never `it`, and import the other test APIs (`describe`, `expect`) from `vite-plus/test`. Never rely on globals. Its fixtures are:
    - `db`: a fresh, empty database for this test, cloned from the service's migrated template and dropped afterwards;
    - `client`: the app from `createApp(deps)`, wrapped in Hono's `testClient`;
    - `network`: the MSW server, reset after the test;
