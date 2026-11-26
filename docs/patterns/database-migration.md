@@ -27,7 +27,7 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
    - `dev` runs `graphile-migrate migrate` before starting the service, so the database is always up to date with the committed migrations;
    - `db:watch` runs `graphile-migrate watch`, which re-applies `current.sql` on every save;
    - `db:reset` runs `graphile-migrate reset --erase`, which drops the development database and rebuilds it from the committed migrations;
-   - `db:commit` and `db:uncommit` run `graphile-migrate commit` and `graphile-migrate uncommit` (rules 14 and 15).
+   - `db:commit` runs `vp run -w fmt:sql && graphile-migrate commit`, so `current.sql` is formatted before Graphile Migrate hashes it. It runs the root script because the SQL tool's configuration names paths from the repository root. `db:uncommit` runs `graphile-migrate uncommit` (rules 14, 15 and 19).
 
    Only `dev` runs across services (`vp run dev`). Run the others for one service at a time, with `vp run --filter <package> <script>`: each service has its own chain, and a recursive `db:commit` would give every service the same message and fail on any service whose `current.sql` is blank.
 
@@ -45,7 +45,11 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
 
 ### Writing a migration
 
-11. Write the change in `current.sql` with `db:watch` running. `current.sql` runs again on every save, so it must be safe to run repeatedly: start with an undo section that drops what the migration creates (`drop … if exists … cascade`), followed by the change itself. Where a statement can be idempotent on its own (`create or replace function`), use that form.
+11. Write the change in `current.sql` with `db:watch` running. `current.sql` runs again on every save, so it must be safe to run repeatedly, and the SQL check's `preferRobustStmts` rule fails any statement that isn't:
+    - Write every statement in its idempotent form where it has one: `create table if not exists`, `alter table … add column if not exists`, `create index if not exists`, `create or replace function`.
+    - Give what the migration creates and is still being reshaped, such as a new table or type, an undo section at the top that drops it (`drop … if exists … cascade`), so that each save rebuilds it. An added column needs no undo: `add column if not exists` is enough. If you rename one while writing, the old column stays in the development database until `db:reset`.
+    - Wrap the undo section in `-- pgls-ignore-start <rule>: <reason>` and `-- pgls-ignore-end <rule>`, once for each rule its drops trigger (`banDropTable` for a table). The reason says the section drops only what this migration creates. Those rules still apply to everything below the undo section, where a drop really can break the running service.
+    - For live type errors while you write, you can point the Postgres Language Server editor extension at your development database. The scripts and CI never connect to one.
 12. Never edit a committed migration: the hash chain detects it. Any change to the schema, including fixing a mistake in a committed migration, is a new migration.
 13. Migrations hold structure, and only the data the schema needs, such as lookup rows. Never put seed or test data in a migration.
 
@@ -55,15 +59,18 @@ Each service's schema is built by plain SQL migrations, managed with Graphile Mi
 15. If `main` gains a migration for the same service before the pull request merges, run `db:uncommit`, rebase onto `main`, and commit again, so the chain stays a single line.
 16. Commit the regenerated `schema.sql` with the migration, so reviewers see the schema change as a diff.
 17. `current.sql` must hold only comments when the pull request merges. CI fails if any service's `migrations/current.sql` contains anything else.
+18. Run `vp run lint:sql` before committing the migration: it lints and format-checks `current.sql` without a database. CI's SQL job checks the committed migrations a pull request adds, and fails the quality gate on a lint warning, a lint error or a formatting difference (see [Linting](../develop/linting.md#sql-migrations)).
+19. To fix a failure in a migration the pull request adds, run `db:uncommit`, fix `current.sql`, and `db:commit` again. Never edit or format the committed file itself (rule 12).
 
 ## Exemplar
 
-- `services/example/migrations/committed/000001-create-the-messages-table.sql`: a first migration, with its undo section and the naming rules.
+- `services/example/migrations/committed/000001-create-the-messages-table.sql`: a first migration, with its undo section and the naming rules. It predates the SQL check, so its undo section has no suppression block and its `create table` has no `if not exists` (rule 11). It can't be changed (rule 12).
 - `services/example/gmrc.ts` and `.gmrc.cjs`: the env files loaded in the service's order, and the shadow-only `schema.sql` dump. The scripts are in `services/example/package.json`.
 
 ## Related
 
 - [Migrate databases with Graphile Migrate](../adr/0013-migrate-databases-with-graphile-migrate.md)
+- [Lint and format migrations with Postgres Language Server](../adr/0051-lint-and-format-migrations-with-postgres-language-server.md)
 - [Load configuration only in each service's config module](../adr/0031-load-configuration-only-in-each-services-config-module.md)
 - [Service composition root](./service-composition-root.md): where the env files come from.
 - [Database transactions](./database-transaction.md): how services use the schema at runtime.

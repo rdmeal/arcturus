@@ -4,7 +4,7 @@ type: guide
 
 # Linting
 
-How lint works in this repository, and how to silence it when you must. Lint is [Oxlint](https://oxc.rs/docs/guide/usage/linter), run by `vp check` with the format and type checks (see [Commands](./commands.md)). It runs in CI and in your editor, not in the pre-commit hook, which only formats (see [Run only formatters in git hooks](../adr/0052-run-only-formatters-in-git-hooks.md)). Warnings fail it, like errors.
+How lint works in this repository, and how to silence it when you must. Code is linted by [Oxlint](https://oxc.rs/docs/guide/usage/linter), run by `vp check` with the format and type checks (see [Commands](./commands.md)). Migrations are linted separately: see [SQL migrations](#sql-migrations). It runs in CI and in your editor, not in the pre-commit hook, which only formats (see [Run only formatters in git hooks](../adr/0052-run-only-formatters-in-git-hooks.md)). Warnings fail it, like errors.
 
 ## Where it's configured
 
@@ -57,3 +57,15 @@ These rules enforce the testing patterns. Their error messages name the pattern 
 | `arcturus/disable-needs-reason` | all             | a disable comment without a reason                                                                                                                                       | [Disable comments](#disable-comments)                        |
 
 `vitest/no-standalone-expect` is set to treat `test` as a test block, because service tests use the `test` that their `src/test/test.ts` builds with `test.extend`. Without that setting, every `expect` in a service test is reported.
+
+## SQL migrations
+
+Migrations are linted and formatted by [Postgres Language Server](https://pg-language-server.com/) (see [Lint and format migrations with Postgres Language Server](../adr/0051-lint-and-format-migrations-with-postgres-language-server.md)). `vp run lint:sql` runs its lint and its format check, and `vp run fmt:sql` formats (see [Commands](./commands.md)). Neither connects to a database, so statements aren't type-checked against a schema: the tests already run every committed migration against Postgres.
+
+- **Where it's configured:** `postgres-language-server.jsonc` at the repository root. It reads only `services/*/migrations/`, so each `schema.sql` and the test harness's fixture migrations are never checked.
+- **The rule set:** the tool's recommended rules. `preferRobustStmts` is an error, because it enforces the idempotent `current.sql` that the [Database migrations](../patterns/database-migration.md) pattern needs. `lockTimeoutWarning` and `requireStatementTimeout` are off, because Graphile Migrate runs migrations before the service starts, so nothing waits on their locks. The config gives each reason next to its rule.
+- **Warnings fail it, like errors.** Where a rule doesn't apply, suppress it on the statements it fires on, with a reason after a colon: `-- pgls-ignore banDropTable: <reason>` above one statement, or `-- pgls-ignore-start <rule>: <reason>` and `-- pgls-ignore-end <rule>` around several. Name each rule: group names such as `lint/safety` aren't accepted. The usual case is a migration's undo section (see the [Database migrations](../patterns/database-migration.md) pattern).
+- **Which files:** every service's `current.sql`, and the committed migrations that differ from `origin/main`. A migration already on `main` is never checked, because it can never change: a rule added later can't fail it. Locally, a committed migration only counts as differing once it's in a Git commit.
+- **Formatting:** lowercase keywords, types and constants, a 2-space indent, and the code formatter's line width of 100. `db:commit` formats `current.sql` before Graphile Migrate commits it, and the pre-commit hook formats a staged `current.sql`. Nothing formats a committed migration: that would break its hash.
+- **In CI:** the SQL job runs `vp run lint:sql` behind the quality gate. It checks out the full Git history, to find where the branch left `main`.
+- **Not linted:** SQL inside TypeScript, in Slonik's `sql` templates. The tests run those queries.
