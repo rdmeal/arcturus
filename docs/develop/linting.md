@@ -46,12 +46,13 @@ import { insertMatchState } from "./test/direct-db.ts";
 
 ## Guard rails
 
-These rules enforce the testing patterns. Their error messages name the pattern rule behind them, except `vitest/no-hooks`, whose message Oxlint fixes.
+These rules enforce the testing and error-handling patterns. Their error messages name the pattern rule behind them, except `vitest/no-hooks`, whose message Oxlint fixes.
 
 | Rule                            | Files           | What it stops                                                                                                                                                            | Why                                                          |
 | ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
 | `no-restricted-imports`         | production code | importing test-only code, `@arcturus/service-testing`, `@arcturus/test-database`, `msw`, `fishery` or `@testcontainers/*`                                                | [Service API tests](../patterns/service-api-test.md) rule 3  |
 | `no-restricted-imports`         | test-only files | importing a service's `direct-db` module, or `@arcturus/service-testing/direct-db` outside a service's `src/test/direct-db.ts`, without a disable comment and its reason | [Service API tests](../patterns/service-api-test.md) rule 13 |
+| `no-restricted-imports`         | production code | importing `@hono/zod-validator` anywhere but `service-runtime`'s `validateRequest`                                                                                       | [Error handling](../patterns/error-handling.md) rule 7       |
 | `vitest/no-hooks`               | test-only files | `beforeAll`, `beforeEach`, `afterEach` and `afterAll`                                                                                                                    | [Service API tests](../patterns/service-api-test.md) rule 6  |
 | `vitest/no-restricted-matchers` | test-only files | snapshot matchers                                                                                                                                                        | [Service API tests](../patterns/service-api-test.md) rule 12 |
 | `arcturus/disable-needs-reason` | all             | a disable comment without a reason                                                                                                                                       | [Disable comments](#disable-comments)                        |

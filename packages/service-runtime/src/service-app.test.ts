@@ -1,28 +1,12 @@
-import { Writable } from "node:stream";
 import { setTimeout as sleep } from "node:timers/promises";
 
 import { cloneDatabase } from "@arcturus/test-database";
 import { describe, expect, onTestFinished, test } from "vite-plus/test";
-import { z } from "zod";
 
+import { captureLog } from "../test/capture-log.ts";
 import { annotate } from "./context.ts";
 import { createDatabase } from "./database.ts";
-import { configureLog } from "./log.ts";
 import { createServiceApp } from "./service-app.ts";
-
-const logRecord = z.record(z.string(), z.unknown());
-
-const captureLog = () => {
-  const lines: string[] = [];
-  const destination = new Writable({
-    write(chunk, _encoding, callback) {
-      lines.push(...String(chunk).trimEnd().split("\n"));
-      callback();
-    },
-  });
-  configureLog({ level: "debug", format: "json", destination });
-  return () => lines.map((line) => logRecord.parse(JSON.parse(line)));
-};
 
 const requestLines = (records: Record<string, unknown>[]) =>
   records.filter((record) => record["msg"] === "request completed");

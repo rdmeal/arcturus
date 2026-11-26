@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { createDatabase } from "./database.ts";
 import type { Database } from "./database.ts";
+import { ConflictError } from "./domain-error.ts";
 
 // An empty database of the test's own, closed and dropped when the test ends.
 const openDatabase = async (options: { lockTimeoutMs?: number } = {}): Promise<Database> => {
@@ -94,6 +95,24 @@ describe("createDatabase", () => {
         throw new Error("the handler failed");
       }),
     ).rejects.toThrow("the handler failed");
+
+    const ids = await db.read((connection) =>
+      connection.manyFirst(sql.type(z.object({ id: z.number() }))`select id from things`),
+    );
+    expect(ids).toStrictEqual([1]);
+  });
+
+  test("a domain error thrown inside a transaction rolls it back and reaches the caller", async () => {
+    const db = await openDatabase();
+    await withThings(db);
+    const conflict = new ConflictError("thing-already-started", "The thing has already started.");
+
+    await expect(
+      db.transaction(async (connection) => {
+        await connection.query(sql.unsafe`insert into things (id) values (2)`);
+        throw conflict;
+      }),
+    ).rejects.toBe(conflict);
 
     const ids = await db.read((connection) =>
       connection.manyFirst(sql.type(z.object({ id: z.number() }))`select id from things`),

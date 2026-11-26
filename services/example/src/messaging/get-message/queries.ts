@@ -6,8 +6,11 @@ const messageRow = z.object({ id: z.uuid(), body: z.string(), createdAt: z.date(
 
 export type MessageRow = z.infer<typeof messageRow>;
 
-export const selectMessage = (connection: CommonQueryMethods, id: string): Promise<MessageRow> =>
-  connection.one(sql.type(messageRow)`
+export const selectMessage = (
+  connection: CommonQueryMethods,
+  id: string,
+): Promise<MessageRow | null> =>
+  connection.maybeOne(sql.type(messageRow)`
     select id, body, created_at as "createdAt"
     from messages
     where id = ${id}
