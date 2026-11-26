@@ -5,8 +5,10 @@
   "scripts": {
     "build": "vp run -r build",
     "check": "vp check",
+    "fmt:sql": "sh -c 'postgres-language-server format --disable-db --write services/*/migrations/current.sql'",
     "infra:down": "docker compose down",
     "infra:up": "docker compose up -d --wait",
+    "lint:sql": "sh -c 'postgres-language-server check --disable-db services/*/migrations/current.sql && postgres-language-server check --disable-db --changed --no-errors-on-unmatched && postgres-language-server format --disable-db services/*/migrations/current.sql && postgres-language-server format --disable-db --changed --no-errors-on-unmatched'",
     "lint:workflows": "docker run --rm -v \"$PWD:/repo\" -w /repo rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color",
     "test": "vp test",
     "prepare": "vp config --no-agent"
@@ -14,6 +16,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
+    "@postgres-language-server/cli": "0.28.2",
     "vite-plus": "1.6.0"
   },
   "commitlint": {

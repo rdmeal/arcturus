@@ -1,0 +1,38 @@
+// Lints and formats the services' migrations (ADR 0051). `vp run lint:sql` checks them and
+// `vp run fmt:sql` formats `current.sql`; both run with `--disable-db`, so no database is needed.
+{
+  "$schema": "https://pg-language-server.com/0.28.2/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    // Only the migrations a pull request adds are checked: merged ones can never change.
+    "defaultBranch": "origin/main",
+  },
+  "files": {
+    // Migrations only. Not `schema.sql`, which `pg_dump` generates, nor the test harness's fixtures.
+    "include": ["services/*/migrations/**/*.sql"],
+    "ignore": ["**/schema.sql"],
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      // Enforces the database-migration pattern's rule that `current.sql` is idempotent.
+      "preferRobustStmts": "error",
+      // Graphile Migrate runs migrations before the service starts, so nothing waits on their locks.
+      "lockTimeoutWarning": "off",
+      "requireStatementTimeout": "off",
+    },
+  },
+  "format": {
+    "enabled": true,
+    // Matches the code formatter's line width.
+    "lineWidth": 100,
+    "indentSize": 2,
+    "indentStyle": "spaces",
+    "keywordCase": "lower",
+    "typeCase": "lower",
+    "constantCase": "lower",
+  },
+}

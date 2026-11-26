@@ -31,7 +31,7 @@ Implements [ticket 12](../tickets/12-migrations-are-linted-and-formatted.md), pa
 
 ## Steps
 
-- [ ] **1. Add Postgres Language Server, its config and the root scripts**
+- [x] **1. Add Postgres Language Server, its config and the root scripts**
   - **Goal:** `vp run lint:sql` and `vp run fmt:sql` work on the current tree without a database, and nothing outside the services' migration folders is ever checked. The build stays green.
   - **Files:**
     - `package.json`: devDependency `@postgres-language-server/cli` at `0.28.2` (added with `vp install`, which records it in `pnpm-lock.yaml`); scripts `lint:sql` and `fmt:sql`, beside `lint:workflows`, as in Planning decisions.
@@ -82,3 +82,9 @@ Implements [ticket 12](../tickets/12-migrations-are-linted-and-formatted.md), pa
 - [ ] The commands guide and the linting guide describe the SQL commands and the CI job, the tech stack lists the tool with its ADR, and the database-migration pattern gains the rules in the ticket's Notes: step 4.
 
 ## Notes
+
+- 2026-11-26: In 0.28.2 the lock-timeout rule is `lockTimeoutWarning` (there's no `requireLockTimeout`); it's the one turned off. `requireStatementTimeout` keeps its name.
+- 2026-11-26: `check` doesn't check formatting, so `lint:sql` runs `check` and then `format` (no `--write`), each once over `services/*/migrations/current.sql` and once with `--changed --no-errors-on-unmatched`. `--changed` with a path intersects rather than unions, so the two calls can't be merged. The `--since` flag isn't needed: `vcs.defaultBranch` is `origin/main`.
+- 2026-11-26: `vp run` doesn't expand globs, so both root scripts are wrapped in `sh -c '…'`. The pre-commit entry needs the same wrapper anyway.
+- 2026-11-26: `--changed` sees only changes in Git commits since `origin/main`: an untracked or staged migration isn't checked. Proven in a scratch clone: a committed `000099` was caught, while edits to `schema.sql` and the fixture migration weren't checked. So, locally, run `lint:sql` after the Git commit that adds a migration (step 4 documents this).
+- 2026-11-26: `000001-create-the-messages-table.sql`'s content, header included, passes the format check. Run as `current.sql`, it fails `preferRobustStmts` (`create table` without `if not exists` after the undo `drop`) and warns `banDropTable` on the undo section. Warnings don't fail the tool, because `--error-on-warnings` isn't passed.
