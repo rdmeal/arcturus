@@ -55,7 +55,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
     - `problem details are sent as application/problem+json`
   - **Check:** `! vp test packages/service-runtime/src/service-app.test.ts`, then `vp check`
 
-- [ ] **2. Prove that a domain error rolls a transaction back**
+- [x] **2. Prove that a domain error rolls a transaction back**
   - **Goal:** a runtime test shows that a domain error thrown inside `db.transaction` leaves nothing it wrote, and reaches the caller unchanged. No production code changes.
   - **Files:** `packages/service-runtime/src/database.test.ts` (a new test, using the file's `openDatabase` and a table created as `withThings` does).
   - **Read first:** [database transactions](../../../../docs/patterns/database-transaction.md)
