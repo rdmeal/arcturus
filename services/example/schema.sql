@@ -24,15 +24,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: lint_demo; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.lint_demo (
-    id uuid NOT NULL
-);
-
-
---
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -41,14 +32,6 @@ CREATE TABLE public.messages (
     body text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
-
-
---
--- Name: lint_demo lint_demo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.lint_demo
-    ADD CONSTRAINT lint_demo_pkey PRIMARY KEY (id);
 
 
 --
