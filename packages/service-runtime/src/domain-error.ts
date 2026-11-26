@@ -1,9 +1,9 @@
-// oxlint-disable max-classes-per-file -- the categories are one small family, read together with their base
 /**
  * An expected failure, thrown with a stable kebab-case `code` the client can
  * translate, and a message written for the client. Throw one of the
  * categories, never this class itself (docs/patterns/error-handling.md).
  */
+// oxlint-disable-next-line max-classes-per-file -- the categories are one small family, read together with their base
 export abstract class DomainError extends Error {
   readonly code: string;
 

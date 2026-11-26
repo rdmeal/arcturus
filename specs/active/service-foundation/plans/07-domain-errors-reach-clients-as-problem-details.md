@@ -77,12 +77,14 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
     - `a valid request reaches the handler with its parsed input`
   - **Check:** `! vp test packages/service-runtime/src/service-app.test.ts`, then `vp check` (lint shows the ban by passing; to see it fire, temporarily import `@hono/zod-validator` in an example file)
 
-- [ ] **4. The example service answers not-found and invalid requests, and its client knows the error shape**
+- [x] **4. The example service answers not-found and invalid requests, and its client knows the error shape**
   - **Goal:** getting an unknown message answers 404 `message-not-found`; a send with an invalid body answers 400; the typed client narrows every route's error responses to `ProblemDetails`.
   - **Files:**
     - `services/example/src/messaging/get-message/queries.ts`: `selectMessage` uses `connection.maybeOne` and returns `Promise<MessageRow | null>` (Slonik's `one` throws Slonik's own `NotFoundError`, which would answer 500).
     - `services/example/src/messaging/get-message/handler.ts`: throw `new NotFoundError("message-not-found", "No message has this ID.")` when there's no row.
-    - `packages/service-testing/src/create-service-test.ts`: the `client` fixture is typed as `WithProblemDetails<TApp>`, because it's typed from `createApp`'s return, not from `AppType`. Without it the `expectTypeOf` checks can't see the error shape.
+    - `services/example/src/test/test.ts`: `createApp` declared as returning `AppType`, so the `client` fixture, typed from that return, knows the problem-details responses.
+    - `packages/service-runtime/test/capture-log.ts`, `packages/service-runtime/src/problem-details.test.ts`: `silenceLog()`, called by each test that doesn't capture logs, so no request lines reach the test output.
+    - `packages/service-runtime/src/domain-error.ts`: the `max-classes-per-file` disable on one line, not the whole file.
   - **Read first:** [error handling](../../../../docs/patterns/error-handling.md) rules 1–3 and 8, [service API tests](../../../../docs/patterns/service-api-test.md), [vertical slices](../../../../docs/patterns/vertical-slice.md)
   - **Tests:**
     - `services/example/src/messaging/get-message/get-message.test.ts`:
@@ -99,7 +101,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
       - rule 7: validation goes through `validateRequest` from `service-runtime`; each issue is `{ path, code, message }`, with zod's issue code;
       - rule 5: the body has `type: "about:blank"` and the frontend translates `code`;
       - the exemplar names the example service's not-found case (`services/example/src/messaging/get-message/handler.ts`) and the runtime's error handler (`packages/service-runtime/src/problem-details.ts`).
-    - `docs/patterns/service-api-test.md` or the `service-testing` README, wherever the `client` fixture is described: it knows the problem-details responses.
+    - `docs/patterns/service-api-test.md` rule 4: `src/test/test.ts` declares its `createApp` as returning the service's `AppType`, so the `client` fixture knows the problem-details responses.
     - `docs/patterns/vertical-slice.md` rule 8: `validateRequest` from `@arcturus/service-runtime` in place of `zValidator` from `@hono/zod-validator`.
     - `docs/patterns/service-composition-root.md` rule 12: `AppType` is wrapped in `WithProblemDetails`.
     - `packages/service-runtime/README.md`:
@@ -125,3 +127,5 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
 - 2026-11-26: Step 3 wrapped the example's `AppType` in `WithProblemDetails`, moved forward from step 4: without the zod-validator 400 in the route types, `arrange.ts`'s status check narrowed to `never`. Step 4 now changes the harness's `client` fixture instead.
 - 2026-11-26: Step 3 also maps Hono's `HTTPException(400)` (thrown for a body that isn't JSON, before zod runs) to 400 `invalid-request` without `issues`, tested by `a malformed JSON body answers 400 problem details with invalid-request`. Any other `HTTPException` still answers 500.
 - 2026-11-26: Step 3 added the zod-validator ban to `docs/develop/linting.md`'s guard rails table.
+- 2026-11-26: Step 4 typed the `client` fixture through the service's `src/test/test.ts` (`createApp: (…): AppType => createApp(…)`) instead of in the harness. A generic `TApp` isn't assignable to `WithProblemDetails<TApp>`, so the harness would have needed `as unknown as` and a lint disable, while a concrete app is assignable with no cast.
+- 2026-11-26: Type tests use `expectTypeOf<InferResponseType<typeof route, status>>()` from `hono/client`, because a status check with `expect` doesn't narrow the response.

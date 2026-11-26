@@ -1,4 +1,6 @@
-import { describe, expect } from "vite-plus/test";
+import type { ProblemDetails } from "@arcturus/service-runtime";
+import type { InferResponseType } from "hono/client";
+import { describe, expect, expectTypeOf } from "vite-plus/test";
 import { z } from "zod";
 
 import { sendMessageInputFactory } from "../../test/factories/send-message-input.factory.ts";
@@ -18,11 +20,21 @@ describe("POST /messaging/send-message", () => {
     expect(id).toMatch(uuid);
   });
 
-  test("rejects a message with an empty body", async ({ client }) => {
-    const response = await client.messaging["send-message"].$post({
-      json: sendMessageInputFactory.build({ body: "" }),
-    });
+  test("answers 400 problem details with invalid-request for an empty body", async ({ client }) => {
+    const sendMessage = client.messaging["send-message"].$post;
+
+    const response = await sendMessage({ json: sendMessageInputFactory.build({ body: "" }) });
 
     expect(response.status).toBe(400);
+    // zod writes each issue's message, so only the issue's path and code are matched.
+    expect(await response.json()).toMatchObject({
+      type: "about:blank",
+      title: "Bad Request",
+      status: 400,
+      detail: "The request is not valid.",
+      code: "invalid-request",
+      issues: [{ path: "body", code: "too_small" }],
+    });
+    expectTypeOf<InferResponseType<typeof sendMessage, 400>>().toEqualTypeOf<ProblemDetails>();
   });
 });

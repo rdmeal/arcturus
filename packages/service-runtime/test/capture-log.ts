@@ -18,3 +18,8 @@ export const captureLog = (): (() => Record<string, unknown>[]) => {
   configureLog({ level: "debug", format: "json", destination });
   return () => lines.map((line) => logRecord.parse(JSON.parse(line)));
 };
+
+/** Turns the logger off, for a test that doesn't read its lines. */
+export const silenceLog = (): void => {
+  configureLog({ level: "silent", format: "json" });
+};
