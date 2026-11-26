@@ -197,6 +197,9 @@ importers:
       '@hono/node-server':
         specifier: ^2.1.8
         version: 2.1.8(hono@4.13.18)
+      '@hono/zod-validator':
+        specifier: ^0.9.1
+        version: 0.9.1(hono@4.13.18)(zod@4.6.7)
       '@opentelemetry/api':
         specifier: ^1.10.0
         version: 1.10.0
@@ -293,9 +296,6 @@ importers:
       '@arcturus/service-runtime':
         specifier: workspace:*
         version: link:../../packages/service-runtime
-      '@hono/zod-validator':
-        specifier: ^0.9.1
-        version: 0.9.1(hono@4.13.18)(zod@4.6.7)
       dotenv:
         specifier: ^18.0.10
         version: 18.0.10

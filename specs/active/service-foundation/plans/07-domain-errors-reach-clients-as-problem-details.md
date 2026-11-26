@@ -62,7 +62,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
   - **Tests:** `a domain error thrown inside a transaction rolls it back and reaches the caller`: insert a row, throw a `ConflictError`, assert the rejection is that same error and that the row isn't there.
   - **Check:** `! vp test packages/service-runtime/src/database.test.ts`
 
-- [ ] **3. Turn validation failures into problem details with `validateRequest`**
+- [x] **3. Turn validation failures into problem details with `validateRequest`**
   - **Goal:** an invalid request to any service answers 400 problem details with `invalid-request` and its issues. Both example routes use `validateRequest`, and lint stops `@hono/zod-validator` being imported outside `service-runtime`. The build stays green.
   - **Files:**
     - `packages/service-runtime/src/validate-request.ts` (new): `validateRequest(target, schema)`, wrapping `zValidator` with a hook that throws `RequestValidationError` (internal, holding the issues as `{ path, code, message }`, with `path` joined from zod's path). Keep the return type inferred, so `c.req.valid(...)` stays typed, with the disable comment every inferred Hono builder carries.
@@ -82,7 +82,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
   - **Files:**
     - `services/example/src/messaging/get-message/queries.ts`: `selectMessage` uses `connection.maybeOne` and returns `Promise<MessageRow | null>` (Slonik's `one` throws Slonik's own `NotFoundError`, which would answer 500).
     - `services/example/src/messaging/get-message/handler.ts`: throw `new NotFoundError("message-not-found", "No message has this ID.")` when there's no row.
-    - `services/example/src/app.ts`: `export type AppType = WithProblemDetails<ReturnType<typeof createApp>>;`
+    - `packages/service-testing/src/create-service-test.ts`: the `client` fixture is typed as `WithProblemDetails<TApp>`, because it's typed from `createApp`'s return, not from `AppType`. Without it the `expectTypeOf` checks can't see the error shape.
   - **Read first:** [error handling](../../../../docs/patterns/error-handling.md) rules 1–3 and 8, [service API tests](../../../../docs/patterns/service-api-test.md), [vertical slices](../../../../docs/patterns/vertical-slice.md)
   - **Tests:**
     - `services/example/src/messaging/get-message/get-message.test.ts`:
@@ -99,6 +99,7 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
       - rule 7: validation goes through `validateRequest` from `service-runtime`; each issue is `{ path, code, message }`, with zod's issue code;
       - rule 5: the body has `type: "about:blank"` and the frontend translates `code`;
       - the exemplar names the example service's not-found case (`services/example/src/messaging/get-message/handler.ts`) and the runtime's error handler (`packages/service-runtime/src/problem-details.ts`).
+    - `docs/patterns/service-api-test.md` or the `service-testing` README, wherever the `client` fixture is described: it knows the problem-details responses.
     - `docs/patterns/vertical-slice.md` rule 8: `validateRequest` from `@arcturus/service-runtime` in place of `zValidator` from `@hono/zod-validator`.
     - `docs/patterns/service-composition-root.md` rule 12: `AppType` is wrapped in `WithProblemDetails`.
     - `packages/service-runtime/README.md`:
@@ -112,10 +113,15 @@ Implements [ticket 07](../tickets/07-domain-errors-reach-clients-as-problem-deta
 
 - [ ] Getting an unknown message ID answers `404` problem details with the not-found code: proven by `answers 404 problem details with message-not-found for an unknown message ID` in `services/example/src/messaging/get-message/get-message.test.ts`
 - [ ] A send request with an invalid body answers `400` problem details: proven by `answers 400 problem details with invalid-request for an empty body` in `services/example/src/messaging/send-message/send-message.test.ts`
-- [ ] An unexpected error answers `500` problem details with no message, stack or internal detail, and is logged at `error` with the cause: proven by `an unexpected error answers 500 problem details with nothing from the error` and `an unexpected error is logged at error with the error as err` in `packages/service-runtime/src/service-app.test.ts`
-- [ ] A domain error over HTTP is logged at `debug` and at no higher level: proven by `logs an unknown message ID at debug and at no higher level` in `services/example/src/messaging/get-message/get-message.test.ts` and `a domain error is logged at debug and at no higher level` in `packages/service-runtime/src/service-app.test.ts`
+- [ ] An unexpected error answers `500` problem details with no message, stack or internal detail, and is logged at `error` with the cause: proven by `an unexpected error answers 500 problem details with nothing from the error` and `an unexpected error is logged at error with the error as err` in `packages/service-runtime/src/problem-details.test.ts`
+- [ ] A domain error over HTTP is logged at `debug` and at no higher level: proven by `logs an unknown message ID at debug and at no higher level` in `services/example/src/messaging/get-message/get-message.test.ts` and `a domain error is logged at debug and at no higher level` in `packages/service-runtime/src/problem-details.test.ts`
 - [ ] A domain error thrown inside a transaction rolls the transaction back: nothing it wrote is visible afterwards: proven by `a domain error thrown inside a transaction rolls it back and reaches the caller` in `packages/service-runtime/src/database.test.ts`
 - [ ] The typed client sees the error responses on every route: proven by the `expectTypeOf` checks in the 404 and 400 tests of `get-message.test.ts` and `send-message.test.ts`, type-checked by `vp check`
 - [ ] The error handling pattern's exemplar names the example service's not-found case and the runtime's error handler: proven by the Exemplar section of `docs/patterns/error-handling.md`
 
 ## Notes
+
+- 2026-11-26: Step 3 split the error-handling and validation tests out of `service-app.test.ts` into `packages/service-runtime/src/problem-details.test.ts`, because lint's `max-lines` and `max-dependencies` failed on one file. Both files share `packages/service-runtime/test/capture-log.ts`.
+- 2026-11-26: Step 3 wrapped the example's `AppType` in `WithProblemDetails`, moved forward from step 4: without the zod-validator 400 in the route types, `arrange.ts`'s status check narrowed to `never`. Step 4 now changes the harness's `client` fixture instead.
+- 2026-11-26: Step 3 also maps Hono's `HTTPException(400)` (thrown for a body that isn't JSON, before zod runs) to 400 `invalid-request` without `issues`, tested by `a malformed JSON body answers 400 problem details with invalid-request`. Any other `HTTPException` still answers 500.
+- 2026-11-26: Step 3 added the zod-validator ban to `docs/develop/linting.md`'s guard rails table.

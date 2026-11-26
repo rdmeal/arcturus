@@ -21,39 +21,47 @@ const testOnlyFiles = [
   "packages/test-database/**",
 ];
 
-const productionImportBans = {
-  patterns: [
-    {
-      group: [
-        "**/test/**",
-        "*.test",
-        "*.test.ts",
-        "**/*.test",
-        "**/*.test.ts",
-        "*.handlers",
-        "*.handlers.ts",
-        "**/*.handlers",
-        "**/*.handlers.ts",
-      ],
-      message:
-        "Production code never imports test-only code (service-api-test rule 3: docs/patterns/service-api-test.md).",
-    },
-    {
-      group: [
-        "@arcturus/service-testing",
-        "@arcturus/service-testing/*",
-        "@arcturus/test-database",
-        "@arcturus/test-database/*",
-        "msw",
-        "msw/*",
-        "fishery",
-        "@testcontainers/*",
-      ],
-      message:
-        "Production code never imports test libraries (service-api-test rule 3: docs/patterns/service-api-test.md).",
-    },
-  ],
+// What production code may never import: test-only code and test libraries.
+const testCodeBans = [
+  {
+    group: [
+      "**/test/**",
+      "*.test",
+      "*.test.ts",
+      "**/*.test",
+      "**/*.test.ts",
+      "*.handlers",
+      "*.handlers.ts",
+      "**/*.handlers",
+      "**/*.handlers.ts",
+    ],
+    message:
+      "Production code never imports test-only code (service-api-test rule 3: docs/patterns/service-api-test.md).",
+  },
+  {
+    group: [
+      "@arcturus/service-testing",
+      "@arcturus/service-testing/*",
+      "@arcturus/test-database",
+      "@arcturus/test-database/*",
+      "msw",
+      "msw/*",
+      "fishery",
+      "@testcontainers/*",
+    ],
+    message:
+      "Production code never imports test libraries (service-api-test rule 3: docs/patterns/service-api-test.md).",
+  },
+];
+
+// zod-validator answers a failure with its own body, not problem details.
+const zodValidatorBan = {
+  group: ["@hono/zod-validator"],
+  message:
+    "Validate requests with validateRequest from @arcturus/service-runtime, so failures answer problem details (error-handling rule 7: docs/patterns/error-handling.md).",
 };
+
+const productionImportBans = { patterns: [...testCodeBans, zodValidatorBan] };
 
 const testImportBans = {
   patterns: [
@@ -175,6 +183,11 @@ export default defineConfig({
           // A test's numbers are its data (ADR 0047).
           "eslint/no-magic-numbers": "off",
         },
+      },
+      {
+        // validateRequest is the one place that wraps zod-validator.
+        files: ["packages/service-runtime/src/validate-request.ts"],
+        rules: { "no-restricted-imports": ["error", { patterns: testCodeBans }] },
       },
       {
         // A service's direct-db module is the one place that reaches the `db`

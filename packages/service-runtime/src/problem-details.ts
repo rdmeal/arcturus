@@ -1,8 +1,10 @@
 import type { Context, ErrorHandler } from "hono";
 import type { ApplyGlobalResponse } from "hono/client";
+import { HTTPException } from "hono/http-exception";
 
 import { ConflictError, DomainError, NotFoundError, RuleViolationError } from "./domain-error.ts";
 import { log } from "./log.ts";
+import { RequestValidationError } from "./validate-request.ts";
 
 /** One field that failed validation, with zod's issue code for the client to translate. */
 export interface ProblemIssue {
@@ -75,6 +77,8 @@ const problem = (
   return c.json(body, status, { "Content-Type": "application/problem+json" });
 };
 
+const invalidRequest = { detail: "The request is not valid.", code: "invalid-request" };
+
 /** Installed by `createServiceApp`; services never call `onError` themselves. */
 export const errorHandler: ErrorHandler = (error, c) => {
   if (error instanceof DomainError) {
@@ -84,6 +88,13 @@ export const errorHandler: ErrorHandler = (error, c) => {
       log.debug({ code: error.code, status }, "domain error answered");
       return problem(c, status, { detail: error.message, code: error.code });
     }
+  }
+  if (error instanceof RequestValidationError) {
+    return problem(c, badRequest, { ...invalidRequest, issues: error.issues });
+  }
+  // Hono's validator throws this for a body that isn't JSON, before zod sees it.
+  if (error instanceof HTTPException && error.status === badRequest) {
+    return problem(c, badRequest, invalidRequest);
   }
   log.error({ err: error }, "unexpected error");
   return problem(c, internalServerError, {

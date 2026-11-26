@@ -1,5 +1,5 @@
 import { createServiceApp } from "@arcturus/service-runtime";
-import type { Clock, Database } from "@arcturus/service-runtime";
+import type { Clock, Database, WithProblemDetails } from "@arcturus/service-runtime";
 
 import type { Config } from "./config.ts";
 import { messagingRouter } from "./messaging/router.ts";
@@ -15,4 +15,4 @@ export const createApp = (deps: Deps) => {
   return createServiceApp({ db: deps.db }).route("/messaging", messagingRouter(deps));
 };
 
-export type AppType = ReturnType<typeof createApp>;
+export type AppType = WithProblemDetails<ReturnType<typeof createApp>>;
