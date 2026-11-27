@@ -9,7 +9,9 @@
   "dependencies": {
     "@arcturus/service-runtime": "workspace:*",
     "@arcturus/test-database": "workspace:*",
+    "graphile-worker": "^0.18.0",
     "hono": "^4.13.18",
+    "msw": "^3.0.7",
     "pino-pretty": "^13.2.0",
     "zod": "^4.6.7"
   },

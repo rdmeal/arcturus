@@ -8,6 +8,7 @@ export const getMessageOutput = z.object({
   id: z.uuid(),
   body: z.string(),
   createdAt: z.iso.datetime(),
+  deliveredAt: z.iso.datetime().nullable(),
 });
 
 export type GetMessageOutput = z.infer<typeof getMessageOutput>;

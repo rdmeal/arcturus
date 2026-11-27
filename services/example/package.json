@@ -20,6 +20,7 @@
     "@arcturus/service-testing": "workspace:*",
     "@types/node": "^26.6.6",
     "fishery": "^2.4.0",
-    "graphile-migrate": "^1.4.1"
+    "graphile-migrate": "^1.4.1",
+    "msw": "^3.0.7"
   }
 }

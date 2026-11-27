@@ -23,8 +23,8 @@ A job is a slice whose entry point is a graphile-worker task instead of a route.
 1. A job slice lives in `src/<area>/<slice>/`, like any slice (see [Vertical slices](./vertical-slice.md)), with `task.ts` in place of `route.ts`, plus `schemas.ts`, `handler.ts` and `queries.ts` as needed.
 2. `task.ts` exports `<slice>Task`, created with `defineTask(name, payloadSchema, handler)` from `service-runtime`. The payload schema is `<slice>Payload` in `schemas.ts`.
 3. The task name is `<area>.<slice>` (`decision-delivery.deliver-decision-request`). It is stored in the database with every job, so once a job has been queued under it, it is never renamed.
-4. Every task is listed in `src/tasks.ts`, the service's task registry, which builds graphile-worker's task list from the definitions.
-5. Jobs are queued only with `addJob(connection, name, payload)` from `service-runtime`, passing the transaction's connection, so the job commits or rolls back with the data. Never use graphile-worker's own JavaScript `addJob`, which uses its own connection and can't join the transaction.
+4. Every task is listed in `src/tasks.ts`, the service's task registry, which exports `tasks`, the list of every task definition. `main.ts` builds graphile-worker's task list from it with `createTaskList(tasks, deps)` from `service-runtime` and starts the worker with `startWorker`, and the service's `src/test/test.ts` passes the same `createTaskList` to the test harness.
+5. Jobs are queued only with `addJob(connection, task, payload)` from `service-runtime`, passing the transaction's connection and the job slice's task definition (`<slice>Task`), so the job commits or rolls back with the data and its payload is typed by the task's schema. A command's handler imports the job slice's `task.ts` to queue it. Never use graphile-worker's own JavaScript `addJob`, which uses its own connection and can't join the transaction.
 6. Payloads are validated against the task's schema when queued and again when the task runs.
 7. The task's only work is to receive the parsed payload and call the handler with `deps`. The handler follows the same rules as any slice's handler.
 8. A handler that makes network calls opens a transaction only around its writes, never around the call (see [Database transactions](./database-transaction.md)).
@@ -39,7 +39,9 @@ A job is a slice whose entry point is a graphile-worker task instead of a route.
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+- `services/example/src/messaging/deliver-message/`, `deliverMessageTask` and `deliverMessage`: the task defined with its payload schema, and a handler that checks the message's state before calling out, calls out outside any transaction, then writes in its own transaction.
+- `services/example/src/messaging/send-message/handler.ts`, `sendMessage`: `addJob` with the task definition, inside the transaction that inserts the message.
+- `services/example/src/tasks.ts`, `tasks`: the task registry, which `services/example/src/main.ts` turns into the worker's task list.
 
 ## Related
 

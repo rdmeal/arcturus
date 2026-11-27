@@ -6,6 +6,7 @@ import { describe, expect, onTestFinished, test } from "vite-plus/test";
 import { captureLog } from "../test/capture-log.ts";
 import { annotate } from "./context.ts";
 import { createDatabase } from "./database.ts";
+import { startWorker } from "./jobs.ts";
 import { createServiceApp } from "./service-app.ts";
 
 const requestLines = (records: Record<string, unknown>[]) =>
@@ -114,5 +115,19 @@ describe("readiness", () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({ status: "ready" });
+  });
+
+  test("ready answers not-ready when the worker isn't running", async () => {
+    const { connectionString } = await cloneDatabase({
+      prefix: "runtime",
+      onCleanup: onTestFinished,
+    });
+    const worker = await startWorker({ connectionString, taskList: {} });
+    await worker.stop();
+
+    const response = await createServiceApp({ worker }).request("/health/ready");
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toStrictEqual({ status: "not-ready" });
   });
 });

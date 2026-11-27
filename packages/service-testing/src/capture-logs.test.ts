@@ -6,6 +6,7 @@ import { createServiceTest } from "./create-service-test.ts";
 const test = createServiceTest({
   parseConfig: () => ({}),
   testConfig: {},
+  createDeps: (fixtures) => fixtures,
   createApp: () =>
     createServiceApp().get("/marked", (c) => {
       log.info({ marker: c.req.query("marker") }, "marked");

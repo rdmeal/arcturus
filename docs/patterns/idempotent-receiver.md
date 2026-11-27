@@ -16,7 +16,7 @@ Calls between services are delivered at least once, so the same callback can arr
 ## Rules
 
 1. Every at-least-once call carries an ID chosen by its sender, such as a request ID or a match ID. The receiver keys its write on that ID.
-2. The table holding the effect has a unique constraint on that ID. The write uses `INSERT … ON CONFLICT DO NOTHING`, or checks the row's current state first (has this decision request already been answered?), in the same transaction as the rest of the effect.
+2. The table holding the effect has a unique constraint on that ID, or uses it as its primary key when each row is one received call. The write uses `INSERT … ON CONFLICT DO NOTHING`, or checks the row's current state first (has this decision request already been answered?), in the same transaction as the rest of the effect.
 3. A duplicate is a no-op that answers with the same success status as the first delivery, so the sender's job stops retrying. It is not an error.
 4. Side effects of the first delivery, such as queued jobs, happen only when the write actually happened. Queue them in the same transaction, after the insert or state check shows the call is new.
 5. Don't keep a generic table of processed message IDs. Idempotency comes from the data the call changes.
@@ -24,7 +24,8 @@ Calls between services are delivered at least once, so the same callback can arr
 
 ## Exemplar
 
-None yet: established by the first ticket that uses it.
+- `services/example/src/inbox/receive-message/`, `receiveMessage` and `insertReceivedMessage`: the inbox keyed on the sent message's ID, written with `insert … on conflict (id) do nothing`, answering 204 to a repeat.
+- `services/example/src/messaging/deliver-message/handler.ts`, `deliverMessage`: a job that checks the message's state before calling out, and records the delivery only where it isn't recorded yet.
 
 ## Related
 

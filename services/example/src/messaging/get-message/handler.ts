@@ -12,5 +12,10 @@ export const getMessage = async (
   if (row === null) {
     throw new NotFoundError("message-not-found", "No message has this ID.");
   }
-  return { id: row.id, body: row.body, createdAt: row.createdAt.toISOString() };
+  return {
+    id: row.id,
+    body: row.body,
+    createdAt: row.createdAt.toISOString(),
+    deliveredAt: row.deliveredAt?.toISOString() ?? null,
+  };
 };
