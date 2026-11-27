@@ -1,17 +1,17 @@
 # @arcturus/service-runtime
 
-What every service shares at run time: the app skeleton with request logging, health checks and error handling, the domain errors and request validation, the database wrapper, the clock, the logger and its context fields, server start-up and graceful shutdown, settings parsing, and the OpenTelemetry entry point. Each service still owns its own configuration schema and wires its own dependencies.
+What every service shares at run time: the app skeleton with request logging, health checks and error handling, the domain errors and request validation, the database wrapper, background jobs and their worker, the clock, the logger and its context fields, server start-up and graceful shutdown, settings parsing, and the OpenTelemetry entry point. Each service still owns its own configuration schema and wires its own dependencies.
 
 How a service is put together with it is in the [service composition root](../../docs/patterns/service-composition-root.md) pattern, and how to log and annotate is in the [observability](../../docs/patterns/observability.md) pattern.
 
 ## Exports
 
-### `createServiceApp({ db? })`
+### `createServiceApp({ db?, worker? })`
 
 Returns the Hono app every service's `createApp(deps)` starts from, and chains its routers onto. It installs, in this order:
 
 - **request logging:** one `"request completed"` line per request, with `method`, `route` (the matched route pattern, left out when nothing matched), `status` and `durationMs`. It's at `info`, or at `debug` for the health endpoints. Each request also gets its own scope for `annotate`.
-- **the health endpoints:** `GET /health/live`, which always answers `{ status: "live" }`, and `GET /health/ready`. Readiness checks only the service's own database, when `db` is passed: it answers `503 { status: "not-ready" }` when `select 1` fails, and `{ status: "ready" }` otherwise.
+- **the health endpoints:** `GET /health/live`, which always answers `{ status: "live" }`, and `GET /health/ready`. Readiness checks only the service's own database and job worker, when they are passed: it answers `503 { status: "not-ready" }` when `select 1` fails or the worker isn't running, and `{ status: "ready" }` otherwise.
 - **the error handler:** every error a route throws becomes RFC 9457 problem details, sent as `application/problem+json`. A domain error answers its category's status and is logged at `debug`; a validation failure from `validateRequest` answers 400; anything else answers a generic 500 and is logged at `error`. How handlers use it is in the [error handling](../../docs/patterns/error-handling.md) pattern.
 
 Why every service starts from it is in [Build every service's app from one runtime factory](../../docs/adr/0049-build-every-services-app-from-one-runtime-factory.md).
@@ -21,6 +21,22 @@ Why every service starts from it is in [Build every service's app from one runti
 Opens a Slonik pool and resolves to `{ db, close }`. It connects straight away, so it rejects when the database is unreachable. `close` ends the pool; pass it to `startServer`'s `onClose`.
 
 `db` is a `Database`, with only two methods: `transaction(routine)` runs `routine` with a connection inside a transaction, and `read(routine)` with a pooled connection outside one. It has no query methods of its own. Every connection has a lock timeout (5 seconds by default) and a statement timeout (30 seconds). Every row a query returns is validated against its `sql.type` schema, `timestamp` and `timestamptz` columns are read as `Date`, and a query on another connection while a transaction is open in the same request throws. How handlers use it is in the [database transactions](../../docs/patterns/database-transaction.md) pattern.
+
+### `defineTask(name, payloadSchema, handler)` and `TaskDefinition`
+
+Defines a background job's task, as a `TaskDefinition<Deps, Payload>`, where `handler(deps, payload)` receives the payload parsed with `payloadSchema`. The name is stored with every job, so it never changes once a job has been queued. How a job slice is written is in the [background jobs](../../docs/patterns/background-job.md) pattern.
+
+### `addJob(connection, task, payload)`
+
+Queues a job for `task` on a transaction's connection, through `graphile_worker.add_job()`, so it commits or rolls back with the transaction. The payload is typed by the task's schema, and checked against it before it's queued: a payload that doesn't match throws a `ZodError`.
+
+### `createTaskList(tasks, deps)`, `TaskList` and `workerLogger`
+
+Builds graphile-worker's `TaskList` from task definitions, each running its handler with `deps`. While a job runs, its log lines carry `jobId`, `taskName` and `attempt`. A payload that doesn't match the task's schema fails the job. A `DomainError` from the handler is logged at `warn` with its `code`, and the job completes without retrying; any other error is rethrown, so graphile-worker retries the job with backoff. `workerLogger` is the logger the worker passes to graphile-worker: its lines go to `log`, with its `info` lines at `debug`.
+
+### `startWorker({ connectionString, taskList })` and `Worker`
+
+Starts graphile-worker on the service's database, without its own signal handlers, and resolves to a `Worker` with `isRunning()` and `stop()`. `isRunning()` turns false when `stop()` is called, or if the worker fails, which is logged at `error`. `stop()` stops taking jobs and resolves once the jobs in progress have finished. Stop the worker in `startServer`'s `onClose`, before closing the database pool.
 
 ### `DomainError`, `NotFoundError`, `ConflictError` and `RuleViolationError`
 
@@ -66,4 +82,4 @@ The entry point a service's `dev` and `start` scripts load with `node --import`,
 
 ## Testing
 
-From the repository root, with Docker running, `vp test packages/service-runtime`. The database tests use their own databases from [`@arcturus/test-database`](../test-database/README.md). The shutdown tests start a real server from `test/fixtures/server.ts`, following the [child process test](../../docs/patterns/child-process-test.md) pattern.
+From the repository root, with Docker running, `vp test packages/service-runtime`. The database and job tests use their own databases from [`@arcturus/test-database`](../test-database/README.md). The shutdown tests start a real server from `test/fixtures/server.ts`, following the [child process test](../../docs/patterns/child-process-test.md) pattern.

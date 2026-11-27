@@ -20,7 +20,18 @@ describe("GET /messaging/get-message", () => {
       id,
       body: "Hello",
       createdAt: "2030-01-01T00:00:00.000Z",
+      deliveredAt: null,
     });
+  });
+
+  test("shows a delivered message's delivery time", async ({ client, clock, runJobs }) => {
+    const id = await sendMessage(client);
+    clock.advance(60_000);
+    await runJobs();
+
+    const response = await client.messaging["get-message"].$get({ query: { id } });
+
+    expect(await response.json()).toMatchObject({ deliveredAt: "2030-01-01T00:01:00.000Z" });
   });
 
   test("returns the later creation time for a message sent after the clock advances", async ({

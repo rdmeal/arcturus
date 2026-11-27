@@ -101,7 +101,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
     - `run-jobs.test.ts`: "runs queued jobs until none can run"; "fails the test when a job throws anything other than a domain error"; "with allowFailures, leaves the failed job to retry"; "a domain error doesn't fail the test".
   - **Check:** `vp check`, then `! vp test packages/service-testing`.
 
-- [ ] **5. Add the delivered time and the inbox table**
+- [x] **5. Add the delivered time and the inbox table**
   - **Goal:** migration 000002 adds `messages.delivered_at` and `inbox_messages`, committed with a regenerated `schema.sql`. No code reads them yet.
   - **Files:**
     - `services/example/migrations/current.sql`, then committed as `services/example/migrations/committed/000002-…sql`: `alter table messages add column if not exists delivered_at timestamptz` (null until delivered), and `create table inbox_messages (message_id uuid primary key, body text not null, received_at timestamptz not null)`, with comments and an undo, as the pattern says.
@@ -110,7 +110,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
   - **Tests:** none; the template build in every later test runs the migration.
   - **Check:** the maintainer runs `vp run infra:up`, then the example service's `db:watch` until the schema is right, then `db:commit`; then `vp run lint:sql`.
 
-- [ ] **6. Receive messages idempotently in the inbox**
+- [x] **6. Receive messages idempotently in the inbox**
   - **Goal:** `POST /inbox/receive-message` stores a message keyed on its ID, a duplicate is a 204 no-op, and `GET /inbox/list-received-messages` lists what was stored.
   - **Files:**
     - `services/example/src/inbox/receive-message/` (`route.ts`, `schemas.ts`, `handler.ts`, `queries.ts`): `receiveMessageInput = z.object({ messageId: z.uuid(), body: z.string().min(1) })`, answering 204. `insertReceivedMessage` runs `insert into inbox_messages … on conflict (message_id) do nothing`, with `received_at` from the clock.
@@ -124,7 +124,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
     - in `services/example/src/inbox/list-received-messages/list-received-messages.test.ts`: "lists no messages before any are received"; "lists received messages in the order they arrived".
   - **Check:** `vp check`, then `! vp test services/example/src/inbox`.
 
-- [ ] **7. Deliver each sent message with a job**
+- [x] **7. Deliver each sent message with a job**
   - **Goal:** sending a message queues a delivery job in its transaction. The job posts the message to `DELIVERY_URL` through the inbox client, outside any transaction, then records when it was delivered. Get-message shows `deliveredAt`, and `main.ts` runs the worker.
   - **Files:**
     - `services/example/package.json`: add `msw` (the same version as step 4) as a devDependency, and run `vp install`.
@@ -155,7 +155,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
     - in `services/example/src/health-ready.test.ts`: "answers not-ready when the worker has stopped".
   - **Check:** `vp check`, then `! vp test services/example`.
 
-- [ ] **8. Document jobs, endpoint mocks and the inbox**
+- [x] **8. Document jobs, endpoint mocks and the inbox**
   - **Goal:** the patterns name the example service's code as exemplars and match the API as built, and the READMEs and the maintainer's `.env.development` key are in place.
   - **Files:**
     - `docs/patterns/background-job.md`: exemplar (`services/example/src/messaging/deliver-message/`, `src/tasks.ts`, and the `addJob` call in send-message); rule 5 reworded to `addJob(connection, task, payload)`, taking the task definition.
@@ -181,7 +181,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
 - [ ] Log lines written by a job carry its job ID, task name and attempt: proven by "log lines written by the job carry its job ID, task name and attempt" in `services/example/src/messaging/deliver-message/deliver-message.test.ts`
 - [ ] `/health/ready` answers not-ready when the worker isn't running: proven by "answers not-ready when the worker has stopped" in `services/example/src/health-ready.test.ts`, and "ready answers not-ready when the worker isn't running" in `packages/service-runtime/src/service-app.test.ts`
 - [ ] An unhandled outbound request fails the test, because MSW is strict: proven by "fails an outbound request that no handler matches" in `packages/service-testing/src/network.test.ts`
-- [ ] The exemplars of these patterns name the example service's code: background jobs, service endpoint mocks and idempotent receivers: proven by step 8's edits to `docs/patterns/background-job.md`, `service-endpoint-mock.md` and `idempotent-receiver.md`
+- [x] The exemplars of these patterns name the example service's code: background jobs, service endpoint mocks and idempotent receivers: proven by step 8's edits to `docs/patterns/background-job.md`, `service-endpoint-mock.md` and `idempotent-receiver.md`
 
 ## Notes
 
@@ -190,3 +190,5 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
 - 2026-11-27: `packages/service-testing/src/run-jobs.test.ts` uses the example service's template (`database: "example"`), because only services have migrated templates. When the example service is deleted, point it at a real service's template.
 - 2026-11-27: `service-runtime` exports `workerLogger` and the `TaskList` type, so the harness's `runJobs` logs as the worker does.
 - 2026-11-27: `pnpm-workspace.yaml` overrides `"@vitest/mocker>msw:peer": "-"`: that optional peer gave every package depending on msw its own Vitest copy, so its `test` couldn't find the runner's suite. Browser mode's module mocking uses an RPC and import-map interceptor, not msw, so frontend browser-mode tests are unaffected; revisit if a Vitest upgrade changes that.
+- 2026-11-27: `inbox_messages` keys on `id` (the sent message's ID), not `message_id`, because database-migration rule 6 says every table has `id uuid primary key`. Step 6's insert uses `on conflict (id) do nothing`; the API still calls the field `messageId`. The migration was committed in step 5 (000002), because test templates are built only from committed migrations.
+- 2026-11-27: Step 8 left ADR 0033 unchanged: it is on `main`, where only status, links and typos may change, and MSW 3's renamed option is not a typo. Its decision (strict mode) still holds; the option's current name lives in service-endpoint-mock rule 1.

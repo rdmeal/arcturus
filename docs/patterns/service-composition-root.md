@@ -53,11 +53,11 @@ Every service builds its dependencies by hand in one place, at startup, and pass
 
 ## Exemplar
 
-The example service, which is temporary and has no clients yet:
+The example service, which is temporary:
 
-- `services/example/src/config.ts`, `parseConfig` and `loadConfig`: the schema with `logSettings` and `DATABASE_URL`, the frozen camelCase config, and the env files loaded from the package folder into a plain object.
-- `services/example/src/app.ts`, `Deps` and `createApp`: `Deps` with the config, the database and the clock, the app started from `createServiceApp({ db })` with the `messaging` router chained on, and `AppType`.
-- `services/example/src/main.ts`: `loadConfig()`, `configureLog`, `createDatabase`, `systemClock`, `startServer` closing the pool through `onClose`, and a `ConfigError` logged as fatal.
+- `services/example/src/config.ts`, `parseConfig` and `loadConfig`: the schema with `logSettings`, `DATABASE_URL` and `DELIVERY_URL`, the frozen camelCase config, and the env files loaded from the package folder into a plain object.
+- `services/example/src/app.ts`, `Deps` and `createApp`: `Deps` with the config, the database, the clock, the inbox client and the worker, the app started from `createServiceApp({ db, worker })` with the `messaging` and `inbox` routers chained on, and `AppType`.
+- `services/example/src/main.ts`: `loadConfig()`, `configureLog`, `createDatabase`, `systemClock`, the inbox client, `startWorker` with the task list, `startServer` stopping the worker and then closing the pool through `onClose`, and a `ConfigError` logged as fatal.
 - `services/example/package.json`: the `dev` and `start` scripts with the telemetry `--import`.
 
 ## Related

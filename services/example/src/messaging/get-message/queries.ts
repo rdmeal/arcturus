@@ -2,7 +2,12 @@ import { sql } from "@arcturus/service-runtime";
 import type { CommonQueryMethods } from "@arcturus/service-runtime";
 import { z } from "zod";
 
-const messageRow = z.object({ id: z.uuid(), body: z.string(), createdAt: z.date() });
+const messageRow = z.object({
+  id: z.uuid(),
+  body: z.string(),
+  createdAt: z.date(),
+  deliveredAt: z.date().nullable(),
+});
 
 export type MessageRow = z.infer<typeof messageRow>;
 
@@ -11,7 +16,7 @@ export const selectMessage = (
   id: string,
 ): Promise<MessageRow | null> =>
   connection.maybeOne(sql.type(messageRow)`
-    select id, body, created_at as "createdAt"
+    select id, body, created_at as "createdAt", delivered_at as "deliveredAt"
     from messages
     where id = ${id}
   `);

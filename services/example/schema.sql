@@ -24,14 +24,34 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: inbox_messages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.inbox_messages (
+    id uuid NOT NULL,
+    body text NOT NULL,
+    received_at timestamp with time zone NOT NULL
+);
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.messages (
     id uuid NOT NULL,
     body text NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    delivered_at timestamp with time zone
 );
+
+
+--
+-- Name: inbox_messages inbox_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.inbox_messages
+    ADD CONSTRAINT inbox_messages_pkey PRIMARY KEY (id);
 
 
 --

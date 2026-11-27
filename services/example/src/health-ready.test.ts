@@ -9,4 +9,13 @@ describe("GET /health/ready", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toStrictEqual({ status: "ready" });
   });
+
+  test("answers not-ready when the worker has stopped", async ({ client, worker }) => {
+    await worker.stop();
+
+    const response = await client.health.ready.$get();
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toStrictEqual({ status: "not-ready" });
+  });
 });

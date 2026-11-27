@@ -28,15 +28,16 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ### Fixtures, not hooks
 
-4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, createApp })` from `packages/service-testing`. Its `createApp` is declared as returning the service's `AppType`, so the `client` fixture knows the problem-details responses. Write every test with `test`, never `it`, and import the other test APIs (`describe`, `expect`) from `vite-plus/test`. Never rely on globals. Its fixtures are:
+4. Tests use the `test` exported by the service's `src/test/test.ts`, built with `createServiceTest({ parseConfig, testConfig, database, createDeps, createApp, createTaskList, handlers })` from `packages/service-testing`. `createDeps` builds the service's deps from the fixtures as `main.ts` builds them, with a real client for each neighbour; `createApp` and `createTaskList` take those deps; `handlers` lists every client's default MSW handlers (see [Service endpoint mocks](./service-endpoint-mock.md)). A service without a database or jobs leaves out `database` and `createTaskList`. Its `createApp` is declared as returning the service's `AppType`, so the `client` fixture knows the problem-details responses. Write every test with `test`, never `it`, and import the other test APIs (`describe`, `expect`) from `vite-plus/test`. Never rely on globals. Its fixtures are:
    - `db`: a fresh, empty database for this test, cloned from the service's migrated template and dropped afterwards;
    - `client`: the app from `createApp(deps)`, wrapped in Hono's `testClient`;
-   - `network`: the MSW server, reset after the test;
+   - `network`: the MSW server, reset after the test. It is installed for every test, whether or not the test asks for it;
    - `runJobs`: runs the service's queued jobs (rule 11);
+   - `worker`: the worker the app's readiness checks. It runs no jobs, because `runJobs` does, and `stop()` makes readiness answer not-ready;
    - `clock`: fixed at `2030-01-01T00:00:00Z` by default, far enough from real time that any accidental use of the system clock shows. It has `now()`, `set(instant)` and `advance(milliseconds)`, and works with `Date` until the choice between `Date` and `Temporal` is made;
    - `captureLogs`: the log records written during the test, for the rare test that asserts a log line (rule 19).
 
-   Ask only for the fixtures the test uses. They are set up lazily.
+   Ask only for the fixtures the test uses. They are set up lazily, apart from `network`. The harness also has a `deps` fixture, which `client` and `runJobs` share; tests never use it.
 
 5. The `client` fixture builds config with the service's `parseConfig` and test values, never from env files or `process.env`. A test that needs a different setting passes it as a fixture option, so the setting shows in the test.
 6. Never use `beforeAll`, `beforeEach`, `afterEach` or `afterAll` in a test file. Lint forbids them. Write a test's data and handler overrides in its body. Setup shared by several tests is a plain function each test calls.
@@ -50,7 +51,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Asserting
 
 10. Assert only through what the service exposes: the response, its problem details, a query's result, and requests recorded by an MSW override. Never query a table to check a result.
-11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
+11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Running jobs explicitly makes a test deterministic, lets it see the state between queuing and running, turns a job's failure into the test's failure, saves starting a worker for every test's database, and puts the timing of retries under the test's control. Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
 12. Use explicit matchers: `toStrictEqual`, or `toMatchObject` when only some fields matter. Never use snapshots.
 
 ### The direct database escape hatch
@@ -79,7 +80,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ## Exemplar
 
-- `services/example/src/test/test.ts`: `createServiceTest` with the service's `parseConfig`, test settings, its database name and `createApp`.
+- `services/example/src/test/test.ts`: `createServiceTest` with the service's `parseConfig`, test settings, its database name, `createDeps` with the inbox client, `createApp`, `createTaskList` and the inbox's default handlers.
 - `services/example/src/messaging/get-message/get-message.test.ts`: state arranged through the API with `sendMessage` from `src/test/arrange.ts`, the `clock` fixture advanced, and the result asserted through the query.
 
 ## Related
