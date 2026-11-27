@@ -42,7 +42,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
 
 ## Steps
 
-- [ ] **1. Build the app and tasks from one set of deps in the harness (prefactor, no behaviour change)**
+- [x] **1. Build the app and tasks from one set of deps in the harness (prefactor, no behaviour change)**
   - **Goal:** `createServiceTest` takes `createDeps(fixtures)` and `createApp(deps)` instead of `createApp(fixtures)`, so step 4 can add `createTaskList(deps)` and the app and tasks share the deps. Every existing test still passes.
   - **Files:**
     - `packages/service-testing/src/create-service-test.ts`: the options become `createDeps: (fixtures: { config: TConfig; db: Database; clock: Clock }) => TDeps` and `createApp: (deps: TDeps) => TApp`. The `client` fixture builds the deps, then the app.

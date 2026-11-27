@@ -6,6 +6,7 @@ import { createServiceTest } from "./create-service-test.ts";
 const test = createServiceTest({
   parseConfig: () => ({}),
   testConfig: {},
+  createDeps: (fixtures) => fixtures,
   createApp: ({ clock }) =>
     createServiceApp().get("/now", (c) => c.json({ now: clock.now().toISOString() })),
 });

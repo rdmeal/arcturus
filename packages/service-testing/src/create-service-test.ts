@@ -72,12 +72,14 @@ const openTestDatabase = async (
   return handle;
 };
 
-export const createServiceTest = <TConfig, TApp extends AnyHono>(options: {
+export const createServiceTest = <TConfig, TDeps, TApp extends AnyHono>(options: {
   parseConfig: (source: Record<string, string | undefined>) => TConfig;
   testConfig: Record<string, string>;
   /** The service's database name, such as `example`, if it has a database. */
   database?: string;
-  createApp: (fixtures: { config: TConfig; db: Database; clock: Clock }) => TApp;
+  /** Builds the service's deps from the fixtures, as `main.ts` builds them in production. */
+  createDeps: (fixtures: { config: TConfig; db: Database; clock: Clock }) => TDeps;
+  createApp: (deps: TDeps) => TApp;
   // oxlint-disable-next-line typescript/explicit-module-boundary-types -- Vitest's `extend` returns a type built from helpers it doesn't export
 }) => {
   configureLog({ level: "debug", format: "json", destination: testDestination });
@@ -97,7 +99,11 @@ export const createServiceTest = <TConfig, TApp extends AnyHono>(options: {
         return openTestDatabase(options.database, onCleanup);
       })
       .extend("client", ({ config, db, clock }) =>
-        testClient(options.createApp({ config, db: databases.get(db) ?? noDatabase, clock })),
+        testClient(
+          options.createApp(
+            options.createDeps({ config, db: databases.get(db) ?? noDatabase, clock }),
+          ),
+        ),
       )
       // oxlint-disable-next-line eslint/no-empty-pattern -- Vitest reads a fixture's dependencies from its first parameter, which must be a destructuring pattern.
       .extend("captureLogs", ({}, { onCleanup }) => {
