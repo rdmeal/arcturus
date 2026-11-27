@@ -51,7 +51,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 ### Asserting
 
 10. Assert only through what the service exposes: the response, its problem details, a query's result, and requests recorded by an MSW override. Never query a table to check a result.
-11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Running jobs explicitly makes a test deterministic, lets it see the state between queuing and running, turns a job's failure into the test's failure, saves starting a worker for every test's database, and puts the timing of retries under the test's control. Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
+11. API tests don't start a job worker. After a command that queues a job, call `runJobs()`, which runs queued jobs until none can run, and then assert. Never poll or sleep. Why is in [Run jobs explicitly in service API tests](../adr/0054-run-jobs-explicitly-in-service-api-tests.md). Test a job slice by queuing its job and calling `runJobs()`. If a job throws anything other than a `DomainError`, `runJobs()` fails the test, so a broken job can't sit unnoticed in the queue. Only a test about retries opts out, with `runJobs({ allowFailures: true })`, and then asserts the retry through the API.
 12. Use explicit matchers: `toStrictEqual`, or `toMatchObject` when only some fields matter. Never use snapshots.
 
 ### The direct database escape hatch
@@ -85,6 +85,7 @@ A service's behaviour is tested through its own API, in-process, against the rea
 
 ## Related
 
+- [Run jobs explicitly in service API tests](../adr/0054-run-jobs-explicitly-in-service-api-tests.md)
 - [Test services mostly through their API, in-process](../adr/0032-test-services-through-their-api.md)
 - [Give every test a fresh database from a migrated template](../adr/0035-give-every-test-a-fresh-database-from-a-template.md)
 - [Run test databases in Testcontainers](../adr/0034-run-test-databases-in-testcontainers.md)
