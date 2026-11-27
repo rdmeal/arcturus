@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 
-import { workerLogger } from "@arcturus/service-runtime";
+import { openWorkerPool, workerLogger } from "@arcturus/service-runtime";
 import type { TaskList, Worker } from "@arcturus/service-runtime";
 import { runOnce } from "graphile-worker";
 import type { WorkerEvents } from "graphile-worker";
@@ -33,13 +33,18 @@ export const runQueuedJobs = async (
       `${job.task_identifier} (job ${job.id}, attempt ${job.attempts}): ${describeError(error)}`,
     );
   });
-  await runOnce({
-    connectionString,
-    taskList,
-    events,
-    logger: workerLogger,
-    noHandleSignals: true,
-  });
+  const pool = openWorkerPool(connectionString);
+  try {
+    await runOnce({
+      pgPool: pool,
+      taskList,
+      events,
+      logger: workerLogger,
+      noHandleSignals: true,
+    });
+  } finally {
+    await pool.end();
+  }
   if (failures.length > 0 && !allowFailures) {
     throw new AggregateError(
       errors,

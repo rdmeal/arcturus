@@ -36,7 +36,11 @@ Builds graphile-worker's `TaskList` from task definitions, each running its hand
 
 ### `startWorker({ connectionString, taskList })` and `Worker`
 
-Starts graphile-worker on the service's database, without its own signal handlers, and resolves to a `Worker` with `isRunning()` and `stop()`. `isRunning()` turns false when `stop()` is called, or if the worker fails, which is logged at `error`. `stop()` stops taking jobs and resolves once the jobs in progress have finished. Stop the worker in `startServer`'s `onClose`, before closing the database pool.
+Starts graphile-worker on the service's database, without its own signal handlers, and resolves to a `Worker` with `isRunning()` and `stop()`. `isRunning()` turns false when `stop()` is called, or if the worker fails, which is logged at `error`. `stop()` stops taking jobs and resolves once the jobs in progress have finished and the worker's pool has closed. Stop the worker in `startServer`'s `onClose`, before closing the database pool.
+
+### `openWorkerPool(connectionString)`
+
+A `pg` pool for graphile-worker's `pgPool` option, which logs a connection's failure at `warn`. Pass it to any graphile-worker call, such as `runOnce` in the test harness, and `await pool.end()` afterwards. graphile-worker ends a pool it opens itself without waiting, after it has stopped listening for the pool's errors, so a connection the database drops then throws outside any handler.
 
 ### `DomainError`, `NotFoundError`, `ConflictError` and `RuleViolationError`
 

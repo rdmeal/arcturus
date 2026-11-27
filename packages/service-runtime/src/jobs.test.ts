@@ -14,6 +14,7 @@ import {
   createTaskList,
   defineTask,
   log,
+  openWorkerPool,
   sql,
   startWorker,
 } from "./index.ts";
@@ -26,7 +27,9 @@ const quietLogger = new Logger(() => () => {
 // An empty database of the test's own, with graphile-worker's schema.
 const openJobDatabase = async (): Promise<{ db: Database; connectionString: string }> => {
   const { connectionString } = await cloneDatabase({ prefix: "jobs", onCleanup: onTestFinished });
-  await runMigrations({ connectionString, logger: quietLogger });
+  const pool = openWorkerPool(connectionString);
+  await runMigrations({ pgPool: pool, logger: quietLogger });
+  await pool.end();
   const { db, close } = await createDatabase({ connectionString });
   onTestFinished(close);
   return { db, connectionString };
@@ -40,7 +43,9 @@ const runQueuedJobs = async (connectionString: string, taskList: TaskList): Prom
   events.on("job:error", ({ error }) => {
     errors.push(error);
   });
-  await runOnce({ connectionString, taskList, events, logger: quietLogger, noHandleSignals: true });
+  const pool = openWorkerPool(connectionString);
+  await runOnce({ pgPool: pool, taskList, events, logger: quietLogger, noHandleSignals: true });
+  await pool.end();
   return errors;
 };
 

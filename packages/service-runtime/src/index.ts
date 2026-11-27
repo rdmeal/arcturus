@@ -6,6 +6,7 @@ export {
   addJob,
   createTaskList,
   defineTask,
+  openWorkerPool,
   startWorker,
   type TaskDefinition,
   type TaskList,

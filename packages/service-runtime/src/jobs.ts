@@ -1,5 +1,6 @@
 import { Logger, run } from "graphile-worker";
 import type { JobHelpers, TaskList } from "graphile-worker";
+import { Pool } from "pg";
 
 export type { TaskList } from "graphile-worker";
 import type { DatabaseTransactionConnection } from "slonik";
@@ -91,10 +92,23 @@ export const workerLogger = new Logger(() => (level, message, meta) => {
   log[pinoLevel]({ ...meta, component: "graphile-worker" }, message);
 });
 
+/**
+ * A pool for graphile-worker, which `end()` closes. graphile-worker ends a pool
+ * it opens itself without waiting, and stops listening for its errors first, so
+ * a connection the database then drops would throw outside any handler.
+ */
+export const openWorkerPool = (connectionString: string): Pool => {
+  const pool = new Pool({ connectionString });
+  pool.on("error", (error) => {
+    log.warn({ err: error }, "a job worker connection failed");
+  });
+  return pool;
+};
+
 /** A running job worker. It stops running when stopped, or if it fails. */
 export interface Worker {
   readonly isRunning: () => boolean;
-  /** Stops taking jobs, and resolves once the jobs in progress have finished. */
+  /** Stops taking jobs, and resolves once the jobs in progress have finished and its pool has closed. */
   readonly stop: () => Promise<void>;
 }
 
@@ -102,30 +116,43 @@ export const startWorker = async (options: {
   connectionString: string;
   taskList: TaskList;
 }): Promise<Worker> => {
+  const pool = openWorkerPool(options.connectionString);
   const runner = await run({
-    connectionString: options.connectionString,
+    pgPool: pool,
     taskList: options.taskList,
     logger: workerLogger,
     // The service's own shutdown stops the worker, before it ends the pool.
     noHandleSignals: true,
+  }).catch(async (error: unknown) => {
+    await pool.end();
+    throw error;
   });
   let running = true;
-  const watch = async () => {
+  let finished = false;
+  const watching = (async () => {
     try {
       await runner.promise;
     } catch (error) {
       log.error({ err: error }, "the job worker failed");
     } finally {
       running = false;
+      finished = true;
     }
+  })();
+  const stopAndClose = async () => {
+    // A runner that has already finished refuses to stop again.
+    if (!finished) {
+      await runner.stop();
+    }
+    await watching;
+    await pool.end();
   };
-  void watch();
   let stopping: Promise<void> | undefined;
   return Object.freeze({
     isRunning: () => running,
     stop: () => {
       running = false;
-      stopping ??= runner.stop();
+      stopping ??= stopAndClose();
       return stopping;
     },
   });
