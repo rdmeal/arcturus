@@ -33,3 +33,8 @@ overrides:
   # dependency, whose undici-types@6.21.0 fails the no-downgrade trust check.
   # Type definitions only, so the repository's own @types/node serves instead.
   "graphile-config>@types/node": ^26.6.6
+  # @vitest/mocker's optional msw peer gives every package that depends on msw
+  # its own copy of Vitest, whose `test` can't find the runner's suite. Only
+  # @vitest/mocker/browser's opt-in MSW interceptor uses it; browser mode's own
+  # module mocking doesn't. If a Vitest upgrade makes browser mode need it, revisit.
+  "@vitest/mocker>msw:peer": "-"

@@ -8,7 +8,9 @@ export {
   defineTask,
   startWorker,
   type TaskDefinition,
+  type TaskList,
   type Worker,
+  workerLogger,
 } from "./jobs.ts";
 export { configureLog, log, type LogFormat } from "./log.ts";
 export type { ProblemDetails, ProblemIssue, WithProblemDetails } from "./problem-details.ts";

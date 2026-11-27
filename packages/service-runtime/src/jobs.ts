@@ -1,5 +1,7 @@
 import { Logger, run } from "graphile-worker";
 import type { JobHelpers, TaskList } from "graphile-worker";
+
+export type { TaskList } from "graphile-worker";
 import type { DatabaseTransactionConnection } from "slonik";
 import type { z } from "zod";
 
@@ -83,7 +85,8 @@ export const createTaskList = <TDeps>(
 // graphile-worker logs every job it runs at info, so its info lines go to debug.
 const workerLogLevels = { error: "error", warning: "warn", info: "debug", debug: "debug" } as const;
 
-const workerLogger = new Logger(() => (level, message, meta) => {
+/** graphile-worker's logger, writing to `log`. */
+export const workerLogger = new Logger(() => (level, message, meta) => {
   const pinoLevel = workerLogLevels[level];
   log[pinoLevel]({ ...meta, component: "graphile-worker" }, message);
 });

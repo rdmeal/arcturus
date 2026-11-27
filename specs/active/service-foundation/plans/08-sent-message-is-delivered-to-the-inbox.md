@@ -85,7 +85,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
     - in `packages/service-runtime/src/service-app.test.ts`: "readiness answers not-ready when the worker isn't running", with a stopped real worker.
   - **Check:** `vp check`, then `! vp test packages/service-runtime`.
 
-- [ ] **4. Give API tests runJobs, a test worker and a strict MSW network**
+- [x] **4. Give API tests runJobs, a test worker and a strict MSW network**
   - **Goal:** the harness has the `runJobs`, `worker` and `network` fixtures that rule 4 lists, and they behave as rules 1 and 11 and the ticket say. No service has tasks or handlers yet, so existing tests pass unchanged.
   - **Files:**
     - `packages/service-testing/package.json`: add `msw` 3.x, after the supply-chain checks, and run `vp install`.
@@ -184,3 +184,9 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
 - [ ] The exemplars of these patterns name the example service's code: background jobs, service endpoint mocks and idempotent receivers: proven by step 8's edits to `docs/patterns/background-job.md`, `service-endpoint-mock.md` and `idempotent-receiver.md`
 
 ## Notes
+
+- 2026-11-27: MSW 3 renamed `onUnhandledRequest` to `onUnhandledFrame` (`server.listen({ onUnhandledFrame: "error" })`). Step 8 updates service-endpoint-mock rule 1 and ADR 0033's wording to match. MSW 3 also exports `http` and `HttpResponse` from `msw`, and `AnyHandler` is the handler type.
+- 2026-11-27: The harness's fixtures, as built in step 4: `mswServer` (file-scoped, automatic), `network` (automatic, resets handlers after each test), `worker` (the test worker), `deps` (from `createDeps`, shared by `client` and `runJobs`), `client`, `runJobs` and `captureLogs`. `createDeps` receives `worker` too. Step 8's rule 4 update lists them.
+- 2026-11-27: `packages/service-testing/src/run-jobs.test.ts` uses the example service's template (`database: "example"`), because only services have migrated templates. When the example service is deleted, point it at a real service's template.
+- 2026-11-27: `service-runtime` exports `workerLogger` and the `TaskList` type, so the harness's `runJobs` logs as the worker does.
+- 2026-11-27: `pnpm-workspace.yaml` overrides `"@vitest/mocker>msw:peer": "-"`: that optional peer gave every package depending on msw its own Vitest copy, so its `test` couldn't find the runner's suite. Browser mode's module mocking uses an RPC and import-map interceptor, not msw, so frontend browser-mode tests are unaffected; revisit if a Vitest upgrade changes that.
