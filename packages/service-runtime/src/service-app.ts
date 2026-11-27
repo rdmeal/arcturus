@@ -7,6 +7,7 @@ import { matchedRoutes } from "hono/route";
 import { withContextFields } from "./context.ts";
 import type { Database } from "./database.ts";
 import { health } from "./health.ts";
+import type { Worker } from "./jobs.ts";
 import { log } from "./log.ts";
 import { errorHandler } from "./problem-details.ts";
 
@@ -39,12 +40,9 @@ const requestLogging = (): MiddlewareHandler => {
 /**
  * The app every service's `createApp` starts from:
  * docs/adr/0049-build-every-services-app-from-one-runtime-factory.md. A service
- * with a database passes it, so readiness checks it.
+ * passes its database and job worker, if it has them, so readiness checks them.
  */
 // oxlint-disable-next-line typescript/explicit-module-boundary-types -- a Hono app's type is its routes, inferred so the RPC client follows them
-export const createServiceApp = (options: { db?: Database } = {}) => {
-  return new Hono()
-    .use(requestLogging())
-    .route("/health", health(options.db))
-    .onError(errorHandler);
+export const createServiceApp = (options: { db?: Database; worker?: Worker } = {}) => {
+  return new Hono().use(requestLogging()).route("/health", health(options)).onError(errorHandler);
 };

@@ -72,7 +72,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
     - "log lines written by a job carry its job ID, task name and attempt".
   - **Check:** `vp check`, then `! vp test packages/service-runtime/src/jobs.test.ts`.
 
-- [ ] **3. Run a worker, check it for readiness and stop it before the pool**
+- [x] **3. Run a worker, check it for readiness and stop it before the pool**
   - **Goal:** a service can start a worker, `/health/ready` answers not-ready when it isn't running, and shutdown stops it before the pool ends. The example service still passes no worker, so its readiness is unchanged.
   - **Files:**
     - `packages/service-runtime/src/jobs.ts`: `interface Worker { isRunning(): boolean; stop(): Promise<void> }`, and `startWorker(options: { connectionString: string; taskList: TaskList }): Promise<Worker>`, which runs graphile-worker's `run` with `noHandleSignals`, a logger adapted to `log`, and `isRunning()` false once the runner's `promise` settles.
@@ -179,7 +179,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
 - [ ] A domain error thrown by a job is logged as a warning with its code, and the job doesn't run again, asserted with `captureLogs`: proven by "logs a rejected delivery as a warning with its code" and "a rejected delivery completes without retrying" in `services/example/src/messaging/deliver-message/deliver-message.test.ts`
 - [ ] A job that throws an unexpected error fails the test through `runJobs()`; with `{ allowFailures: true }` it doesn't, and the job is left to retry: proven by "a failed delivery fails runJobs" and "with allowFailures, a failed delivery is left to retry" in `services/example/src/messaging/deliver-message/deliver-message.test.ts`, and the `run-jobs.test.ts` tests in `packages/service-testing/src/`
 - [ ] Log lines written by a job carry its job ID, task name and attempt: proven by "log lines written by the job carry its job ID, task name and attempt" in `services/example/src/messaging/deliver-message/deliver-message.test.ts`
-- [ ] `/health/ready` answers not-ready when the worker isn't running: proven by "answers not-ready when the worker has stopped" in `services/example/src/health-ready.test.ts`, and "readiness answers not-ready when the worker isn't running" in `packages/service-runtime/src/service-app.test.ts`
+- [ ] `/health/ready` answers not-ready when the worker isn't running: proven by "answers not-ready when the worker has stopped" in `services/example/src/health-ready.test.ts`, and "ready answers not-ready when the worker isn't running" in `packages/service-runtime/src/service-app.test.ts`
 - [ ] An unhandled outbound request fails the test, because MSW is strict: proven by "fails an outbound request that no handler matches" in `packages/service-testing/src/network.test.ts`
 - [ ] The exemplars of these patterns name the example service's code: background jobs, service endpoint mocks and idempotent receivers: proven by step 8's edits to `docs/patterns/background-job.md`, `service-endpoint-mock.md` and `idempotent-receiver.md`
 

@@ -15,6 +15,7 @@ import {
   defineTask,
   log,
   sql,
+  startWorker,
 } from "./index.ts";
 import type { Database } from "./index.ts";
 
@@ -169,5 +170,33 @@ describe("createTaskList", () => {
     const counting = records().find((record) => record.msg === "counting");
     expect(counting).toMatchObject({ taskName: "testing.count", attempt: 1 });
     expect(counting?.jobId).toMatch(/^\d+$/u);
+  });
+});
+
+describe("startWorker", () => {
+  test("a started worker runs a queued job", async () => {
+    const { db, connectionString } = await openJobDatabase();
+    const { promise: ran, resolve: hasRun } = Promise.withResolvers<unknown>();
+    const task = countTask((_deps, payload) => {
+      hasRun(payload);
+      return Promise.resolve();
+    });
+    const worker = await startWorker({ connectionString, taskList: createTaskList([task], {}) });
+    onTestFinished(worker.stop);
+
+    await db.transaction((connection) => addJob(connection, task, { count: 2 }));
+
+    expect(await ran).toStrictEqual({ count: 2 });
+  });
+
+  test("a worker is running until it is stopped", async () => {
+    const { connectionString } = await openJobDatabase();
+    const worker = await startWorker({ connectionString, taskList: {} });
+    onTestFinished(worker.stop);
+    expect(worker.isRunning()).toBe(true);
+
+    await worker.stop();
+
+    expect(worker.isRunning()).toBe(false);
   });
 });

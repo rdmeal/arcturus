@@ -1,3 +1,4 @@
+import { Logger, run } from "graphile-worker";
 import type { JobHelpers, TaskList } from "graphile-worker";
 import type { DatabaseTransactionConnection } from "slonik";
 import type { z } from "zod";
@@ -78,3 +79,51 @@ export const createTaskList = <TDeps>(
       (payload: unknown, helpers: JobHelpers) => runJob(task, deps, payload, helpers),
     ]),
   );
+
+// graphile-worker logs every job it runs at info, so its info lines go to debug.
+const workerLogLevels = { error: "error", warning: "warn", info: "debug", debug: "debug" } as const;
+
+const workerLogger = new Logger(() => (level, message, meta) => {
+  const pinoLevel = workerLogLevels[level];
+  log[pinoLevel]({ ...meta, component: "graphile-worker" }, message);
+});
+
+/** A running job worker. It stops running when stopped, or if it fails. */
+export interface Worker {
+  readonly isRunning: () => boolean;
+  /** Stops taking jobs, and resolves once the jobs in progress have finished. */
+  readonly stop: () => Promise<void>;
+}
+
+export const startWorker = async (options: {
+  connectionString: string;
+  taskList: TaskList;
+}): Promise<Worker> => {
+  const runner = await run({
+    connectionString: options.connectionString,
+    taskList: options.taskList,
+    logger: workerLogger,
+    // The service's own shutdown stops the worker, before it ends the pool.
+    noHandleSignals: true,
+  });
+  let running = true;
+  const watch = async () => {
+    try {
+      await runner.promise;
+    } catch (error) {
+      log.error({ err: error }, "the job worker failed");
+    } finally {
+      running = false;
+    }
+  };
+  void watch();
+  let stopping: Promise<void> | undefined;
+  return Object.freeze({
+    isRunning: () => running,
+    stop: () => {
+      running = false;
+      stopping ??= runner.stop();
+      return stopping;
+    },
+  });
+};
