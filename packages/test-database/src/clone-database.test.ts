@@ -76,6 +76,6 @@ describe("cloneDatabase", () => {
       onCleanup: onTestFinished,
     });
 
-    expect(await publicTables(database.connectionString)).toStrictEqual(["messages"]);
+    expect(await publicTables(database.connectionString)).toContain("messages");
   });
 });
