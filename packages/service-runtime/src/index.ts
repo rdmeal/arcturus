@@ -2,6 +2,7 @@ export { type Clock, systemClock } from "./clock.ts";
 export { annotate } from "./context.ts";
 export { createDatabase, type Database } from "./database.ts";
 export { ConflictError, DomainError, NotFoundError, RuleViolationError } from "./domain-error.ts";
+export { addJob, createTaskList, defineTask, type TaskDefinition } from "./jobs.ts";
 export { configureLog, log, type LogFormat } from "./log.ts";
 export type { ProblemDetails, ProblemIssue, WithProblemDetails } from "./problem-details.ts";
 export { startServer } from "./server.ts";

@@ -51,7 +51,7 @@ Implements [ticket 08](../tickets/08-sent-message-is-delivered-to-the-inbox.md),
   - **Tests:** none new; the existing example and harness tests prove nothing changed.
   - **Check:** `vp check`, then the maintainer runs `! vp test services/example packages/service-testing`.
 
-- [ ] **2. Define, queue and run jobs in service-runtime**
+- [x] **2. Define, queue and run jobs in service-runtime**
   - **Goal:** the runtime can define a task, queue it in a transaction, and run it with validation, domain-error handling and job context fields. Nothing uses it yet, so the build stays green.
   - **Files:**
     - `packages/service-runtime/package.json`: add `graphile-worker` `^0.18.0` (already vetted in the lockfile), and run `vp install`.
